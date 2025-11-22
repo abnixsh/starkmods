@@ -53,7 +53,7 @@ function HomePage() {
         <div class="app-card-content">
           <div class="app-card-header">
             <div class="app-icon-container">
-              <img src="assets/icons/icon_rc20.jpg" alt="WCC3 Mod" class="h-16 w-16 rounded-lg" loading="lazy" />
+              <img src="assets/icons/icon_wcc3.jpg" alt="WCC3 Mod" class="h-16 w-16 rounded-lg" loading="lazy" />
             </div>
             <div class="flex-1">
               <div class="text-xl font-semibold">WCC3 Mod Menu</div>
