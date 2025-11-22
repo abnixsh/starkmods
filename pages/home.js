@@ -67,21 +67,6 @@ function HomePage() {
     </div>
 </article>
 
-      <article id="chams-menu-card" class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm cursor-pointer">
-        <div class="app-card-content">
-            <div class="app-card-header">
-               <div class="app-icon-container"><img src="assets/icons/icon_chams_menu.jpg" class="h-16 w-16 rounded-lg"/></div>
-               <div class="flex-1"><div class="text-xl font-semibold">WCC3 Mod</div><div class="badge mt-2">v4.1</div></div>
-            </div>
-            <p class="text-sm text-slate-600 dark:text-slate-300 mb-4 mt-4">
-              Advanced WCC3 features including instant wickets and sixes every ball.
-            </p>
-            <div class="app-card-footer">
-               <button class="btn download-btn" data-app="chams-menu"><span class="material-icons">shopping_cart</span> Buy Plan</button>
-            </div>
-        </div>
-      </article>
-
     </section>
   `;
 }
