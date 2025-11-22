@@ -16,6 +16,7 @@ class Router {
         
         // CHANGED THIS LINE
         this.addRoute('/rc20', () => this.loadPageComponent('rc20'));
+        this.addRoute('/wcc3', () => this.loadPageComponent('wcc3'));
         
         this.addRoute('/chamsmenu', () => this.loadPageComponent('chamsmenu'));
         this.addRoute('/esptester', () => this.loadPageComponent('esptester'));
@@ -61,6 +62,9 @@ class Router {
                 let functionName;
                 // Add mapping for RC20
                 if (pageName === 'rc20') functionName = 'Rc20Page';
+                else if (pageName === 'wcc3') functionName = 'Wcc3Page';
+
+
                 else if (pageName === 'home') functionName = 'HomePage';
                 else functionName = pageName.charAt(0).toUpperCase() + pageName.slice(1) + 'Page';
                 
