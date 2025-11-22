@@ -18,8 +18,6 @@ class Router {
         this.addRoute('/rc20', () => this.loadPageComponent('rc20'));
         this.addRoute('/wcc3', () => this.loadPageComponent('wcc3'));
         
-        this.addRoute('/chamsmenu', () => this.loadPageComponent('chamsmenu'));
-        this.addRoute('/esptester', () => this.loadPageComponent('esptester'));
         this.addRoute('/404', () => Promise.resolve(`<div class='text-center py-20'>404 Not Found</div>`));
 
         window.addEventListener('popstate', () => this.handleRoute(location.pathname));
