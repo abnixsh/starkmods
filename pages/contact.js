@@ -41,25 +41,25 @@ function ContactPage() {
             <h2 class="text-xl font-semibold mb-6">Get in Touch</h2>
             
             <div class="space-y-6">
-              <a href="mailto:gameraadilmods@gmail.com" class="flex items-start gap-4 hover:opacity-80 transition">
+              <a href="mailto:abnixsh@gmail.com" class="flex items-start gap-4 hover:opacity-80 transition">
                 <div class="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
                   <span class="material-icons">email</span>
                 </div>
                 <div>
                   <div class="font-semibold">Email</div>
                   <div class="text-sm text-slate-500 mb-1">Primary contact method</div>
-                  <div class="text-blue-500">gameraadilmods@gmail.com</div>
+                  <div class="text-blue-500">abnixsh@gmail.com</div>
                 </div>
               </a>
 
-              <a href="https://t.me/AbnixSH" target="_blank" class="flex items-start gap-4 hover:opacity-80 transition">
+              <a href="https://t.me/imsergiomoreio" target="_blank" class="flex items-start gap-4 hover:opacity-80 transition">
                 <div class="p-3 bg-sky-100 dark:bg-sky-900/30 text-sky-500 rounded-lg">
                   <span class="material-icons">send</span>
                 </div>
                 <div>
                   <div class="font-semibold">Telegram</div>
                   <div class="text-sm text-slate-500 mb-1">Fast response</div>
-                  <div class="text-blue-500">@AbnixSH</div>
+                  <div class="text-blue-500">@ImSergioMoreio</div>
                 </div>
               </a>
 
