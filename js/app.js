@@ -90,7 +90,7 @@
     function initializeCardNavigation() {
         const cardRoutes = {
             'rc20-card': '/rc20',        // New Route
-            'chams-menu-card': '/chamsmenu',
+            'wcc3-card': '/wcc3',
             'esp-tester-card': '/esptester'
         };
 
