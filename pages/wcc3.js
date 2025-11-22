@@ -17,7 +17,7 @@ function Wcc3Page() {
 
       <div class="app-card p-6 rounded-2xl mb-8 bg-slate-900 text-white">
         <div class="flex flex-col md:flex-row items-center gap-6">
-           <img src="assets/icons/icon_wcc3.jpg" class="w-24 h-24 rounded-2xl shadow-lg" alt="WCC3 Logo">
+           <img src="assets/icons/icon_wcc3.png" class="w-24 h-24 rounded-2xl shadow-lg" alt="WCC3 Logo">
            <div class="flex-1 text-center md:text-left">
              <h2 class="text-2xl font-bold">WCC3 Ultimate</h2>
              <div class="text-slate-400 mb-3">com.netwave.wcc3</div>
