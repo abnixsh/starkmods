@@ -48,6 +48,30 @@ function HomePage() {
           </div>
         </div>
       </article>
+      
+      // pages/home.js ke andar
+
+// ... RC20 card khatam hone ke baad ...
+
+<article id="wcc3-card" class="app-card ..."> 
+    <div class="app-card-content">
+        <div class="app-card-header">
+            <img src="assets/icons/icon_wcc3.jpg" class="h-16 w-16 rounded-lg" />
+            <div class="flex-1">
+                <div class="text-xl font-semibold">WCC3 Mod</div>
+                <div class="text-sm text-slate-500">com.stark.wcc3</div>
+            </div>
+        </div>
+        <p class="text-sm mb-4">Unlock everything in WCC3.</p>
+        <div class="app-card-footer">
+            <button class="btn" onclick="window.router.navigateTo('/wcc3')">
+                View Mod
+            </button>
+        </div>
+    </div>
+</article>
+// ... Baki code ...
+
 
       <article id="chams-menu-card" class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm cursor-pointer">
         <div class="app-card-content">
