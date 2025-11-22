@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Stark Mods</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css" /> 
+</head>
+
+<body class="bg-white text-slate-800 antialiased">
+    
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <button id="mobile-menu-button" class="md:hidden p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <span class="material-icons">menu</span>
+                    </button>
+                    <a href="/" class="flex items-center gap-3" data-link>
+                        <img src="assets/icons/icon_site.jpg" alt="Stark Mods" class="h-10 w-10 rounded-lg" />
+                        <div>
+                            <div class="text-lg font-semibold">Stark Mods</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 -mt-1">Premium Modding Tools</div>
+                        </div>
+                    </a>
+                </div>
+
+                <nav id="desktop-nav" class="hidden md:flex items-center gap-6">
+                    <a href="/" class="nav-link" data-link>Home</a>
+                    <a href="/plans" class="nav-link" data-link>Plans</a>
+                    <a href="/contact" class="nav-link" data-link>Contact</a>
+                    
+                    <button id="theme-toggle" class="flex items-center gap-2 p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <span id="theme-icon" class="material-icons">dark_mode</span>
+                        <span id="theme-text" class="text-sm">Dark</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+        
+        <div id="mobile-menu" class="md:hidden hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+            <div class="px-4 py-3 space-y-2">
+                <a href="/" class="block mobile-link" data-link>Home</a>
+                <a href="/plans" class="block mobile-link" data-link>Plans</a>
+                <a href="/contact" class="block mobile-link" data-link>Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <main id="app-content" class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+        </main>
+
+    <footer class="mt-12 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <div class="max-w-6xl mx-auto px-4 py-8 text-center text-sm text-slate-500">
+            &copy; 2025 Stark Mods. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script src="js/router.js"></script>
+</body>
+</html>
