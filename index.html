@@ -17,9 +17,9 @@
     <link rel="stylesheet" href="css/styles.css" />
 </head>
 
-<body class="bg-white text-slate-800 antialiased transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 antialiased transition-colors duration-300">
 
-    <!-- HEADER SECTION -->
+    <!-- HEADER -->
     <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-16">
@@ -30,95 +30,78 @@
                         <!-- Logo Image -->
                         <img src="assets/icons/icon_site.jpg" alt="Stark Mods" class="h-10 w-10 rounded-lg shadow-sm" onerror="this.src='https://placehold.co/40x40?text=S'" />
                         <div>
-                            <div class="text-lg font-bold tracking-tight text-slate-900 dark:text-black">Stark Mods</div>
-                            <div class="text-xs text-slate-500 dark:text-slate-400 -mt-1 font-medium">Premium Tools</div>
+                            <div class="text-xl font-black tracking-tight text-slate-900 dark:text-white">Stark Mods</div>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 -mt-1 font-bold uppercase tracking-wide">Premium Tools</div>
                         </div>
                     </a>
                 </div>
 
-                <!-- RIGHT: Actions (Nav + Cart + Theme + Menu) -->
+                <!-- RIGHT: Actions -->
                 <div class="flex items-center gap-2">
                     
-                    <!-- Desktop Navigation (Hidden on Mobile) -->
+                    <!-- Desktop Nav -->
                     <nav id="desktop-nav" class="hidden md:flex items-center gap-6 mr-4">
                         <a href="/" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Home</a>
-                        <a href="/plans" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Plans</a>
+                        <a href="/cart" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Cart</a>
                         <a href="/contact" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Contact</a>
                     </nav>
 
-                    <!-- SHOPPING CART ICON (Visible on Mobile & Desktop) -->
-                    <button onclick="window.openCart()" class="relative p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition mr-1">
+                    <!-- CART ICON (White Bg in Light Mode) -->
+                    <button onclick="window.router.navigateTo('/cart')" class="relative p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition mr-1 shadow-sm">
                         <span class="material-icons text-xl">shopping_cart</span>
-                        <!-- Cart Badge (Hidden by default) -->
-                        <span id="cart-badge" class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900">0</span>
+                        <!-- Badge -->
+                        <span id="cart-badge" class="hidden absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900">0</span>
                     </button>
 
-                    <!-- DARK MODE TOGGLE (Visible on Mobile & Desktop) -->
-                    <button id="theme-toggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <!-- DARK MODE TOGGLE -->
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
                         <span id="theme-icon" class="material-icons text-xl">dark_mode</span>
                     </button>
 
-                    <!-- MOBILE MENU BUTTON (Hidden on Desktop) -->
-                    <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition ml-1">
+                    <!-- MOBILE MENU BUTTON -->
+                    <button id="mobile-menu-button" class="md:hidden p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition ml-1 shadow-sm">
                         <span class="material-icons text-2xl">menu</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- MOBILE MENU DROPDOWN (Hidden by default) -->
-        <div id="mobile-menu" class="md:hidden hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl absolute w-full left-0">
+        <!-- MOBILE MENU -->
+        <div id="mobile-menu" class="md:hidden hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl absolute w-full left-0 z-40">
             <div class="px-4 py-3 space-y-2">
-                <a href="/" class="block mobile-link py-2 px-3 rounded hover:bg-slate-100 dark:hover:bg-slate-800" data-link>Home</a>
-                <a href="/plans" class="block mobile-link py-2 px-3 rounded hover:bg-slate-100 dark:hover:bg-slate-800" data-link>Plans</a>
-                <a href="/contact" class="block mobile-link py-2 px-3 rounded hover:bg-slate-100 dark:hover:bg-slate-800" data-link>Contact</a>
-                
-                <!-- Extra Links for Mobile -->
-                <div class="border-t border-slate-100 dark:border-slate-700 pt-2 mt-2">
-                     <a href="/help" class="block mobile-link py-2 px-3 text-sm text-slate-500" data-link>Help Center</a>
-                </div>
+                <a href="/" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium" data-link>Home</a>
+                <a href="/cart" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium" data-link>My Cart</a>
+                <a href="/contact" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium" data-link>Contact Support</a>
             </div>
         </div>
     </header>
 
-    <!-- DYNAMIC CONTENT AREA -->
+    <!-- DYNAMIC CONTENT -->
     <main id="app-content" class="max-w-6xl mx-auto px-4 sm:px-6 py-10 min-h-[60vh]">
-        <!-- Router will load pages here -->
         <div class="flex justify-center pt-20">
             <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
         </div>
     </main>
 
-    <!-- FOOTER -->
+    <!-- FOOTER (Icon Removed) -->
     <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors duration-300">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                
-                <div class="flex items-center gap-3">
-                    
-                    <span class="text-sm text-slate-500 dark:text-slate-400">
-                        &copy; 2025 Stark Mods. All rights reserved.
-                    </span>
+                <div class="text-sm font-medium text-slate-600 dark:text-slate-400">
+                    &copy; 2025 Stark Mods. All rights reserved.
                 </div>
-
-                <div class="flex gap-4 text-sm text-slate-400">
-                    <a href="/privacy" class="hover:text-slate-600 dark:hover:text-slate-200" data-link>Privacy</a>
-                    <a href="/terms" class="hover:text-slate-600 dark:hover:text-slate-200" data-link>Terms</a>
+                <div class="flex gap-6 text-sm text-slate-500">
+                    <a href="/privacy" class="hover:text-blue-600 dark:hover:text-blue-400 transition" data-link>Privacy</a>
+                    <a href="/terms" class="hover:text-blue-600 dark:hover:text-blue-400 transition" data-link>Terms</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- Loading Bar -->
-    <div id="loading-indicator" class="fixed top-0 left-0 w-full h-1 bg-blue-600 opacity-0 transition-opacity duration-300 z-[60]">
-        <div class="h-full bg-blue-400 animate-pulse"></div>
-    </div>
-
-    <!-- SCRIPTS -->
     <script src="js/app.js"></script>
-    <!-- Router must be loaded last -->
     <script src="js/router.js"></script>
 
 </body>
 </html>
+
 
