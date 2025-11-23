@@ -1,142 +1,111 @@
-// js/app.js - Main Application
+// js/app.js
 (function() {
     'use strict';
+    
+    // --- GLOBAL CART STATE ---
+    window.cart = [];
+    window.selectedPlan = null; // Stores currently selected plan on product page
 
+    // --- THEME LOGIC ---
     const THEME_KEY = 'stark_theme_dark';
-
-    // ... (Theme functions same as before) ...
+    
     function updateThemeIcons(isDark) {
-        const elements = [{icon: 'theme-icon', text: 'theme-text'}, {icon: 'theme-icon-mobile', text: 'theme-text-mobile'}];
-        elements.forEach(({icon, text}) => {
-            const iconEl = document.getElementById(icon);
-            const textEl = document.getElementById(text);
-            if (iconEl && textEl) {
-                if (isDark) { iconEl.textContent = 'light_mode'; textEl.textContent = 'Light'; } 
-                else { iconEl.textContent = 'dark_mode'; textEl.textContent = 'Dark'; }
-            }
-        });
+        const icon = document.getElementById('theme-icon');
+        if (icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
     }
 
     function setTheme(isDark) {
-        const body = document.body;
-        if (isDark) body.classList.add('dark'); else body.classList.remove('dark');
+        if (isDark) document.body.classList.add('dark');
+        else document.body.classList.remove('dark');
         updateThemeIcons(isDark);
-        try { localStorage.setItem(THEME_KEY, isDark ? '1' : '0'); } catch (e) { console.warn(e); }
+        localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
     }
 
     function initializeTheme() {
-        let isDark = false;
-        try { const saved = localStorage.getItem(THEME_KEY); if (saved !== null) isDark = saved === '1'; } catch (e) { console.warn(e); }
-        document.body.classList.remove('dark'); setTheme(isDark);
+        const saved = localStorage.getItem(THEME_KEY);
+        setTheme(saved === '1');
     }
 
-    function toggleTheme() {
-        const body = document.body;
-        setTheme(!body.classList.contains('dark'));
-    }
+    // --- CART FUNCTIONS ---
+    
+    // 1. Select Plan (Visual Only)
+    window.selectPlan = function(gameId, planType, price, name) {
+        // Reset previous selection visual
+        document.querySelectorAll('.plan-option').forEach(el => {
+            el.classList.remove('border-blue-600', 'bg-blue-50', 'dark:bg-blue-900/20', 'ring-2', 'ring-blue-600');
+            el.classList.add('border-slate-200', 'dark:border-slate-700');
+        });
 
-    function initializeMobileMenu() {
-        const mobileBtn = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        if (mobileBtn && mobileMenu) {
-            mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
-            document.addEventListener('click', (e) => {
-                if (!mobileBtn.contains(e.target) && !mobileMenu.contains(e.target)) mobileMenu.classList.add('hidden');
-            });
-            mobileMenu.addEventListener('click', (e) => {
-                if (e.target.hasAttribute('data-link') || e.target.closest('[data-link]')) mobileMenu.classList.add('hidden');
-            });
+        // Highlight new selection
+        const selectedEl = document.getElementById(`plan-${planType}`);
+        if(selectedEl) {
+            selectedEl.classList.remove('border-slate-200', 'dark:border-slate-700');
+            selectedEl.classList.add('border-blue-600', 'bg-blue-50', 'dark:bg-blue-900/20', 'ring-2', 'ring-blue-600');
         }
-    }
 
-    function initializeDropdowns() {
-        const moreDropdown = document.getElementById('more-dropdown');
-        const moreMenu = document.getElementById('more-menu');
-        if (moreDropdown && moreMenu) {
-            moreDropdown.addEventListener('click', (e) => { e.preventDefault(); moreMenu.classList.toggle('hidden'); });
-            document.addEventListener('click', (e) => {
-                if (!moreDropdown.contains(e.target) && !moreMenu.contains(e.target)) moreMenu.classList.add('hidden');
-            });
+        // Store selection
+        window.selectedPlan = { gameId, planType, price, name };
+        
+        // Enable Add to Cart Button
+        const btn = document.getElementById('add-to-cart-btn');
+        if(btn) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            btn.innerHTML = `<span class="material-icons">shopping_cart</span> Add ${name} to Cart`;
         }
-    }
-
-    window.initializeComponents = function() {
-        initializeCarousels();
-        initializeCardNavigation();
-        initializeDownloads();
-        initializeForms();
     };
 
-    function initializeCarousels() {
-        document.querySelectorAll('.screenshot-carousel').forEach(function(carousel) {
-            const track = carousel.querySelector('.screenshot-carousel-track');
-            const slides = carousel.querySelectorAll('.screenshot-carousel-slide');
-            const prevBtn = carousel.querySelector('.screenshot-carousel-nav.prev');
-            const nextBtn = carousel.querySelector('.screenshot-carousel-nav.next');
-            
-            if (!track || !slides.length) return;
-            let currentIndex = 0;
+    // 2. Add to Cart (Action)
+    window.addToCart = function() {
+        if (!window.selectedPlan) return;
+        
+        // Add to global cart array
+        window.cart = [window.selectedPlan]; // Replaces previous item (Single item cart for now)
+        
+        updateCartBadge();
+        
+        // Animation feedback
+        const btn = document.getElementById('add-to-cart-btn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<span class="material-icons">check</span> Added!`;
+        btn.classList.add('bg-green-600');
+        
+        setTimeout(() => {
+            window.router.navigateTo('/cart');
+        }, 800);
+    };
 
-            function updateCarousel() { track.style.transform = `translateX(${-currentIndex * 100}%)`; }
-            
-            if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); currentIndex = (currentIndex - 1 + slides.length) % slides.length; updateCarousel(); });
-            if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); currentIndex = (currentIndex + 1) % slides.length; updateCarousel(); });
-            
-            setInterval(() => { currentIndex = (currentIndex + 1) % slides.length; updateCarousel(); }, 4000);
-        });
-    }
-
-    // UPDATED: Now points to RC20 instead of Offset Tester
-    function initializeCardNavigation() {
-        const cardRoutes = {
-            'rc20-card': '/rc20',        // New Route
-            'wcc3-card': '/wcc3',
-            'esp-tester-card': '/esptester'
-        };
-
-        Object.keys(cardRoutes).forEach(function(cardId) {
-            const card = document.getElementById(cardId);
-            if (card) {
-                card.addEventListener('click', function(e) {
-                    if (e.target.closest('.download-btn')) return; // Let download button handle itself
-                    window.router.navigateTo(cardRoutes[cardId]);
-                });
-            }
-        });
-    }
-
-    // UPDATED: Removed GitHub Links. Redirects to Plans.
-    function initializeDownloads() {
-        document.querySelectorAll('.download-btn').forEach(function(button) {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                // Send everyone to Plans page to buy
-                window.router.navigateTo('/plans');
-            });
-        });
-    }
-
-    function initializeForms() {
-        const contactForm = document.getElementById('contact-form');
-        if (contactForm) {
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(this);
-                // Updated Email
-                window.open(`mailto:abnixsh@gmail.com?subject=Contact&body=${encodeURIComponent(formData.get('message'))}`);
-            });
+    // 3. Update Badge
+    function updateCartBadge() {
+        const badge = document.getElementById('cart-badge');
+        if(!badge) return;
+        
+        if (window.cart.length > 0) {
+            badge.classList.remove('hidden');
+            badge.innerText = window.cart.length;
+        } else {
+            badge.classList.add('hidden');
         }
     }
 
+    // --- INITIALIZATION ---
     document.addEventListener('DOMContentLoaded', function() {
         initializeTheme();
-        const desktopToggle = document.getElementById('theme-toggle');
-        const mobileToggle = document.getElementById('theme-toggle-mobile');
-        if (desktopToggle) desktopToggle.addEventListener('click', toggleTheme);
-        if (mobileToggle) mobileToggle.addEventListener('click', toggleTheme);
-        initializeMobileMenu();
-        initializeDropdowns();
-        setTimeout(() => { if (window.router) window.initializeComponents(); }, 100);
+        updateCartBadge();
+
+        // Theme Toggle
+        const toggleBtn = document.getElementById('theme-toggle');
+        if(toggleBtn) toggleBtn.addEventListener('click', () => {
+            const isDark = document.body.classList.contains('dark');
+            setTheme(!isDark);
+        });
+
+        // Mobile Menu
+        const menuBtn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+        if(menuBtn && menu) {
+            menuBtn.addEventListener('click', () => menu.classList.toggle('hidden'));
+        }
     });
+
 })();
