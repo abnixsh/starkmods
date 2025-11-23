@@ -47,7 +47,7 @@ function HomePage() {
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
-              <img src="assets/icons/icon_wcc3.jpg" alt="WCC3 Mod" class="h-16 w-16 rounded-lg" onerror="this.src='https://placehold.co/64?text=WCC3'" />
+              <img src="assets/icons/icon_wcc3.png" alt="WCC3 Mod" class="h-16 w-16 rounded-lg" onerror="this.src='https://placehold.co/64?text=WCC3'" />
             </div>
             <div class="flex-1">
               <div class="text-xl font-semibold">WCC3 Mod Menu</div>
