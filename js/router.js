@@ -5,21 +5,17 @@ class Router {
     }
 
     init() {
-        // 1. Routes List (Yahan check karo /rc20 hai ya nahi)
+        // Routes
         this.addRoute('/', 'home');
+        this.addRoute('/rc20', 'rc20');
+        this.addRoute('/wcc3', 'wcc3');
         this.addRoute('/cart', 'cart');
         this.addRoute('/checkout', 'checkout');
-        
-        this.addRoute('/rc20', 'rc20'); // <-- YE LINE ZAROORI HAI
-        this.addRoute('/wcc3', 'wcc3');
-        
         this.addRoute('/contact', 'contact');
-        this.addRoute('/plans', 'cart'); // Plans click karne par bhi cart dikhaye
+        this.addRoute('/plans', 'cart'); // Plans now redirects to cart
 
-        // Back Button Handle
         window.addEventListener('popstate', () => this.handleRoute(location.pathname));
         
-        // Link Click Handle
         document.addEventListener('click', (e) => {
             const link = e.target.closest('[data-link]');
             if (link) {
@@ -28,7 +24,6 @@ class Router {
             }
         });
 
-        // Initial Load
         this.handleRoute(location.pathname);
     }
 
@@ -49,18 +44,17 @@ class Router {
 
     loadPage(pageName) {
         const content = document.getElementById('app-content');
-        
-        // Loading Spinner
+        // Loader
         content.innerHTML = `<div class="flex justify-center pt-20"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div></div>`;
 
-        // Agar function pehle se memory mein hai, toh load karo
+        // Check Memory
         const funcName = this.getFunctionName(pageName);
         if (window[funcName]) {
             this.renderPage(funcName);
             return;
         }
 
-        // Agar nahi hai, toh file fetch karo
+        // Load Script
         const script = document.createElement('script');
         script.src = `pages/${pageName}.js`;
         
@@ -69,19 +63,20 @@ class Router {
         };
         
         script.onerror = () => {
-            content.innerHTML = `<div class="text-center py-10">Error: File <b>pages/${pageName}.js</b> not found.</div>`;
+            content.innerHTML = `<div class="text-center py-20">Error: File <b>pages/${pageName}.js</b> not found.</div>`;
         };
         
         document.head.appendChild(script);
     }
 
     getFunctionName(pageName) {
+        // File Name -> Function Name Map
         const map = {
             'home': 'HomePage',
+            'rc20': 'Rc20Page',
+            'wcc3': 'Wcc3Page',
             'cart': 'CartPage',
             'checkout': 'CheckoutPage',
-            'rc20': 'Rc20Page', // <-- Ye match hona chahiye
-            'wcc3': 'Wcc3Page',
             'contact': 'ContactPage',
             '404': 'NotFoundPage'
         };
@@ -93,13 +88,13 @@ class Router {
         if (window[funcName]) {
             content.innerHTML = window[funcName]();
             window.scrollTo(0, 0);
+            if(window.initializeComponents) window.initializeComponents();
         } else {
-            content.innerHTML = `<div class="text-center py-10">Error: Function <b>${funcName}</b> not found. Check your JS file.</div>`;
+            content.innerHTML = `<div class="text-center py-20">Error: Function <b>${funcName}</b> not found.</div>`;
         }
     }
 }
 
-// Router Start
 document.addEventListener('DOMContentLoaded', () => {
     window.router = new Router();
 });
