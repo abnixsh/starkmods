@@ -62,19 +62,29 @@ function Rc20Page() {
             </ul>
           </div>
 
-          <div class="app-card p-6 rounded-2xl flex flex-col justify-between">
-            <div>
-                <h3 class="text-xl font-bold mb-4">Description</h3>
-                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                    Get the ultimate advantage in Real Cricket 20. Our mod menu is safe, secure, and easy to use. No root required.
-                </p>
-            </div>
-            
-            <button onclick="window.router.navigateTo('/plans')" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-600/30 transition transform hover:-translate-y-1 flex items-center justify-center gap-2 cursor-pointer">
-                <span class="material-icons">shopping_cart</span> Buy Premium Plan
-            </button>
-          </div>
-      </div>
+          // Description & Buy Button Section
+<div class="app-card p-6 rounded-2xl flex flex-col justify-between">
+    <div>
+        <h3 class="text-xl font-bold mb-4">Description</h3>
+        <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
+            Get the ultimate advantage in Real Cricket 20. Safe, secure, and anti-ban.
+        </p>
+    </div>
+    
+    <div class="space-y-3">
+        <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Select Plan</div>
+        
+        <button onclick="window.addToCart('rc20', '1month')" class="w-full py-3 px-4 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-xl font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-center justify-between">
+            <span>1 Month Access</span>
+            <span>₹250</span>
+        </button>
+
+        <button onclick="window.addToCart('rc20', 'lifetime')" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-between">
+            <span class="flex items-center gap-2"><span class="material-icons text-sm">diamond</span> Lifetime Access</span>
+            <span>₹1500</span>
+        </button>
+    </div>
+</div>
     </div>
     `;
 }
