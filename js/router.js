@@ -8,6 +8,7 @@ class Router {
         this.addRoute('/', 'home');
         this.addRoute('/rc20', 'rc20');
         this.addRoute('/wcc3', 'wcc3');
+        this.addRoute('/rc25', 'rc25');
         this.addRoute('/cart', 'cart');
         this.addRoute('/checkout', 'checkout');
         this.addRoute('/contact', 'contact');
@@ -71,6 +72,7 @@ class Router {
             'home': 'HomePage',
             'rc20': 'Rc20Page',
             'wcc3': 'Wcc3Page',
+            'rc25': 'Rc25Page',
             'cart': 'CartPage',
             'checkout': 'CheckoutPage',
             'contact': 'ContactPage',
