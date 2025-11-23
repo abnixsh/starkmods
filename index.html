@@ -44,12 +44,19 @@
         </div>
         
         <div id="mobile-menu" class="md:hidden hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-            <div class="px-4 py-3 space-y-2">
-                <a href="/" class="block mobile-link" data-link>Home</a>
-                <a href="/plans" class="block mobile-link" data-link>Plans</a>
-                <a href="/contact" class="block mobile-link" data-link>Contact</a>
-            </div>
+    <div class="px-4 py-3 space-y-2">
+        <a href="/" class="block mobile-link" data-link>Home</a>
+        <a href="/plans" class="block mobile-link" data-link>Plans</a>
+        <a href="/contact" class="block mobile-link" data-link>Contact</a>
+
+        <div class="border-t border-slate-200 dark:border-slate-700 pt-2 mt-2">
+            <button id="theme-toggle-mobile" class="w-full text-left flex items-center gap-2 p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                <span id="theme-icon-mobile" class="material-icons">dark_mode</span>
+                <span id="theme-text-mobile">Dark</span>
+            </button>
         </div>
+    </div>
+</div>
     </header>
 
     <main id="app-content" class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
