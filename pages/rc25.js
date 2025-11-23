@@ -13,10 +13,11 @@ function Rc25Page() {
       <div class="flex items-center gap-4 mb-8">
          <img src="assets/icons/icon_rc25.jpg" class="w-20 h-20 rounded-2xl shadow-lg" onerror="this.src='https://placehold.co/80?text=RC25'">
          <div>
-             <h1 class="text-3xl font-bold">RC25 Mod Menu</h1>
+             <h1 class="text-3xl font-bold">RC25 V7+ Patch</h1>
              <div class="flex gap-2 mt-2">
                 <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">New Release</span>
                 <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">Free</span>
+                 <span class="px-2 py-0.5 bg-red-100 dark:bg-white-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">V6.1</span>
              </div>
          </div>
       </div>
