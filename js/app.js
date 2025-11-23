@@ -124,7 +124,7 @@
                 e.preventDefault();
                 const formData = new FormData(this);
                 // Updated Email
-                window.open(`mailto:gameraadilmods@gmail.com?subject=Contact&body=${encodeURIComponent(formData.get('message'))}`);
+                window.open(`mailto:abnixsh@gmail.com?subject=Contact&body=${encodeURIComponent(formData.get('message'))}`);
             });
         }
     }
