@@ -5,14 +5,14 @@ class Router {
     }
 
     init() {
-        // Routes
         this.addRoute('/', 'home');
         this.addRoute('/rc20', 'rc20');
         this.addRoute('/wcc3', 'wcc3');
         this.addRoute('/cart', 'cart');
         this.addRoute('/checkout', 'checkout');
         this.addRoute('/contact', 'contact');
-        this.addRoute('/plans', 'cart'); // Plans now redirects to cart
+        
+        this.addRoute('/plans', 'cart'); 
 
         window.addEventListener('popstate', () => this.handleRoute(location.pathname));
         
@@ -44,17 +44,14 @@ class Router {
 
     loadPage(pageName) {
         const content = document.getElementById('app-content');
-        // Loader
         content.innerHTML = `<div class="flex justify-center pt-20"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div></div>`;
 
-        // Check Memory
         const funcName = this.getFunctionName(pageName);
         if (window[funcName]) {
             this.renderPage(funcName);
             return;
         }
 
-        // Load Script
         const script = document.createElement('script');
         script.src = `pages/${pageName}.js`;
         
@@ -70,7 +67,6 @@ class Router {
     }
 
     getFunctionName(pageName) {
-        // File Name -> Function Name Map
         const map = {
             'home': 'HomePage',
             'rc20': 'Rc20Page',
