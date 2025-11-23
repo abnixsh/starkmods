@@ -15,8 +15,8 @@ function Rc20Page() {
              <h1 class="text-3xl font-bold">RC20 Mod Menu</h1>
              <div class="flex gap-2 mt-2">
                 <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">v6.1</span>
-                <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">Anti-ban</span>
-                <span class="px-2 py-0.5 bg-blue-100 dark:bg-red-900 text-white-700 dark:text-blue-300 text-xs font-bold rounded">v3.2.3</span>
+                <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">no root</span>
+                <span class="px-2 py-0.5 bg-blue-100 dark:bg-red-900 text-white-700 dark:text-blue-300 text-xs font-bold rounded">Anti-ban</span>
              </div>
          </div>
       </div>
@@ -48,11 +48,17 @@ function Rc20Page() {
           <div class="app-card p-6 rounded-2xl">
             <h3 class="text-xl font-bold mb-4">Mod Features</h3>
             <ul class="space-y-3 text-slate-600 dark:text-slate-300">
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Auto Play (Perfect Timing)</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Perfect Timing)</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Always No ball</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Always Wide ball</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited Runs</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Anti-pause</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited Coins & Tickets</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlock All Tournaments</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Real Names & Jerseys</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Anti-Ban Protection</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimed Mps/Mcs</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All Stadiums Unlock</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>No Ads</span></li>
+
             </ul>
           </div>
 
