@@ -165,5 +165,5 @@ window.confirmOrder = function() {
     const item = window.cart[0];
     const method = window.selectedMethod.toUpperCase();
     const msg = `ORDER VERIFICATION:\nProduct: ${item.gameId.toUpperCase()} Mod\nPlan: ${item.name}\nPrice: ${item.price}\nMethod: ${method}\n\nI have completed the payment. Sending proof now.`;
-    window.open(`https://t.me/AbnixSH?text=${encodeURIComponent(msg)}`, '_blank');
+    window.open(`https://t.me/imsergiomoreio?text=${encodeURIComponent(msg)}`, '_blank');
 };
