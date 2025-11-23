@@ -1,29 +1,37 @@
 (function() {
     'use strict';
 
-    // --- GLOBAL CART SETUP ---
+    
     window.cart = [];
     
-    // Product Database (Prices & Details)
+    
     window.products = {
-        'rc20': { name: 'RC20 Mod', icon: 'assets/icons/icon_rc20.jpg', plans: {
-            '1month': { name: '1 Month', price: 250 },
-            'lifetime': { name: 'Lifetime', price: 1500 }
-        }},
-        'wcc3': { name: 'WCC3 Mod', icon: 'assets/icons/icon_wcc3.jpg', plans: {
-            '1month': { name: '1 Month', price: 350 },
-            'lifetime': { name: 'Lifetime', price: 2000 }
-        }}
+        'rc20': { 
+            name: 'RC20 Mod', 
+            icon: 'assets/icons/icon_rc20.jpg', 
+            plans: {
+                '1month': { name: '1 Month', price: 250 },
+                'lifetime': { name: 'Lifetime', price: 1500 }
+            }
+        },
+        'wcc3': { 
+            name: 'WCC3 Mod', 
+            icon: 'assets/icons/icon_wcc3.jpg', 
+            plans: {
+                '1month': { name: '1 Month', price: 350 },
+                'lifetime': { name: 'Lifetime', price: 2000 }
+            }
+        }
     };
 
-    // --- ADD TO CART FUNCTION ---
+   
     window.addToCart = function(gameId, planType) {
         const product = window.products[gameId];
-        if(!product) return;
+        if (!product) return;
         
         const plan = product.plans[planType];
         
-        // Add item to cart
+        
         window.cart = [{
             gameId: gameId,
             gameName: product.name,
@@ -33,9 +41,9 @@
         }];
         
         updateCartBadge();
-        
-        // Show feedback and redirect
         alert("Added to Cart!");
+        
+        
         if(window.router) window.router.navigateTo('/cart');
     };
 
@@ -51,7 +59,49 @@
         }
     }
 
-    // --- THEME & UI LOGIC ---
+    
+    function initializeCarousels() {
+        document.querySelectorAll('.screenshot-carousel').forEach(function(carousel) {
+            const track = carousel.querySelector('.screenshot-carousel-track');
+            const slides = carousel.querySelectorAll('.screenshot-carousel-slide');
+            const prevBtn = carousel.querySelector('.screenshot-carousel-nav.prev');
+            const nextBtn = carousel.querySelector('.screenshot-carousel-nav.next');
+            
+            if (!track || !slides.length) return;
+            let currentIndex = 0;
+
+            function updateCarousel() { 
+                track.style.transform = `translateX(${-currentIndex * 100}%)`; 
+            }
+            
+            
+            if (prevBtn) prevBtn.addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length; 
+                updateCarousel(); 
+            });
+            
+            if (nextBtn) nextBtn.addEventListener('click', (e) => { 
+                e.stopPropagation(); 
+                currentIndex = (currentIndex + 1) % slides.length; 
+                updateCarousel(); 
+            });
+            
+            
+            let interval = setInterval(() => { 
+                currentIndex = (currentIndex + 1) % slides.length; 
+                updateCarousel(); 
+            }, 4000);
+            
+            
+            carousel.addEventListener('mouseenter', () => clearInterval(interval));
+            carousel.addEventListener('mouseleave', () => { 
+                interval = setInterval(() => { currentIndex = (currentIndex + 1) % slides.length; updateCarousel(); }, 4000); 
+            });
+        });
+    }
+
+    
     const THEME_KEY = 'stark_theme_dark';
 
     function initializeTheme() {
@@ -66,48 +116,9 @@
         if(icon) icon.textContent = isDark ? 'light_mode' : 'dark_mode';
     }
 
-    // --- CAROUSEL LOGIC (Fixed for Static Screenshots) ---
-    function initializeCarousels() {
-        document.querySelectorAll('.screenshot-carousel').forEach(function(carousel) {
-            const track = carousel.querySelector('.screenshot-carousel-track');
-            const slides = carousel.querySelectorAll('.screenshot-carousel-slide');
-            const prevBtn = carousel.querySelector('.screenshot-carousel-nav.prev');
-            const nextBtn = carousel.querySelector('.screenshot-carousel-nav.next');
-            
-            // CHECK AUTOPLAY SETTING
-            const shouldAutoPlay = carousel.getAttribute('data-autoplay') !== 'false';
-
-            if (!track || !slides.length) return;
-            let currentIndex = 0;
-
-            function updateCarousel() { 
-                track.style.transform = `translateX(${-currentIndex * 100}%)`; 
-            }
-            
-            if (prevBtn) prevBtn.addEventListener('click', (e) => { 
-                e.stopPropagation(); 
-                currentIndex = (currentIndex - 1 + slides.length) % slides.length; 
-                updateCarousel(); 
-            });
-            
-            if (nextBtn) nextBtn.addEventListener('click', (e) => { 
-                e.stopPropagation(); 
-                currentIndex = (currentIndex + 1) % slides.length; 
-                updateCarousel(); 
-            });
-            
-            // Only start auto-scroll if allowed
-            if (shouldAutoPlay) {
-                setInterval(() => { currentIndex = (currentIndex + 1) % slides.length; updateCarousel(); }, 4000);
-            }
-        });
-    }
-
-    // --- INIT ---
     document.addEventListener('DOMContentLoaded', function() {
         initializeTheme();
         
-        // Theme Toggle
         const toggle = document.getElementById('theme-toggle');
         if(toggle) toggle.addEventListener('click', () => {
             document.body.classList.toggle('dark');
@@ -115,13 +126,11 @@
             updateThemeIcon();
         });
 
-        // Mobile Menu
         const menuBtn = document.getElementById('mobile-menu-button');
         const menu = document.getElementById('mobile-menu');
         if(menuBtn && menu) menuBtn.addEventListener('click', () => menu.classList.toggle('hidden'));
     });
 
-    // Global Init Function called by Router
     window.initializeComponents = function() {
         initializeCarousels();
         updateCartBadge();
