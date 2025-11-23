@@ -36,10 +36,16 @@ function Rc25Page() {
           <div class="app-card p-6 rounded-2xl">
             <h3 class="text-xl font-bold mb-4">Mod Features</h3>
             <ul class="space-y-3 text-slate-600 dark:text-slate-300">
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlocked Everything</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited XP</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>No Root Required</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Safe to Use</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Latest Jerseys of All teams</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Updated Sounds</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Updated Stadiums</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All teams squads updated</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New Shots</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New Bowling Actions</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New Teams (The Hundred)</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All bugs fixed</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Ai Enhanced</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Updated Tournaments</span></li>
             </ul>
           </div>
 
@@ -57,7 +63,7 @@ function Rc25Page() {
                     <span class="material-icons">download</span> Download APK
                 </a>
                 <p class="text-center text-xs text-slate-500 mt-2">
-                    File Size: 150 MB | Version: 1.0
+                    File Size: 700+ MB | Version: v7+
                 </p>
             </div>
           </div>
