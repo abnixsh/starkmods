@@ -1,17 +1,20 @@
+// api/order.js
 export default async function handler(req, res) {
-    // Sirf POST request allow karenge
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-    const { orderId, userName, email, item, amount, method, transId } = req.body;
+  const { orderId, userName, email, item, amount, method, transId } = req.body;
 
-    // --- ⚠️ YAHAN APNA BOT TOKEN DALO (SECURE AREA) ---
-    const BOT_TOKEN = "8553888606:AAHma2ngi2_rqb3hHpXDLKbBEbVs0MxKE5U"; // <--- Example: 123456:ABC-Def...
-    const CHAT_ID = "6879169726";     // <--- Example: 123456789
+  // Use environment variables on Vercel (Settings → Environment Variables)
+  const BOT_TOKEN = process.env.TG_BOT_TOKEN;
+  const CHAT_ID = process.env.TG_CHAT_ID;
 
-    // Message Format (Jo aapko Telegram par dikhega)
-    const message = 
+  if (!BOT_TOKEN || !CHAT_ID) {
+    return res.status(500).json({ error: 'Bot config missing' });
+  }
+
+  const message = `
 🚨 <b>NEW ORDER RECEIVED</b>
 -----------------------------
 🆔 <b>Order ID:</b> <code>#${orderId}</code>
@@ -26,27 +29,29 @@ export default async function handler(req, res) {
 🔢 <b>UTR/Trans ID:</b> <code>${transId}</code>
 -----------------------------
 <i>Please verify payment in bank and approve in Admin Panel.</i>
-    ;
+`;
 
-    try {
-        const url = https://api.telegram.org/bot${BOT_TOKEN}/sendMessage;
-        
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                chat_id: CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            })
-        });
+  try {
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 
-        if (response.ok) {
-            return res.status(200).json({ success: true });
-        } else {
-            throw new Error('Telegram send failed');
-        }
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: message,
+        parse_mode: 'HTML',
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Telegram send failed: ${text}`);
     }
+
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
 }
