@@ -32,26 +32,32 @@
     // Make global
     window.updateCartBadge = updateCartBadge;
 
-    // --- 2. THEME LOGIC (FIXED) ---
-    const THEME_KEY = 'stark_theme_dark';
+  // --- 2. THEME LOGIC (FIXED) ---
+const THEME_KEY = 'stark_theme_dark';
 
-    function initializeTheme() {
-        const saved = localStorage.getItem(THEME_KEY);
-        // Tailwind needs class on HTML element
-        if (saved === '1') {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    }
+function applyTheme(isDark) {
+    // Tailwind expects .dark on <html>, your CSS expects .dark on body
+    document.documentElement.classList.toggle('dark', isDark);
+    document.body.classList.toggle('dark', isDark);
 
-    function toggleTheme() {
-        const html = document.documentElement;
-        html.classList.toggle('dark');
-        const isDark = html.classList.contains('dark');
-        localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
-    }
+    // Optional: update icons
+    const iconDesktop = document.getElementById('theme-icon');
+    const iconMobile  = document.querySelector('#theme-toggle-mobile .material-icons');
+    if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
+    if (iconMobile)  iconMobile.textContent  = isDark ? 'light_mode' : 'dark_mode';
+}
 
+function initializeTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    const isDark = saved === '1';
+    applyTheme(isDark);
+}
+
+function toggleTheme() {
+    const isDark = !document.documentElement.classList.contains('dark');
+    applyTheme(isDark);
+    localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
+}
     // --- 3. CAROUSEL ---
     function initializeCarousels() {
         document.querySelectorAll('.screenshot-carousel').forEach(c => {
