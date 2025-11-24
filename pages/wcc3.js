@@ -34,6 +34,15 @@ function Wcc3Page() {
                 <div class="screenshot-carousel-slide min-w-full h-full">
                   <img src="assets/img/img_wcc3_2.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 2" />
                 </div>
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_wcc3_3.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 3" />
+                </div>
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_wcc3_4.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 4" />
+                </div>
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_wcc3_5.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 5" />
+                </div>
               </div>
 
               <button class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full cursor-pointer z-10">
