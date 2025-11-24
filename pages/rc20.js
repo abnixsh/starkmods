@@ -34,6 +34,12 @@ function Rc20Page() {
                 <div class="screenshot-carousel-slide min-w-full h-full">
                   <img src="assets/img/img_rc20_2.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 2" />
                 </div>
+                 <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_rc20_3.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 3" />
+                </div>
+                 <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_rc20_4.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 4" />
+                </div>
               </div>
 
               <button class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full cursor-pointer z-10">
