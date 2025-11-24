@@ -77,6 +77,12 @@ class Router {
             'checkout': 'CheckoutPage',
             'contact': 'ContactPage',
             '404': 'NotFoundPage'
+            'profile': 'ProfilePage',
+'admin': 'AdminPage',
+Aur `init` function mein:
+```javascript
+this.addRoute('/profile', 'profile');
+this.addRoute('/admin', 'admin');
         };
         return map[pageName];
     }
