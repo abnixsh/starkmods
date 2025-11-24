@@ -40,14 +40,16 @@ window.loadAllOrders = function() {
           let html = '';
           snapshot.forEach(doc => {
               const o = doc.data();
-              const id = doc.id;
-              
-              html += `
-              <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-                  <td class="p-4">
-                      <div class="font-bold">${o.userName}</div>
-                      <div class="text-xs text-slate-500">${o.userEmail}</div>
-                  </td>
+                const id = doc.id;
+                const userName = o.userName || o.email || 'Unknown';
+                
+                html += `
+                  <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                      <td class="p-4">
+                          <div class="font-bold">${userName}</div>
+                          <div class="text-xs text-slate-500">${o.email || ''}</div>
+                      </td>
+                      
                   <td class="p-4">${o.item.gameName}<br><span class="text-xs text-slate-500">${o.item.planName}</span></td>
                   <td class="p-4 font-mono select-all">${o.transId}</td>
                   <td class="p-4 font-bold text-blue-600">₹${o.amount}</td>
