@@ -677,7 +677,7 @@ a.quick-link:hover {
 
 /* Better text contrast for light backgrounds */
 
-.text-slate-500 {
+.text-slate-600 {
     color: var(--text-light-secondary) !important;
 }
 
@@ -685,7 +685,7 @@ a.quick-link:hover {
     color: var(--text-light-secondary) !important;
 }
 
-.dark body .text-slate-500 {
+.dark body .text-slate-600 {
     color: var(--text-dark-secondary) !important;
 }
 
@@ -772,9 +772,9 @@ a.quick-link:hover {
 }
 
 /* And their "muted" text should also be lighter */
-.bg-slate-800 .text-slate-500,
 .bg-slate-800 .text-slate-600,
-.bg-slate-900 .text-slate-500,
+.bg-slate-800 .text-slate-600,
+.bg-slate-900 .text-slate-600,
 .bg-slate-900 .text-slate-600 {
     color: #9ca3af !important; /* tailwind text-slate-400 */
 }
