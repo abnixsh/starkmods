@@ -15,9 +15,10 @@ function Wcc3Page() {
          <div>
              <h1 class="text-3xl font-bold">WCC3 vip Mod Menu</h1>
              <div class="flex gap-2 mt-2">
-                <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">v6.1</span>
+                <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">v3.2.3</span>
                 <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">No Root</span>
                 <span class="px-2 py-0.5 bg-blue-100 dark:bg-red-900 text-white dark:text-blue-300 text-xs font-bold rounded">Anti-ban</span>
+                <span class="px-2 py-0.5 bg-black-100 dark:bg-red-900 text-gold dark:text-blue-300 text-xs font-bold rounded">VIP</span>
              </div>
          </div>
       </div>
