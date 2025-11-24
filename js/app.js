@@ -22,7 +22,6 @@
                 'lifetime': { name: 'Lifetime', price: 2000 }
             }
         },
-        // RC25 Free hai, iska price 0 rakha hai logic ke liye
         'rc25': { 
             name: 'RC25 Mod', 
             icon: 'assets/icons/icon_rc25.jpg', 
@@ -39,7 +38,7 @@
 
         const plan = product.plans[planType];
         
-        // Logic: Agar price 0 hai (Free Mod), toh direct download link kholo
+        // Logic: Free Mod
         if (plan.price === 0) {
             window.open('https://www.mediafire.com/', '_blank'); 
             return;
@@ -54,7 +53,7 @@
             image: product.icon
         }];
         
-        updateCartBadge();
+        window.updateCartBadge(); // Call global function
         
         // Notification Animation
         const badge = document.getElementById('cart-badge');
@@ -63,14 +62,14 @@
             setTimeout(() => badge.classList.remove('animate-bounce'), 1000);
         }
         
-        // Redirect to Cart Page
         if(window.router) window.router.navigateTo('/cart');
     };
 
-    function updateCartBadge() {
+    // FIX: Make this GLOBAL so other files can use it
+    window.updateCartBadge = function() {
         const badge = document.getElementById('cart-badge');
         if (badge) {
-            if (window.cart.length > 0) {
+            if (window.cart && window.cart.length > 0) {
                 badge.classList.remove('hidden');
                 badge.innerText = window.cart.length;
             } else {
@@ -79,7 +78,7 @@
         }
     }
 
-    // --- 2. CAROUSEL LOGIC (Smart Auto-Play) ---
+    // --- 2. CAROUSEL LOGIC ---
     function initializeCarousels() {
         document.querySelectorAll('.screenshot-carousel').forEach(function(carousel) {
             const track = carousel.querySelector('.screenshot-carousel-track');
@@ -87,7 +86,6 @@
             const prevBtn = carousel.querySelector('.screenshot-carousel-nav.prev');
             const nextBtn = carousel.querySelector('.screenshot-carousel-nav.next');
             
-            // HTML mein data-autoplay="false" hai to auto-scroll nahi hoga
             const shouldAutoPlay = carousel.getAttribute('data-autoplay') !== 'false';
 
             if (!track || !slides.length) return;
@@ -109,14 +107,12 @@
                 updateCarousel(); 
             });
             
-            // Auto Scroll Logic
             if (shouldAutoPlay) {
                 let interval = setInterval(() => { 
                     currentIndex = (currentIndex + 1) % slides.length; 
                     updateCarousel(); 
                 }, 4000);
                 
-                // Mouse upar ho to ruk jaye
                 carousel.addEventListener('mouseenter', () => clearInterval(interval));
                 carousel.addEventListener('mouseleave', () => { 
                     interval = setInterval(() => { 
@@ -128,12 +124,11 @@
         });
     }
 
-    // --- 3. THEME LOGIC (Tailwind Compatible) ---
+    // --- 3. THEME LOGIC ---
     const THEME_KEY = 'stark_theme_dark';
 
     function initializeTheme() {
         const saved = localStorage.getItem(THEME_KEY);
-        // HTML tag par class lagani hoti hai Tailwind ke liye
         if (saved === '1') {
             document.documentElement.classList.add('dark');
         } else {
@@ -144,25 +139,16 @@
 
     function updateThemeIcon() {
         const isDark = document.documentElement.classList.contains('dark');
-        // Desktop & Mobile dono icons update karo
         const icons = document.querySelectorAll('#theme-icon');
         icons.forEach(icon => {
             icon.textContent = isDark ? 'light_mode' : 'dark_mode';
         });
-        
-        // Mobile Menu Text
-        const mobileText = document.getElementById('theme-text-mobile');
-        // Agar element hai toh text change karo
-        if(mobileText) {
-             // Kuch nahi karna, text same rahega
-        }
     }
 
-    // --- INIT LISTENERS ---
     document.addEventListener('DOMContentLoaded', function() {
         initializeTheme();
-        
-        // Handle Theme Toggles (Header & Mobile Menu)
+        window.updateCartBadge(); // Run on load
+
         const toggles = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
         toggles.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -173,7 +159,6 @@
             });
         });
 
-        // Handle Mobile Menu Toggle
         const menuBtn = document.getElementById('mobile-menu-button');
         const menu = document.getElementById('mobile-menu');
         if(menuBtn && menu) {
@@ -183,10 +168,9 @@
         }
     });
 
-    // Global Init (Router ise call karega page change hone par)
     window.initializeComponents = function() {
         initializeCarousels();
-        updateCartBadge();
+        window.updateCartBadge();
     };
 
 })();
