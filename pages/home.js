@@ -98,39 +98,64 @@ function HomePage() {
   </div>
 </article>
 	  
-      <!-- WCC3 CARD -->
-      <article onclick="window.router.navigateTo('/wcc3')" class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition">
-        <div class="app-card-content">
-          <div class="app-card-header flex gap-3 mb-4">
-            <div class="app-icon-container">
-              <img src="assets/icons/icon_wcc3.png" alt="WCC3 Mod" class="h-16 w-16 rounded-lg" onerror="this.src='https://placehold.co/64?text=WCC3'" />
-            </div>
-            <div class="flex-1">
-              <div class="text-xl font-semibold">WCC3 Mod Menu</div>
-              <div class="text-sm text-slate-500 dark:text-slate-400">com.stark.wcc3</div>
-              <div class="mt-2 flex items-center gap-2 flex-wrap">
-                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v3.2</span>
-                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Anti-ban</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden h-40 bg-black">
-             <img src="assets/img/img_wcc3_1.jpg" class="w-full h-full object-cover opacity-90" />
-          </div>
-
-          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The ultimate WCC3 Mod Menu. Unlock everything and play like a pro.
-          </p>
-
-          <div class="app-card-footer">
-            <button class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
-              View Details
-            </button>
-          </div>
+     <!-- WCC3 CARD (Click Link Added) -->
+<article onclick="window.router.navigateTo('/wcc3')" class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm cursor-pointer hover:shadow-md transition">
+  <div class="app-card-content">
+    <div class="app-card-header flex gap-3 mb-4">
+      <div class="app-icon-container">
+        <img src="assets/icons/icon_wcc3.png" alt="WCC3 Mod" class="h-16 w-16 rounded-lg" onerror="this.src='https://placehold.co/64?text=WCC3'" />
+      </div>
+      <div class="flex-1">
+        <div class="text-xl font-semibold">WCC3 VIP Mod Menu</div>
+        <div class="text-sm text-slate-500 dark:text-slate-400">com.starkmods.wcc3</div>
+        <div class="mt-2 flex items-center gap-2 flex-wrap">
+          <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v3.2.3</span>
+          <span class="badge bg-yellow-100 px-2 py-1 rounded text-xs text-yellow-800">Premium</span>
         </div>
-      </article>
+      </div>
+    </div>
 
+    <!-- mini carousel on card -->
+    <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel">
+      <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+        <div class="screenshot-carousel-slide min-w-full h-full">
+          <img src="assets/img/img_wcc3_1.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 1">
+        </div>
+        <div class="screenshot-carousel-slide min-w-full h-full">
+          <img src="assets/img/img_wcc3_2.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 2">
+        </div>
+        <div class="screenshot-carousel-slide min-w-full h-full">
+          <img src="assets/img/img_wcc3_3.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 3">
+        </div>
+        <div class="screenshot-carousel-slide min-w-full h-full">
+          <img src="assets/img/img_wcc3_4.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 4">
+        </div>
+		 <div class="screenshot-carousel-slide min-w-full h-full">
+          <img src="assets/img/img_wcc3_5.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 5">
+        </div>
+      </div>
+
+      <button class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full cursor-pointer z-10">
+        <span class="material-icons text-sm">chevron_left</span>
+      </button>
+      <button class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full cursor-pointer z-10">
+        <span class="material-icons text-sm">chevron_right</span>
+      </button>
+
+      <div class="screenshot-carousel-indicators"></div>
+    </div>
+
+    <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+      The ultimate WCC3 Menu. Features Everything Unlock,  Career Mode unlock , many more
+    </p>
+
+    <div class="app-card-footer">
+      <button class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+        View Details
+      </button>
+    </div>
+  </div>
+</article>
     </section>
   `;
 }
