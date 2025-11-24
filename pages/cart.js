@@ -15,7 +15,7 @@ function CartPage() {
         </div>`;
     }
 
-    const item = cart[0]; // Single item logic for now
+    const item = cart[0]; // single item
 
     return `
     <div class="max-w-3xl mx-auto animate-fade-in">
@@ -28,13 +28,19 @@ function CartPage() {
                         <span class="material-icons text-blue-600">extension</span>
                     </div>
                     <div>
-                        <div class="font-bold text-lg capitalize">${item.gameId} Mod Menu</div>
-                        <div class="text-slate-500 text-sm">${item.name}</div>
+                        <!-- Game name -->
+                        <div class="font-bold text-lg">${item.gameName}</div>
+                        <!-- Plan name -->
+                        <div class="text-slate-500 text-sm">${item.planName} · Mod Menu</div>
                     </div>
                 </div>
                 <div class="text-right">
                     <div class="font-bold text-xl">₹${item.price}</div>
-                    <button onclick="window.cart = []; window.router.navigateTo('/cart'); updateCartBadge();" class="text-red-500 text-xs hover:underline mt-1">Remove</button>
+                    <button
+                        onclick="window.cart = []; updateCartBadge(); window.router.navigateTo('/cart');"
+                        class="text-red-500 text-xs hover:underline mt-1">
+                        Remove
+                    </button>
                 </div>
             </div>
         </div>
@@ -51,3 +57,6 @@ function CartPage() {
     </div>
     `;
 }
+
+// register for router
+window.CartPage = CartPage;
