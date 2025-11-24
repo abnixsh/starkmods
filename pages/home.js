@@ -117,45 +117,65 @@ function HomePage() {
         </div>
       </article>
 
-      <!-- WCC3 CARD -->
+      <!-- WCC3 CARD with CAROUSEL -->
       <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition">
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
-              <img src="assets/icons/icon_wcc3.png" alt="WCC3 Mod" class="h-16 w-16 rounded-lg"
+              <img src="assets/icons/icon_rc20.jpg" alt="WCC3 Mod" class="h-16 w-16 rounded-lg"
                    onerror="this.src='https://placehold.co/64?text=WCC3'" />
             </div>
             <div class="flex-1">
               <div class="text-xl font-semibold">WCC3 Mod Menu</div>
               <div class="text-sm text-slate-500 dark:text-slate-400">com.stark.wcc3</div>
               <div class="mt-2 flex items-center gap-2 flex-wrap">
-                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v3.2.3</span>
-                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Anti-ban</span>
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v6.1</span>
+                <span class="badge bg-yellow-100 px-2 py-1 rounded text-xs text-yellow-800">Premium</span>
               </div>
             </div>
           </div>
 
-         <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel">
-      <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
-        <div class="screenshot-carousel-slide min-w-full h-full">
-          <img src="assets/img/img_wcc3_1.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 1">
-        </div>
-        <div class="screenshot-carousel-slide min-w-full h-full">
-          <img src="assets/img/img_wcc3_2.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 2">
-        </div>
-        <div class="screenshot-carousel-slide min-w-full h-full">
-          <img src="assets/img/img_wcc3_3.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 3">
-        </div>
-        <div class="screenshot-carousel-slide min-w-full h-full">
-          <img src="assets/img/img_wcc3_4.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 4">
-        </div>
-		 <div class="screenshot-carousel-slide min-w-full h-full">
-          <img src="assets/img/img_wcc3_5.jpg" class="w-full h-full object-cover opacity-90" alt="WCC3 screenshot 5">
-        </div>
-      </div>
+          <!-- CAROUSEL AREA -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              <div class="screenshot-carousel-slide min-w-full h-full">
+                <img src="assets/img/img_rc20_1.jpg" class="w-full h-full object-cover opacity-90"
+                     alt="WCC3 screenshot 1"
+                     onerror="this.src='https://placehold.co/320x180?text=WCC3-1'">
+              </div>
+              <div class="screensWCC3hot-carousel-slide min-w-full h-full">
+                <img src="assets/img/img_rc20_2.jpg" class="w-full h-full object-cover opacity-90"
+                     alt="WCC3 screenshot 2"
+                     onerror="this.src='https://placehold.co/320x180?text=WCC3-2'">
+              </div>
+              <div class="screenshot-carousel-slide min-w-full h-full">
+                <img src="assets/img/img_rc20_3.jpg" class="w-full h-full object-cover opacity-90"
+                     alt="WCC3 screenshot 3"
+                     onerror="this.src='https://placehold.co/320x180?text=WCC3-3'">
+              </div>
+              <div class="screenshot-carousel-slide min-w-full h-full">
+                <img src="assets/img/img_rc20_4.jpg" class="w-full h-full object-cover opacity-90"
+                     alt="WCC3 screenshot 4"
+                     onerror="this.src='https://placehold.co/320x180?text=WCC3-4'">
+              </div>
+            </div>
+
+            <!-- arrows -->
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+
+            <!-- dots -->
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
+          </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The ultimate WCC3 Mod Menu. Unlock everything and play like a pro.
+            The ultimate WCC3 Mod Menu. Features include Auto Play, Unlimited Currency, All Tournaments Unlocked.
           </p>
 
           <div class="app-card-footer">
