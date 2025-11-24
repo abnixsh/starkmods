@@ -129,7 +129,7 @@ function HomePage() {
               <div class="text-xl font-semibold">WCC3 Mod Menu</div>
               <div class="text-sm text-slate-500 dark:text-slate-400">com.stark.wcc3</div>
               <div class="mt-2 flex items-center gap-2 flex-wrap">
-                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v3.2</span>
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v3.2.3</span>
                 <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Anti-ban</span>
               </div>
             </div>
