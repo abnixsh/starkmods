@@ -38,7 +38,7 @@ function Rc20Page() {
                   <img src="assets/img/img_rc20_3.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 3" />
                 </div>
                  <div class="screenshot-carousel-slide min-w-full h-full">
-                  <img src="assets/img/img_rc20_4.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 4" />
+                  <img src="assets/img/img_rc20_4.png" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 4" />
                 </div>
               </div>
 
