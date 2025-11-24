@@ -1,134 +1,131 @@
-<!doctype html>
-<html lang="en">
+// js/firebase-config.js
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Stark Mods - Premium Modding Tools for RC20, WCC3 and more." />
-  <title>Stark Mods</title>
+// --- 1. FIREBASE CONFIG ---
+const firebaseConfig = {
+  apiKey: "AIzaSyA-90IyGJgLNB_MB80nk_r08LdbEPzYVU4",
+  authDomain: "starkmods-f0a41.firebaseapp.com",
+  projectId: "starkmods-f0a41",
+  storageBucket: "starkmods-f0a41.firebasestorage.app",
+  messagingSenderId: "114676638526",
+  appId: "1:114676638526:web:332102f93a62376270026f"
+};
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+// --- 2. INITIALIZE FIREBASE ---
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+// Services
+const auth = firebase.auth();
+const db   = firebase.firestore();
 
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css" />
-</head>
+// Expose globally
+window.firebase = firebase;
+window.auth = auth;
+window.db   = db;
 
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 antialiased transition-colors duration-300">
+// --- 3. GLOBAL AUTH STATE ---
+window.currentUser = null;
+window.isAdmin = false;
+const ADMIN_EMAIL = "theabhistark17@gmail.com";
 
-  <!-- HEADER -->
-  <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <div class="flex items-center justify-between h-16">
+// --- 4. AUTH UI ---
+function updateAuthUI(user) {
+  const containers = [
+    document.getElementById("auth-container"),
+    document.getElementById("mobile-auth-container")
+  ];
 
-        <!-- LEFT: Logo -->
-        <div class="flex items-center gap-3">
-          <a href="/" class="flex items-center gap-3" data-link>
-            <img src="assets/icons/icon_site.jpg" alt="Stark Mods"
-                 class="h-10 w-10 rounded-lg shadow-sm"
-                 onerror="this.src='https://placehold.co/40x40?text=S'" />
-            <div class="hidden sm:block">
-              <div class="text-xl font-black tracking-tight text-slate-900 dark:text-white">Stark Mods</div>
-              <div class="text-[10px] text-slate-500 dark:text-slate-400 -mt-1 font-bold uppercase tracking-wide">
-                Premium Tools
-              </div>
-            </div>
-          </a>
-        </div>
+  containers.forEach((container) => {
+    if (!container) return;
 
-        <!-- RIGHT: Actions -->
-        <div class="flex items-center gap-2 sm:gap-3">
+    if (user) {
+      const firstName = user.displayName
+        ? user.displayName.split(" ")[0]
+        : "User";
 
-          <!-- Desktop Nav -->
-          <nav id="desktop-nav" class="hidden md:flex items-center gap-6 mr-2">
-            <a href="/" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Home</a>
-            <a href="/cart" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Cart</a>
-            <a href="/contact" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Contact</a>
-          </nav>
-
-          <!-- AUTH BUTTON (Login / Profile) – JS injects here -->
-          <div id="auth-container" class="relative"></div>
-
-          <!-- CART ICON -->
-          <button onclick="window.router.navigateTo('/cart')"
-                  class="relative p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
-            <span class="material-icons text-xl">shopping_cart</span>
-            <span id="cart-badge"
-                  class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900">
-              0
-            </span>
-          </button>
-
-          <!-- DARK MODE -->
-          <button id="theme-toggle"
-                  class="p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm hidden sm:block">
-            <span id="theme-icon" class="material-icons text-xl">dark_mode</span>
-          </button>
-
-          <!-- MOBILE MENU BUTTON -->
-          <button id="mobile-menu-button"
-                  class="md:hidden p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition shadow-sm">
-            <span class="material-icons text-2xl">menu</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- MOBILE MENU -->
-    <div id="mobile-menu"
-         class="md:hidden hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl absolute w-full left-0 z-40">
-      <div class="px-4 py-3 space-y-2">
-        <a href="/" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
-           data-link>Home</a>
-        <a href="/cart" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
-           data-link>My Cart</a>
-        <a href="/profile" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
-           data-link>My Profile</a>
-
-        <!-- Mobile Auth Button -->
-        <div id="mobile-auth-container" class="mt-2"></div>
-
-        <!-- Mobile Theme Toggle -->
-        <button id="theme-toggle-mobile"
-                class="w-full text-left flex items-center gap-3 py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium text-slate-600 dark:text-slate-300">
-          <span class="material-icons">dark_mode</span> Dark Mode
+      container.innerHTML = `
+        <button onclick="window.router && window.router.navigateTo('/profile')"
+          class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 py-1 px-2 pr-3 rounded-full border border-slate-200 dark:border-slate-700 hover:border-blue-500 transition group">
+          <img src="${user.photoURL || '/assets/icons/default_user.png'}"
+               class="w-7 h-7 rounded-full border border-white dark:border-slate-600">
+          <span class="text-xs font-bold truncate max-w-[90px] text-slate-700 dark:text-slate-200">
+            ${firstName}
+          </span>
         </button>
-      </div>
-    </div>
-  </header>
+      `;
+    } else {
+      container.innerHTML = `
+        <button onclick="window.googleLogin()"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-md transition flex items-center gap-2">
+          <span class="material-icons text-sm">login</span>
+          <span>Login</span>
+        </button>
+      `;
+    }
+  });
+}
 
-  <main id="app-content" class="max-w-6xl mx-auto px-4 sm:px-6 py-10 min-h-[60vh]">
-    <div class="flex justify-center pt-20">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-    </div>
-  </main>
+// --- 5. LISTENER ---
+auth.onAuthStateChanged((user) => {
+  console.log("Auth state:", user ? user.email : "none");
 
-  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors duration-300">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-        <div class="text-sm font-medium text-slate-600 dark:text-slate-400">
-          &copy; 2025 Stark Mods. All rights reserved.
-        </div>
-        <div class="flex gap-6 text-sm text-slate-500">
-          <a href="/privacy" class="hover:text-blue-600 dark:hover:text-blue-400 transition" data-link>Privacy</a>
-          <a href="/terms" class="hover:text-blue-600 dark:hover:text-blue-400 transition" data-link>Terms</a>
-        </div>
-      </div>
-    </div>
-  </footer>
+  window.currentUser = user || null;
+  window.isAdmin = !!user && user.email === ADMIN_EMAIL;
 
-  <!-- FIREBASE SDKs (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  const applyUI = () => updateAuthUI(user);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyUI, { once: true });
+  } else {
+    applyUI();
+  }
+});
 
-  <!-- Your Scripts -->
-  <script src="js/firebase-config.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/router.js"></script>
+// --- 6. GOOGLE LOGIN ---
+window.googleLogin = function () {
+  console.log("googleLogin clicked");
+  const provider = new firebase.auth.GoogleAuthProvider();
 
-</body>
-</html>
+  auth
+    .signInWithPopup(provider)
+    .then((result) => {
+      const user = result.user;
+      if (!user) return;
+
+      console.log("Login success:", user.email);
+
+      db.collection("users")
+        .doc(user.uid)
+        .set(
+          {
+            name: user.displayName || "",
+            email: user.email || "",
+            photo: user.photoURL || null,
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+          },
+          { merge: true }
+        );
+    })
+    .catch((error) => {
+      console.error("Login Error:", error);
+      if (error.code === "auth/configuration-not-found") {
+        alert("Enable Google sign-in in Firebase → Authentication → Sign-in method.");
+      } else if (error.code === "auth/popup-blocked") {
+        alert("Popup blocked. Allow popups for this site and try again.");
+      } else if (error.code === "auth/popup-closed-by-user") {
+        // ignore
+      } else {
+        alert("Login Failed: " + error.message);
+      }
+    });
+};
+
+// --- 7. LOGOUT ---
+window.logout = function () {
+  auth.signOut().then(() => {
+    console.log("Logged out");
+    if (window.router) {
+      window.router.navigateTo("/");
+    }
+  });
+};
