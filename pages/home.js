@@ -64,6 +64,7 @@ function HomePage() {
 
           <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden h-40 bg-black">
              <img src="assets/img/img_rc20_1.jpg" class="w-full h-full object-cover opacity-90" />
+			 <img src="assets/img/img_rc20_2.jpg" class="w-full h-full object-cover opacity-90" />
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
