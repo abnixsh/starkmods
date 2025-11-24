@@ -7,8 +7,8 @@ export default async function handler(req, res) {
   const { orderId, userName, email, item, amount, method, transId } = req.body;
 
   // Use environment variables on Vercel (Settings → Environment Variables)
-  const BOT_TOKEN = process.env.TG_BOT_TOKEN;
-  const CHAT_ID = process.env.TG_CHAT_ID;
+  const BOT_TOKEN = process.env.8491648554:AAHwIlmoD6jrIZlhMdSd0Pd8mNYJebkrWxE;
+  const CHAT_ID = process.env.6879169726;
 
   if (!BOT_TOKEN || !CHAT_ID) {
     return res.status(500).json({ error: 'Bot config missing' });
