@@ -267,7 +267,7 @@ window.submitOrder = async function() {
         method: window.selectedMethod.toUpperCase(),
         transId: transId,
         status: 'pending',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     try {
