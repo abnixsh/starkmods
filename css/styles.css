@@ -32,25 +32,6 @@ body {
     color: var(--text-dark) !important;
 }
 
-
-/* --------- Fix text contrast on dark panels (cart, admin, checkout) --------- */
-
-/* Any element with bg-slate-800 or bg-slate-900 will use light text */
-.bg-slate-800,
-.bg-slate-900 {
-    color: #e5e7eb !important; /* tailwind text-slate-200 */
-}
-
-/* And their "muted" text should also be lighter */
-.bg-slate-800 .text-slate-500,
-.bg-slate-800 .text-slate-600,
-.bg-slate-900 .text-slate-500,
-.bg-slate-900 .text-slate-600 {
-    color: #9ca3af !important; /* tailwind text-slate-400 */
-}
-
-
-
 /* Page Transition */
 
 .page-transition {
@@ -781,4 +762,20 @@ a.quick-link:hover {
     .app-card-header .flex-1 {
         min-width: 0;
     }
+
+    /* --------- Fix text contrast on dark panels (cart, admin, checkout) --------- */
+
+/* Any element with bg-slate-800 or bg-slate-900 will use light text */
+.bg-slate-800,
+.bg-slate-900 {
+    color: #e5e7eb !important; /* tailwind text-slate-200 */
+}
+
+/* And their "muted" text should also be lighter */
+.bg-slate-800 .text-slate-500,
+.bg-slate-800 .text-slate-600,
+.bg-slate-900 .text-slate-500,
+.bg-slate-900 .text-slate-600 {
+    color: #9ca3af !important; /* tailwind text-slate-400 */
+}
 }
