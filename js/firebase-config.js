@@ -18,6 +18,11 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+window.auth = auth;
+window.db = db;
+
+db.collection('orders')...
+window.db.collection('orders')...
 // --- 3. GLOBAL VARIABLES ---
 window.currentUser = null;
 window.isAdmin = false;
