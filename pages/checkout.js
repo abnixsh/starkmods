@@ -219,8 +219,8 @@ function renderSmartPaymentDetails() {
             <div class="text-left bg-slate-100 dark:bg-slate-900 p-4 rounded-xl">
                 <p class="text-xs text-slate-500 uppercase font-bold">Binance Pay ID</p>
                 <div class="flex justify-between items-center mt-1">
-                    <span class="font-mono text-xl font-bold text-slate-900 dark:text-white">123456789</span>
-                    <span class="material-icons text-slate-400 cursor-pointer" onclick="navigator.clipboard.writeText('123456789')">content_copy</span>
+                    <span class="font-mono text-xl font-bold text-slate-900 dark:text-white">998477777</span>
+                    <span class="material-icons text-slate-400 cursor-pointer" onclick="navigator.clipboard.writeText('998477777')">content_copy</span>
                 </div>
             </div>
             <div class="mt-4 text-yellow-600 font-bold bg-yellow-50 dark:bg-yellow-900/20 px-4 py-2 rounded-full inline-block">
