@@ -27,7 +27,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body.dark {
+.dark body {
     background-color: var(--bg-dark) !important;
     color: var(--text-dark) !important;
 }
@@ -52,7 +52,7 @@ header {
     border-color: var(--border-light) !important;
 }
 
-body.dark header {
+.dark body header {
     background-color: var(--bg-dark) !important;
     border-color: var(--border-dark) !important;
 }
@@ -67,7 +67,7 @@ body.dark header {
     transition: all 0.2s ease;
 }
 
-body.dark .nav-link {
+.dark body .nav-link {
     color: var(--text-dark) !important;
 }
 
@@ -77,8 +77,8 @@ body.dark .nav-link {
     text-decoration: none;
 }
 
-body.dark .nav-link:hover,
-body.dark .nav-link.active {
+.dark body .nav-link:hover,
+.dark body .nav-link.active {
     background-color: var(--bg-dark-secondary) !important;
 }
 
@@ -94,8 +94,8 @@ body.dark .nav-link.active {
     transition: all 0.2s ease;
 }
 
-body.dark #theme-toggle,
-body.dark #theme-toggle-mobile {
+.dark body #theme-toggle,
+.dark body #theme-toggle-mobile {
     color: var(--text-dark) !important;
     border-color: var(--border-dark) !important;
 }
@@ -107,8 +107,8 @@ body.dark #theme-toggle-mobile {
     color: var(--text-light) !important;
 }
 
-body.dark #theme-toggle:hover,
-body.dark #theme-toggle-mobile:hover {
+.dark body #theme-toggle:hover,
+.dark body #theme-toggle-mobile:hover {
     background-color: var(--bg-dark-secondary) !important;
     border-color: var(--accent) !important;
     color: var(--text-dark) !important;
@@ -130,7 +130,7 @@ body.dark #theme-toggle-mobile:hover {
     transition: all 0.2s ease;
 }
 
-body.dark #mobile-menu-button {
+.dark body #mobile-menu-button {
     color: var(--text-dark) !important;
 }
 
@@ -139,7 +139,7 @@ body.dark #mobile-menu-button {
     color: #1e293b !important;
 }
 
-body.dark #mobile-menu-button:hover {
+.dark body #mobile-menu-button:hover {
     background-color: #374151 !important;
     color: #f9fafb !important;
 }
@@ -155,7 +155,7 @@ body.dark #mobile-menu-button:hover {
         background-color: #f1f5f9 !important;
         color: #1e293b !important;
     }
-    body.dark #theme-toggle-mobile:hover {
+    .dark body #theme-toggle-mobile:hover {
         background-color: #374151 !important;
         color: #f9fafb !important;
     }
@@ -175,8 +175,8 @@ body.dark #mobile-menu-button:hover {
     background-color: var(--bg-light-secondary);
 }
 
-body.dark .mobile-link:hover,
-body.dark .mobile-link.active {
+.dark body .mobile-link:hover,
+.dark body .mobile-link.active {
     background-color: var(--bg-dark-secondary);
 }
 
@@ -189,7 +189,7 @@ body.dark .mobile-link.active {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-body.dark .app-card {
+.dark body .app-card {
     background-color: var(--bg-dark-secondary);
     border-color: var(--border-dark);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -200,7 +200,7 @@ body.dark .app-card {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
-body.dark .app-card:hover {
+.dark body .app-card:hover {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
@@ -227,7 +227,7 @@ body.dark .app-card:hover {
     overflow: hidden;
 }
 
-body.dark .app-card-screenshots {
+.dark body .app-card-screenshots {
     background-color: var(--bg-dark);
     border-color: var(--border-dark);
 }
@@ -339,7 +339,7 @@ body.dark .app-card-screenshots {
     border: 1px solid var(--border-light);
 }
 
-body.dark .badge {
+.dark body .badge {
     background-color: var(--bg-dark);
     color: var(--text-dark) !important;
     border-color: var(--border-dark);
@@ -396,7 +396,7 @@ body.dark .badge {
     line-height: 1.2;
 }
 
-body.dark .hero-title {
+.dark body .hero-title {
     color: var(--text-dark);
 }
 
@@ -408,7 +408,7 @@ body.dark .hero-title {
     line-height: 1.6;
 }
 
-body.dark .hero-description {
+.dark body .hero-description {
     color: var(--text-dark-secondary);
 }
 
@@ -419,7 +419,7 @@ footer {
     border-color: var(--border-light) !important;
 }
 
-body.dark footer {
+.dark body footer {
     background-color: var(--bg-dark) !important;
     border-color: var(--border-dark) !important;
 }
@@ -446,7 +446,7 @@ body.dark footer {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-body.dark #more-menu {
+.dark body #more-menu {
     background-color: var(--bg-dark-secondary);
     border-color: var(--border-dark);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -457,7 +457,7 @@ body.dark #more-menu {
     transition: all 0.2s ease;
 }
 
-body.dark #more-menu a {
+.dark body #more-menu a {
     color: var(--text-dark);
 }
 
@@ -465,7 +465,7 @@ body.dark #more-menu a {
     background-color: var(--bg-light-secondary) !important;
 }
 
-body.dark #more-menu a:hover {
+.dark body #more-menu a:hover {
     background-color: var(--bg-dark) !important;
 }
 
@@ -476,7 +476,7 @@ body.dark #more-menu a:hover {
     border-color: var(--border-light) !important;
 }
 
-body.dark #mobile-menu {
+.dark body #mobile-menu {
     background-color: var(--bg-dark) !important;
     border-color: var(--border-dark) !important;
 }
@@ -492,7 +492,7 @@ body.dark #mobile-menu {
     margin-bottom: 2rem;
 }
 
-body.dark .content-card {
+.dark body .content-card {
     background-color: var(--bg-dark-secondary);
     border-color: var(--border-dark);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -514,11 +514,11 @@ textarea {
     transition: all 0.2s ease;
 }
 
-body.dark .form-input,
-body.dark input[type="text"],
-body.dark input[type="email"],
-body.dark select,
-body.dark textarea {
+.dark body .form-input,
+.dark body input[type="text"],
+.dark body input[type="email"],
+.dark body select,
+.dark body textarea {
     background-color: var(--bg-dark) !important;
     border-color: var(--border-dark);
     color: var(--text-dark) !important;
@@ -544,8 +544,8 @@ a.quick-link {
     text-decoration: none;
 }
 
-body.dark .quick-link,
-body.dark a.quick-link {
+.dark body .quick-link,
+.dark body a.quick-link {
     background-color: var(--bg-dark-secondary) !important;
     border-color: var(--border-dark) !important;
     color: var(--text-dark) !important;
@@ -560,8 +560,8 @@ a.quick-link:hover {
     text-decoration: none;
 }
 
-body.dark .quick-link:hover,
-body.dark a.quick-link:hover {
+.dark body .quick-link:hover,
+.dark body a.quick-link:hover {
     background-color: var(--bg-dark) !important;
     border-color: var(--accent) !important;
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
@@ -575,7 +575,7 @@ body.dark a.quick-link:hover {
     color: #166534 !important;
 }
 
-body.dark .contact-info-box {
+.dark body .contact-info-box {
     background-color: rgba(34, 197, 94, 0.1) !important;
     border-color: rgba(34, 197, 94, 0.3) !important;
     color: #4ade80 !important;
@@ -585,7 +585,7 @@ body.dark .contact-info-box {
     color: #16a34a !important;
 }
 
-body.dark .contact-info-box .material-icons {
+.dark body .contact-info-box .material-icons {
     color: #22c55e !important;
 }
 
@@ -593,7 +593,7 @@ body.dark .contact-info-box .material-icons {
     color: #166534 !important;
 }
 
-body.dark .contact-info-box h3 {
+.dark body .contact-info-box h3 {
     color: #4ade80 !important;
 }
 
@@ -601,7 +601,7 @@ body.dark .contact-info-box h3 {
     color: #166534 !important;
 }
 
-body.dark .contact-info-box p {
+.dark body .contact-info-box p {
     color: #4ade80 !important;
 }
 
@@ -615,11 +615,11 @@ body.dark .contact-info-box p {
     color: var(--text-light-secondary) !important;
 }
 
-body.dark .text-slate-500 {
+.dark body .text-slate-500 {
     color: var(--text-dark-secondary) !important;
 }
 
-body.dark .text-slate-600 {
+.dark body .text-slate-600 {
     color: var(--text-dark-secondary) !important;
 }
 
@@ -632,7 +632,7 @@ body.dark .text-slate-600 {
     margin-bottom: 1rem;
 }
 
-body.dark .faq-item {
+.dark body .faq-item {
     border-color: var(--border-dark);
 }
 
@@ -651,7 +651,7 @@ body.dark .faq-item {
     font-weight: 500;
 }
 
-body.dark .faq-question {
+.dark body .faq-question {
     color: var(--text-dark) !important;
 }
 
@@ -659,7 +659,7 @@ body.dark .faq-question {
     background-color: var(--bg-light-secondary) !important;
 }
 
-body.dark .faq-question:hover {
+.dark body .faq-question:hover {
     background-color: var(--bg-dark) !important;
 }
 
@@ -670,7 +670,7 @@ body.dark .faq-question:hover {
     color: var(--text-light-secondary);
 }
 
-body.dark .faq-question .material-icons {
+.dark body .faq-question .material-icons {
     color: var(--text-dark-secondary);
 }
 
@@ -685,7 +685,7 @@ body.dark .faq-question .material-icons {
     transition: all 0.3s ease;
 }
 
-body.dark .faq-answer {
+.dark body .faq-answer {
     color: var(--text-dark-secondary) !important;
 }
 
@@ -693,26 +693,22 @@ body.dark .faq-answer {
     display: none;
 }
 
-/* Better contrast for light backgrounds */
+/* Better text contrast for light backgrounds */
 
-.bg-blue-50 {
-    background-color: #eff6ff !important;
-    border-color: #dbeafe !important;
+.text-slate-500 {
+    color: var(--text-light-secondary) !important;
 }
 
-body.dark .bg-blue-50 {
-    background-color: rgba(59, 130, 246, 0.1) !important;
-    border-color: rgba(59, 130, 246, 0.2) !important;
+.text-slate-600 {
+    color: var(--text-light-secondary) !important;
 }
 
-.bg-green-100 {
-    background-color: #dcfce7 !important;
-    color: #166534 !important;
+.dark body .text-slate-500 {
+    color: var(--text-dark-secondary) !important;
 }
 
-body.dark .bg-green-100 {
-    background-color: rgba(34, 197, 94, 0.2) !important;
-    color: #4ade80 !important;
+.dark body .text-slate-600 {
+    color: var(--text-dark-secondary) !important;
 }
 
 /* Text Colors */
@@ -721,7 +717,7 @@ body.dark .bg-green-100 {
     color: var(--text-light-secondary);
 }
 
-body.dark .text-secondary {
+.dark body .text-secondary {
     color: var(--text-dark-secondary);
 }
 
@@ -734,7 +730,7 @@ body.dark .text-secondary {
     border-radius: 0.5rem;
 }
 
-body.dark .info-box {
+.dark body .info-box {
     background-color: var(--bg-dark);
     border-color: var(--border-dark);
 }
@@ -748,7 +744,7 @@ body.dark .info-box {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
-body.dark .app-card {
+.dark body .app-card {
     background-color: var(--bg-dark-secondary) !important;
     border-color: var(--border-dark) !important;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
@@ -759,7 +755,7 @@ body.dark .app-card {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
 }
 
-body.dark .app-card:hover {
+.dark body .app-card:hover {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
 }
 
