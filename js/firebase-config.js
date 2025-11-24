@@ -1,11 +1,11 @@
 // 1. Paste Your Firebase Config Here (Firebase Console se milega)
 const firebaseConfig = {
-    apiKey: "AIzaSyDxxxxxx...", // <--- REPLACE THIS
-    authDomain: "starkmods.firebaseapp.com", // <--- REPLACE THIS
-    projectId: "starkmods", // <--- REPLACE THIS
-    storageBucket: "starkmods.firebasestorage.app",
-    messagingSenderId: "123456...",
-    appId: "1:123456..."
+    apiKey: "AIzaSyA-90IyGJgLNB_MB80nk_r08LdbEPzYVU4", // <--- REPLACE THIS
+    authDomain: "starkmods-f0a41.firebaseapp.com", // <--- REPLACE THIS
+    projectId: "starkmods-f0a41", // <--- REPLACE THIS
+    storageBucket: "starkmods-f0a41.firebasestorage.app",
+    messagingSenderId: "114676638526",
+    appId: "1:114676638526:web:332102f93a62376270026f"
 };
 
 // Initialize Firebase
