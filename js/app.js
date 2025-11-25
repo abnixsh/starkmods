@@ -8,16 +8,16 @@
       name: 'RC20 Mod',
       icon: 'assets/icons/icon_rc20.jpg',
       plans: {
-        '1month': { name: '1 Month', price: 250 },
-        'lifetime': { name: 'Lifetime', price: 1500 }
+        '1month': { name: '1 Month', price: 300 },
+        'lifetime': { name: 'Lifetime', price: 1000 }
       }
     },
     wcc3: {
       name: 'WCC3 Mod',
       icon: 'assets/icons/icon_wcc3.png',
       plans: {
-        '1month': { name: '1 Month', price: 350 },
-        'lifetime': { name: 'Lifetime', price: 2000 }
+        '1month': { name: '1 Month', price: 300 },
+        'lifetime': { name: 'Lifetime', price: 1500 }
       }
     },
     rc25: {
