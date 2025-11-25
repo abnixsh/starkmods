@@ -58,7 +58,7 @@ function HomePage() {
             </div>
             <div class="flex-1">
               <div class="text-xl font-semibold">RC20 Mod Menu</div>
-              <div class="text-sm text-slate-500 dark:text-slate-400">com.stark.rc20</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.ReaCricket3D</div>
               <div class="mt-2 flex items-center gap-2 flex-wrap">
                 <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v6.1</span>
                 <span class="badge bg-yellow-100 px-2 py-1 rounded text-xs text-yellow-800">Premium</span>
