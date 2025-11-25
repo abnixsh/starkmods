@@ -27,8 +27,29 @@ window.db   = db;
 // --- 3. GLOBAL AUTH STATE ---
 window.currentUser = null;
 window.isAdmin = false;
-const ADMIN_EMAIL = "theabhistark17@gmail.com";
+window.isElite = false;
 
+// ADD ALL ADMIN / ELITE EMAILS HERE
+const ADMIN_EMAILS = ["theabhistark17@gmail.com"]; // you can add more later
+const ELITE_EMAILS = ["theastroabhi18@gmail.com"];                  // for now same list
+
+// --- 5. LISTENER ---
+auth.onAuthStateChanged((user) => {
+  console.log("Auth state:", user ? user.email : "none");
+
+  window.currentUser = user || null;
+  const email = user?.email || null;
+
+  window.isAdmin = !!email && ADMIN_EMAILS.includes(email);
+  window.isElite = !!email && ELITE_EMAILS.includes(email);
+
+  const applyUI = () => updateAuthUI(user);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyUI, { once: true });
+  } else {
+    applyUI();
+  }
+});
 // --- 4. AUTH UI ---
 function updateAuthUI(user) {
   const containers = [
@@ -66,20 +87,6 @@ function updateAuthUI(user) {
   });
 }
 
-// --- 5. LISTENER ---
-auth.onAuthStateChanged((user) => {
-  console.log("Auth state:", user ? user.email : "none");
-
-  window.currentUser = user || null;
-  window.isAdmin = !!user && user.email === ADMIN_EMAIL;
-
-  const applyUI = () => updateAuthUI(user);
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", applyUI, { once: true });
-  } else {
-    applyUI();
-  }
-});
 
 // --- 6. GOOGLE LOGIN ---
 window.googleLogin = function () {
