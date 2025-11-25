@@ -233,7 +233,8 @@ function renderSmartPaymentDetails() {
   const item = window.cart[0];
 
   if (method === 'upi') {
-    const upiID = "abnixsh@ptyes"; // YOUR UPI ID
+    // UPI LINK GENERATOR
+    const upiID = "starkmods@upi"; // <--- YOUR UPI ID
     const name = "StarkStore";
     const link = `upi://pay?pa=${upiID}&pn=${name}&am=${item.price}&cu=INR`;
     const qr = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(link)}`;
@@ -254,7 +255,43 @@ function renderSmartPaymentDetails() {
         <span class="material-icons text-xs text-slate-400">content_copy</span>
       </div>
     `;
-  } else if (method === 'binance') {
+  }
+
+  else if (method === 'ep') {
+    // EASYPAYSA DETAILS
+    const epNumber = "03045381058";
+    const epName = "Ghulam shabir";
+
+    box.innerHTML = `
+      <img src="assets/icons/pay_easypaisa.png" class="h-12 mx-auto mb-4 object-contain" onerror="this.style.display='none'">
+
+      <div class="text-left bg-slate-100 dark:bg-slate-900 p-4 rounded-xl space-y-2">
+        <p class="text-xs text-slate-500 uppercase font-bold">EasyPaisa Account</p>
+
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="text-[11px] text-slate-500">Account Name</div>
+            <div class="font-semibold text-slate-900 dark:text-white">${epName}</div>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <div class="text-[11px] text-slate-500">EasyPaisa Number</div>
+          <div class="flex justify-between items-center mt-1">
+            <span class="font-mono text-lg font-bold text-slate-900 dark:text-white">${epNumber}</span>
+            <span class="material-icons text-slate-400 cursor-pointer"
+                  onclick="navigator.clipboard.writeText('${epNumber}')">content_copy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 text-amber-700 bg-amber-50 dark:bg-amber-900/20 px-4 py-2 rounded-full inline-block text-xs font-semibold">
+        Send Exactly: Rs ${item.price} PKR to this EasyPaisa number, then paste your Transaction ID / UTR below.
+      </div>
+    `;
+  }
+
+  else if (method === 'binance') {
     const usdt = (item.price / 90).toFixed(2);
     box.innerHTML = `
       <img src="assets/icons/pay_binance.png" class="h-12 mx-auto mb-4 object-contain">
@@ -270,12 +307,12 @@ function renderSmartPaymentDetails() {
         Send Exactly: ${usdt} USDT
       </div>
     `;
-  } else {
-    // TODO: Add EasyPaisa / PayPal details if you want
+  }
+
+  else {
     box.innerHTML = `<p class="text-slate-500">Selected Method Details Loading...</p>`;
   }
 }
-
 function startTimer() {
   let time = 300;
   const display = document.getElementById('countdown-timer');
