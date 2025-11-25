@@ -12,7 +12,7 @@ const MIN_WITHDRAW_USD = 5;
 // -----------------------------------------
 
 function ProfilePage() {
-  // Wait until Firebase auth state is known
+  // Wait until Firebase auth state is known (set in firebase-config.js)
   if (!window.authReady) {
     return `
       <div class="max-w-4xl mx-auto py-20 text-center">
@@ -21,15 +21,13 @@ function ProfilePage() {
       </div>`;
   }
 
-  // If auth is ready and user is not logged in, redirect to home
+  // If auth is ready and no user, go home
   if (!window.currentUser) {
     setTimeout(() => window.router.navigateTo('/'), 50);
     return '';
   }
 
-  // ...keep the rest of your ProfilePage code exactly as it is...
-}
-  // load data after render
+  // Load data after render
   setTimeout(() => {
     window.loadUserOrders();
     if (window.isElite) {
@@ -206,7 +204,6 @@ window.requestWithdrawal = async function () {
         throw new Error('Please set your payment method first.');
       }
 
-      // withdraw full balance
       amountUSD = Math.floor(balance * 100) / 100;
 
       const reqRef = db.collection('withdrawRequests').doc();
@@ -225,7 +222,6 @@ window.requestWithdrawal = async function () {
       });
     });
 
-    // Notify Telegram (ignore if fails)
     try {
       await fetch('/api/withdraw', {
         method: 'POST',
@@ -398,8 +394,9 @@ window.showKey = function (key) {
   alert('Your key: ' + key + '\\n\\n(If allowed, it was copied to your clipboard.)');
 };
 
-window.contactSupport = function (utr) {
+window.contactSupport = function () {
   window.open(SUPPORT_TELEGRAM_URL, '_blank');
 };
 
+// --------- REGISTER FOR ROUTER ---------
 window.ProfilePage = ProfilePage;
