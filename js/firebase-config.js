@@ -31,7 +31,9 @@ window.isElite = false;
 
 // ADD ALL ADMIN / ELITE EMAILS HERE
 const ADMIN_EMAILS = ["theabhistark17@gmail.com"]; // you can add more later
-const ELITE_EMAILS = ["theastroabhi18@gmail.com"]; 
+const ELITE_EMAILS = ["theastroabhi18@gmail.com",
+                     "ritamsarkar875@gmail.com",
+                     "thomasbuju62@gmail.com]; 
   // for now same list
 
 // --- 5. LISTENER ---
