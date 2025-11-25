@@ -61,16 +61,15 @@ function Wcc3Page() {
           <div class="app-card p-6 rounded-2xl">
             <h3 class="text-xl font-bold mb-4">Mod Features</h3>
             <ul class="space-y-3 text-slate-600 dark:text-slate-300">
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Perfect Timing</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Always No ball</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Always Wide ball</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited Runs</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Anti-pause</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited Coins & Tickets</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlock All Tournaments</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited MPs/MCs</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All Stadiums Unlock</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlock Everything</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>No Ads</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All Jerseys Unlock</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All Tournaments Unlock</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All Comentary Unlock</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Coins Free Matches & Tournaments</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All Stadiums Unlock</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited Career Mode Energy</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Career Mode Unlock</span></li>
             </ul>
           </div>
 
@@ -79,7 +78,7 @@ function Wcc3Page() {
             <div>
                 <h3 class="text-xl font-bold mb-4">Select Plan</h3>
                 <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
-                    Get the ultimate advantage in Real Cricket 20. Safe, secure, and anti-ban.
+                    Get the ultimate advantage of every tournaments & career mode for free Safe, secure, and anti-ban.
                 </p>
             </div>
             
