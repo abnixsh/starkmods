@@ -28,6 +28,7 @@ window.db   = db;
 window.currentUser = null;
 window.isAdmin = false;
 window.isElite = false;
+window.authReady = false;
 
 // ADD ALL ADMIN / ELITE EMAILS HERE
 const ADMIN_EMAILS = ["theabhistark17@gmail.com"]; // you can add more later
@@ -47,12 +48,18 @@ auth.onAuthStateChanged((user) => {
 
   window.isAdmin = !!email && ADMIN_EMAILS.includes(email);
   window.isElite = !!email && ELITE_EMAILS.includes(email);
+  window.authReady = true;
 
   const applyUI = () => updateAuthUI(user);
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", applyUI, { once: true });
   } else {
     applyUI();
+  }
+
+  // Re-render current route so /profile uses the correct auth state
+  if (window.router && typeof window.router.handleRoute === 'function') {
+    window.router.handleRoute(location.pathname);
   }
 });
 // --- 4. AUTH UI ---
