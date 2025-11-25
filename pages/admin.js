@@ -13,6 +13,7 @@ function AdminPage() {
   setTimeout(() => {
     window.loadAllOrders();
     window.loadWithdrawRequests();
+    window.loadEliteWallets();
   }, 100);
 
   return `
@@ -62,11 +63,32 @@ function AdminPage() {
           </table>
         </div>
       </section>
+
+      <!-- ELITE WALLETS -->
+      <section>
+        <h2 class="text-lg font-bold mb-3">Elite Wallets (Manual Credit)</h2>
+        <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="p-4">User</th>
+                <th class="p-4">Balance</th>
+                <th class="p-4">Total Earned</th>
+                <th class="p-4">Payment Method</th>
+                <th class="p-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="elite-list">
+              <tr><td colspan="5" class="p-8 text-center">Loading wallets...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   `;
 }
 
-/* ---------- Load orders ---------- */
+/* ---------- ORDERS ---------- */
 
 window.loadAllOrders = function () {
   const list = document.getElementById('admin-list');
@@ -85,6 +107,7 @@ window.loadAllOrders = function () {
             <td class="p-4">
               <div class="font-bold">${userName}</div>
               <div class="text-xs text-slate-500">${o.email || ''}</div>
+              <div class="text-[10px] text-slate-400">UID: ${o.userId || '-'}</div>
             </td>
             <td class="p-4">
               ${o.item?.gameName || '-'}<br>
@@ -137,7 +160,7 @@ window.setKey = function (docId) {
     .catch(e => alert(e.message));
 };
 
-/* ---------- Update order status + credit wallet ---------- */
+/* ---------- Update order status + 10% elite credit ---------- */
 
 window.updateStatus = async function (docId, status) {
   if (!confirm(`Mark order as ${status}?`)) return;
@@ -162,9 +185,8 @@ window.updateStatus = async function (docId, status) {
 };
 
 window.creditEliteWallet = async function (adminUser, order, orderDocId) {
-  // convert INR -> USD then 10%
   const usd = (order.amount / INR_PER_USD) * COMMISSION_RATE;
-  const commissionUSD = Math.round(usd * 100) / 100; // 2 decimals
+  const commissionUSD = Math.round(usd * 100) / 100;
 
   const walletRef = db.collection('wallets').doc(adminUser.uid);
 
@@ -197,7 +219,7 @@ window.creditEliteWallet = async function (adminUser, order, orderDocId) {
   });
 };
 
-/* ---------- Withdrawal requests table ---------- */
+/* ---------- WITHDRAWAL REQUESTS ---------- */
 
 window.loadWithdrawRequests = function () {
   const list = document.getElementById('withdraw-list');
@@ -287,6 +309,89 @@ window.handleWithdrawStatus = async function (requestId, newStatus) {
   });
 
   alert('Withdrawal updated.');
+};
+
+/* ---------- ELITE WALLETS (MANUAL CREDIT) ---------- */
+
+window.loadEliteWallets = function () {
+  const list = document.getElementById('elite-list');
+
+  db.collection('wallets')
+    .orderBy('email')
+    .onSnapshot(snapshot => {
+      let html = '';
+      snapshot.forEach(doc => {
+        const w = doc.data();
+        const uid = w.userId || doc.id;
+        const balance = w.balanceUSD || 0;
+        const earned  = w.totalEarnedUSD || 0;
+        const method  = (w.paymentMethod || '').replace(/\n/g, '<br>');
+
+        const safeEmail = (w.email || '').replace(/"/g, '&quot;').replace(/'/g, "\\'");
+
+        html += `
+          <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+            <td class="p-4">
+              <div class="font-bold">${w.email || 'Unknown'}</div>
+              <div class="text-[11px] text-slate-400">UID: ${uid}</div>
+            </td>
+            <td class="p-4 font-bold text-blue-600">$${balance.toFixed(2)}</td>
+            <td class="p-4 text-sm text-slate-700 dark:text-slate-200">$${earned.toFixed(2)}</td>
+            <td class="p-4 text-xs whitespace-pre-line max-w-xs">${method || '<span class="text-slate-400">Not set</span>'}</td>
+            <td class="p-4">
+              <button onclick="window.manualCredit('${uid}', '${safeEmail}')"
+                      class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs font-bold">
+                Add Funds
+              </button>
+            </td>
+          </tr>`;
+      });
+
+      list.innerHTML = html || `<tr><td colspan="5" class="p-8 text-center text-slate-400">No elite wallets yet.</td></tr>`;
+    });
+};
+
+window.manualCredit = function (userId, email) {
+  const amountStr = prompt(`Enter USD amount to credit to ${email}:`);
+  if (!amountStr) return;
+
+  const amount = parseFloat(amountStr);
+  if (isNaN(amount) || amount <= 0) {
+    alert('Invalid amount.');
+    return;
+  }
+
+  const walletRef = db.collection('wallets').doc(userId);
+
+  db.runTransaction(async (tx) => {
+    const snap = await tx.get(walletRef);
+    const data = snap.exists ? snap.data() : {};
+
+    const newBalance = (data.balanceUSD || 0) + amount;
+    const newEarned  = (data.totalEarnedUSD || 0) + amount;
+
+    tx.set(walletRef, {
+      userId,
+      email,
+      balanceUSD: newBalance,
+      totalEarnedUSD: newEarned,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt: data.createdAt || firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    const txRef = walletRef.collection('transactions').doc();
+    tx.set(txRef, {
+      type: 'manual',
+      amountUSD: amount,
+      note: `Manual credit by ${window.currentUser?.email || 'admin'}`,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }).then(() => {
+    alert('Wallet updated.');
+  }).catch((e) => {
+    console.error(e);
+    alert(e.message);
+  });
 };
 
 window.AdminPage = AdminPage;
