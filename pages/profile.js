@@ -81,7 +81,7 @@ window.loadUserOrders = function () {
             <div class="text-right">
               ${statusBadge}
               ${o.status === 'approved'
-                ? `<button onclick="window.open('https://t.me/imsergiomoreio')" class="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-xs">Get Key</button>`
+                ? `<button onclick="window.open('https://t.me/imsergiomoreio')" class="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-xs">Get Mod</button>`
                 : ''}
             </div>
           </div>`;
