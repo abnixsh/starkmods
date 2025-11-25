@@ -7,7 +7,7 @@ window.downloadLinks = {
   rc25: 'https://your-download-link.com/rc25.apk'
 };
 
-const SUPPORT_TELEGRAM_URL = 'https://t.me/YourSupportUsername'; // CHANGE
+const SUPPORT_TELEGRAM_URL = 'https://t.me/imsergiomoreio'; // CHANGE
 const MIN_WITHDRAW_USD = 5;
 // -----------------------------------------
 
