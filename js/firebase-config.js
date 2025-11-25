@@ -32,7 +32,7 @@ window.isElite = false;
 // ADD ALL ADMIN / ELITE EMAILS HERE
 const ADMIN_EMAILS = ["theabhistark17@gmail.com"]; // you can add more later
 const ELITE_EMAILS = ["theastroabhi18@gmail.com"]; 
-const ELITE_EMAILS = ["ritamsarkar875@gmail.com"];   // for now same list
+  // for now same list
 
 // --- 5. LISTENER ---
 auth.onAuthStateChanged((user) => {
