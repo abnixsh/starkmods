@@ -234,7 +234,7 @@ function renderSmartPaymentDetails() {
 
   if (method === 'upi') {
     // UPI LINK GENERATOR
-    const upiID = "starkmods@upi"; // <--- YOUR UPI ID
+    const upiID = "abnixsh@ptyes"; // <--- YOUR UPI ID
     const name = "StarkStore";
     const link = `upi://pay?pa=${upiID}&pn=${name}&am=${item.price}&cu=INR`;
     const qr = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(link)}`;
