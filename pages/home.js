@@ -37,12 +37,12 @@ function HomePage() {
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The ultimate RC25 Mod Menu. Enhanced version of RC20 for the fans.
+            The ultimate RC25 Patch. Upgraded Enhanced version of RC20 for the fans of Real Cricket.
           </p>
 
           <div class="app-card-footer">
             <button onclick="window.router.navigateTo('/rc25')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
-              View Details
+              Download Now
             </button>
           </div>
         </div>
@@ -106,7 +106,7 @@ function HomePage() {
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The ultimate RC20 Mod Menu. Features include Auto Play, Unlimited Currency, All Tournaments Unlocked.
+            The ultimate RC20 VIP Mod Menu. Features include Timing Hack, Unlimited Coins/tickets, Mps&Mcs, All Tournaments Unlocked.
           </p>
 
           <div class="app-card-footer">
@@ -180,7 +180,7 @@ function HomePage() {
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The ultimate WCC3 Mod Menu. Features include Auto Play, Unlimited Currency, All Tournaments Unlocked.
+            The ultimate WCC3 VIP Mod Menu. Features include Career Mode Unlock, Unlimited Energy, All Tournaments Unlocked..etc
           </p>
 
           <div class="app-card-footer">
@@ -195,5 +195,6 @@ function HomePage() {
   </div>
   `;
 }
+
 
 window.HomePage = HomePage;
