@@ -1,4 +1,4 @@
-// Configure your download links per game ID
+oreio// Configure your download links per game ID
 window.downloadLinks = {
   rc20: 'https://your-download-link.com/rc20.apk',
   wcc3: 'https://your-download-link.com/wcc3.apk',
@@ -6,7 +6,7 @@ window.downloadLinks = {
 };
 
 // Telegram or contact link for support
-const SUPPORT_TELEGRAM_URL = 'https://t.me/YourSupportUsername'; // change to your username
+const SUPPORT_TELEGRAM_URL = 'https://t.me/imsergiomoreio'; // change to your username
 
 function ProfilePage() {
   if (!window.currentUser) {
