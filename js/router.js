@@ -14,6 +14,7 @@ class Router {
         this.addRoute('/contact', 'contact');
         this.addRoute('/profile', 'profile');
         this.addRoute('/admin', 'admin');
+        this.addRoute('/terms', 'terms');
         
         // Redirects
         this.addRoute('/plans', 'cart'); 
@@ -89,7 +90,9 @@ class Router {
             'profile': 'ProfilePage',
             'admin': 'AdminPage',
             'contact': 'ContactPage',
+            'terms': 'TermsPage',
             '404': 'NotFoundPage' // Virtual function
+            
         };
         return map[pageName];
     }
