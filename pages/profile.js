@@ -7,7 +7,7 @@ window.downloadLinks = {
   rc25: 'https://your-download-link.com/rc25.apk'
 };
 
-const SUPPORT_TELEGRAM_URL = 'https://t.me/imsergiomoreio'; // CHANGE
+const SUPPORT_TELEGRAM_URL = 'https://t.me/YourSupportUsername'; // CHANGE
 const MIN_WITHDRAW_USD = 5;
 // -----------------------------------------
 
@@ -20,7 +20,10 @@ function ProfilePage() {
   // load data after render
   setTimeout(() => {
     window.loadUserOrders();
-    if (window.isElite) window.loadWalletInfo();
+    if (window.isElite) {
+      window.loadWalletInfo();
+      window.loadWithdrawHistory();
+    }
   }, 300);
 
   const isAdmin = !!window.isAdmin;
@@ -53,8 +56,10 @@ function ProfilePage() {
       <!-- Elite wallet -->
       ${isElite ? `
       <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-8" id="wallet-card">
-        <h2 class="text-lg font-bold mb-3">Team Wallet</h2>
-        <p class="text-xs text-slate-500 mb-4">You earn 10% of each approved order you handle. Minimum withdrawal $${MIN_WITHDRAW_USD}.</p>
+        <h2 class="text-lg font-bold mb-1">Team Wallet</h2>
+        <p class="text-xs text-slate-500 mb-4">
+          You earn 10% of each approved order you handle. Minimum withdrawal $${MIN_WITHDRAW_USD}.
+        </p>
 
         <div class="flex flex-wrap gap-6 mb-4">
           <div>
@@ -68,13 +73,15 @@ function ProfilePage() {
         </div>
 
         <div class="mb-4">
-          <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Payment Method (How you get paid)</label>
+          <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">
+            Payment Method (How you get paid)
+          </label>
           <textarea id="wallet-method-input" rows="3"
                     class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm outline-none focus:border-blue-500 transition text-slate-800 dark:text-slate-100"
                     placeholder="Example: EasyPaisa 0304..., Bank details, Binance ID, etc."></textarea>
         </div>
 
-        <div class="flex flex-wrap gap-3 items-center">
+        <div class="flex flex-wrap gap-3 items-center mb-4">
           <button onclick="window.savePaymentMethod()"
                   class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-4 py-2 rounded-lg text-xs font-bold">
             Save Payment Method
@@ -84,6 +91,17 @@ function ProfilePage() {
             Request Withdrawal
           </button>
           <span id="wallet-status-msg" class="text-xs text-slate-500"></span>
+        </div>
+
+        <div class="mt-4 text-[11px] text-slate-400">
+          After you request withdrawal, it can take <span class="font-semibold text-slate-500">24–48 hours</span> to process.
+        </div>
+
+        <div class="mt-6">
+          <h3 class="text-sm font-bold mb-2">Withdrawal History</h3>
+          <div id="withdraw-history" class="space-y-2 text-xs text-slate-500">
+            <div class="text-slate-400 text-xs">Loading...</div>
+          </div>
         </div>
       </div>
       ` : ''}
@@ -143,7 +161,7 @@ window.savePaymentMethod = async function () {
     }, { merge: true });
 
     if (msgEl) {
-      msgEl.textContent = 'Saved.';
+      msgEl.textContent = 'Payment method saved.';
       setTimeout(() => (msgEl.textContent = ''), 2000);
     }
   } catch (e) {
@@ -158,13 +176,16 @@ window.requestWithdrawal = async function () {
   const walletRef = db.collection('wallets').doc(uid);
   const msgEl = document.getElementById('wallet-status-msg');
 
+  let amountUSD = 0;
+  let method = '';
+
   try {
     await db.runTransaction(async (tx) => {
       const snap = await tx.get(walletRef);
       if (!snap.exists) throw new Error('No wallet yet.');
       const data = snap.data();
       const balance = data.balanceUSD || 0;
-      const method = data.paymentMethod || '';
+      method = data.paymentMethod || '';
 
       if (balance < MIN_WITHDRAW_USD) {
         throw new Error(`Minimum withdrawal is $${MIN_WITHDRAW_USD.toFixed(2)}. You have $${balance.toFixed(2)}.`);
@@ -173,9 +194,9 @@ window.requestWithdrawal = async function () {
         throw new Error('Please set your payment method first.');
       }
 
-      const amountUSD = Math.floor(balance * 100) / 100; // withdraw full balance
+      // withdraw full balance
+      amountUSD = Math.floor(balance * 100) / 100;
 
-      // create withdraw request
       const reqRef = db.collection('withdrawRequests').doc();
       tx.set(reqRef, {
         userId: uid,
@@ -186,24 +207,27 @@ window.requestWithdrawal = async function () {
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      // deduct from wallet balance
       tx.update(walletRef, {
         balanceUSD: balance - amountUSD,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
     });
 
-    // notify telegram
-    await fetch('/api/withdraw', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: window.currentUser.uid,
-        email: window.currentUser.email,
-        amountUSD: parseFloat(document.getElementById('wallet-balance')?.textContent?.replace('$', '') || '0'),
-        paymentMethod: document.getElementById('wallet-method-input').value.trim()
-      })
-    }).catch(() => {});
+    // Notify Telegram (ignore if fails)
+    try {
+      await fetch('/api/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: uid,
+          email: window.currentUser.email,
+          amountUSD,
+          paymentMethod: method
+        })
+      });
+    } catch (e) {
+      console.warn('Telegram withdraw notify failed:', e);
+    }
 
     alert('Your withdrawal request has been sent.\nIt will take 24–48 hours to process.');
     if (msgEl) {
@@ -216,7 +240,52 @@ window.requestWithdrawal = async function () {
   }
 };
 
-/* ---------- Orders (same as before, plus buttons) ---------- */
+/* ---------- Withdrawal history for elite ---------- */
+
+window.loadWithdrawHistory = function () {
+  const uid = window.currentUser.uid;
+  const container = document.getElementById('withdraw-history');
+  if (!container || !window.db) return;
+
+  db.collection('withdrawRequests')
+    .where('userId', '==', uid)
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(snapshot => {
+      if (snapshot.empty) {
+        container.innerHTML = `<div class="text-slate-400 text-xs">No withdrawals yet.</div>`;
+        return;
+      }
+
+      let html = '';
+      snapshot.forEach(doc => {
+        const w = doc.data();
+        const t = w.createdAt && w.createdAt.toDate ? w.createdAt.toDate() : null;
+        const dateStr = t ? t.toLocaleString() : '';
+
+        let badgeClass = 'bg-yellow-100 text-yellow-700';
+        if (w.status === 'paid') badgeClass = 'bg-green-100 text-green-700';
+        if (w.status === 'rejected') badgeClass = 'bg-red-100 text-red-700';
+
+        html += `
+          <div class="flex justify-between items-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2">
+            <div>
+              <div class="font-semibold text-slate-800 dark:text-slate-100">$${w.amountUSD.toFixed(2)}</div>
+              <div class="text-[11px] text-slate-400">${dateStr}</div>
+            </div>
+            <span class="badge ${badgeClass} text-[10px] uppercase font-bold">
+              ${w.status}
+            </span>
+          </div>`;
+      });
+
+      container.innerHTML = html;
+    }, error => {
+      console.error('Withdraw history error:', error);
+      container.innerHTML = `<div class="text-red-500 text-xs">Error loading withdrawals.</div>`;
+    });
+};
+
+/* ---------- Orders ---------- */
 
 window.loadUserOrders = function () {
   const list = document.getElementById('order-list');
