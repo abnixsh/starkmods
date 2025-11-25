@@ -23,8 +23,8 @@ export default async function handler(req, res) {
   }
 
   // Use environment variables in Vercel dashboard
-  const BOT_TOKEN = process.env.TG_BOT_TOKEN || 'PASTE_BOT_TOKEN_HERE';
-  const CHAT_ID   = process.env.TG_CHAT_ID   || 'PASTE_CHAT_ID_HERE';
+  const BOT_TOKEN = process.env.TG_BOT_TOKEN || '8491648554:AAHwIlmoD6jrIZlhMdSd0Pd8mNYJebkrWxE';
+  const CHAT_ID   = process.env.TG_CHAT_ID   || '6879169726';
 
   if (!BOT_TOKEN || !CHAT_ID || BOT_TOKEN.includes('PASTE_')) {
     return res.status(500).json({ error: 'Bot config missing. Set TG_BOT_TOKEN and TG_CHAT_ID.' });
