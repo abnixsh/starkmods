@@ -12,11 +12,23 @@ const MIN_WITHDRAW_USD = 5;
 // -----------------------------------------
 
 function ProfilePage() {
+  // Wait until Firebase auth state is known
+  if (!window.authReady) {
+    return `
+      <div class="max-w-4xl mx-auto py-20 text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p class="text-slate-500">Checking login...</p>
+      </div>`;
+  }
+
+  // If auth is ready and user is not logged in, redirect to home
   if (!window.currentUser) {
-    setTimeout(() => window.router.navigateTo('/'), 100);
+    setTimeout(() => window.router.navigateTo('/'), 50);
     return '';
   }
 
+  // ...keep the rest of your ProfilePage code exactly as it is...
+}
   // load data after render
   setTimeout(() => {
     window.loadUserOrders();
