@@ -151,7 +151,7 @@ window.showKey = function (key) {
 
 window.contactSupport = function (utr) {
   // Open Telegram support – you can also add the UTR in the URL if you like
-  window.open(SUPPORT_TELEGRAM_URL, '_blank');
+  window.open(https://t.me/imsergiomoreio, '_blank');
 };
 
 window.ProfilePage = ProfilePage;
