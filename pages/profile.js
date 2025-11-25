@@ -1,4 +1,6 @@
-oreio// Configure your download links per game ID
+// pages/profile.js
+
+// ------------- CONFIG: update these -------------
 window.downloadLinks = {
   rc20: 'https://your-download-link.com/rc20.apk',
   wcc3: 'https://your-download-link.com/wcc3.apk',
@@ -6,9 +8,11 @@ window.downloadLinks = {
 };
 
 // Telegram or contact link for support
-const SUPPORT_TELEGRAM_URL = 'https://t.me/imsergiomoreio'; // change to your username
+const SUPPORT_TELEGRAM_URL = 'https://t.me/imsergiomoreio'; // CHANGE THIS
+// ------------------------------------------------
 
 function ProfilePage() {
+  // Redirect if not logged in
   if (!window.currentUser) {
     setTimeout(() => window.router.navigateTo('/'), 100);
     return '';
@@ -52,6 +56,8 @@ function ProfilePage() {
     </div>`;
 }
 
+// --------- Load user orders from Firestore ---------
+
 window.loadUserOrders = function () {
   const list = document.getElementById('order-list');
   if (!window.db) {
@@ -61,7 +67,7 @@ window.loadUserOrders = function () {
 
   window.db.collection('orders')
     .where('userId', '==', window.currentUser.uid)
-    .orderBy('timestamp', 'desc')
+    .orderBy('timestamp', 'desc')   // make sure field name matches checkout.js
     .onSnapshot(snapshot => {
       if (snapshot.empty) {
         list.innerHTML = `<div class="text-center py-10 text-slate-400">No orders found.</div>`;
@@ -72,31 +78,35 @@ window.loadUserOrders = function () {
       snapshot.forEach(doc => {
         const o = doc.data();
 
-        const statusBadge = o.status === 'approved'
-          ? `<span class="text-green-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">check_circle</span> Approved</span>`
-          : o.status === 'rejected'
-          ? `<span class="text-red-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">cancel</span> Rejected</span>`
-          : `<span class="text-yellow-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">schedule</span> Pending</span>`;
+        const statusBadge =
+          o.status === 'approved'
+            ? `<span class="text-green-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">check_circle</span> Approved</span>`
+            : o.status === 'rejected'
+            ? `<span class="text-red-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">cancel</span> Rejected</span>`
+            : `<span class="text-yellow-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">schedule</span> Pending</span>`;
 
-        // Download button only when approved
+        // Download button only when approved and we have a configured link
         const dlLink = window.downloadLinks[o.item?.gameId];
-        const downloadBtn = (o.status === 'approved' && dlLink)
-          ? `<button onclick="window.downloadMod('${o.item.gameId}')"
-                     class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold flex items-center gap-1">
-               <span class="material-icons text-xs">download</span> Download Mod
-             </button>`
-          : '';
+        const downloadBtn =
+          o.status === 'approved' && dlLink
+            ? `<button onclick="window.downloadMod('${o.item.gameId}')"
+                       class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold flex items-center gap-1">
+                 <span class="material-icons text-xs">download</span> Download Mod
+               </button>`
+            : '';
 
-        // Key button (shows key if admin has set it)
-        const keySection = (o.status === 'approved')
-          ? (o.key
-              ? `<button onclick="window.showKey('${o.key}')"
-                        class="mt-2 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs font-bold flex items-center gap-1">
-                   <span class="material-icons text-xs">vpn_key</span> Get Key
-                 </button>`
-              : `<div class="mt-2 text-[11px] text-slate-400">Key will be added soon. Please wait or contact support.</div>`)
-          : '';
+        // Key button (if admin set key)
+        const keySection =
+          o.status === 'approved'
+            ? (o.key
+                ? `<button onclick="window.showKey('${o.key}')"
+                          class="mt-2 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs font-bold flex items-center gap-1">
+                     <span class="material-icons text-xs">vpn_key</span> Get Key
+                   </button>`
+                : `<div class="mt-2 text-[11px] text-slate-400">Key will be added soon. Please wait or contact support.</div>`)
+            : '';
 
+        // Contact button (always visible)
         const contactBtn = `
           <button onclick="window.contactSupport('${o.transId || ''}')"
                   class="mt-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-3 py-1 rounded text-xs font-bold flex items-center gap-1">
@@ -132,7 +142,7 @@ window.loadUserOrders = function () {
     });
 };
 
-// Helpers exposed globally
+// --------- Helper actions for buttons ---------
 
 window.downloadMod = function (gameId) {
   const link = window.downloadLinks[gameId];
@@ -144,14 +154,17 @@ window.downloadMod = function (gameId) {
 };
 
 window.showKey = function (key) {
-  // Simple alert + copy to clipboard
-  navigator.clipboard?.writeText(key).catch(() => {});
-  alert('Your key: ' + key + '\\n\\n(We copied it to your clipboard if permissions allowed.)');
+  // Copy to clipboard (ignore errors)
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(key).catch(() => {});
+  }
+  alert('Your key: ' + key + '\\n\\n(If allowed, it was copied to your clipboard.)');
 };
 
 window.contactSupport = function (utr) {
-  // Open Telegram support – you can also add the UTR in the URL if you like
-  window.open(https://t.me/imsergiomoreio, '_blank');
+  // You can customize this to include the UTR in a pre-filled message
+  window.open(SUPPORT_TELEGRAM_URL, '_blank');
 };
 
+// --------- Register for router ---------
 window.ProfilePage = ProfilePage;
