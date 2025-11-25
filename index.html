@@ -22,25 +22,24 @@
 
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 antialiased transition-colors duration-300">
 
-  <!-- HEADER -->
+    <!-- HEADER -->
   <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
       <div class="flex items-center justify-between h-16">
 
-        <!-- LEFT: Logo -->
+        <!-- LEFT: Logo + Text (shown on PC & Mobile) -->
         <div class="flex items-center gap-3">
           <a href="/" class="flex items-center gap-3" data-link>
             <img src="/assets/icons/icon_site.jpg" alt="Stark Mods"
                  class="h-10 w-10 rounded-lg shadow-sm"
                  onerror="this.src='https://placehold.co/40x40?text=S'" />
-            <div class="hidden sm:block">
-              <!-- Brand text: black in light, white in dark -->
-              <div class="text-lg font-semibold"> Stark Mods</div>
-               
-               
-             
-              <div class="text-[10px] text-slate-500 dark:text-slate-400 -mt-1 font-bold uppercase tracking-wide">
-                Premium Mods & Patches
+            <div class="block">
+              <div class="text-lg sm:text-xl font-black tracking-tight">
+                <span class="inline dark:hidden text-black">Stark Mods</span>
+                <span class="hidden dark:inline text-white">Stark Mods</span>
+              </div>
+              <div class="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 -mt-1 font-bold uppercase tracking-wide">
+                Premium Mods &amp; Patches
               </div>
             </div>
           </a>
@@ -49,17 +48,16 @@
         <!-- RIGHT: Actions -->
         <div class="flex items-center gap-2 sm:gap-3">
 
-          <!-- Desktop Nav -->
+          <!-- Desktop Nav (no Cart text link now) -->
           <nav id="desktop-nav" class="hidden md:flex items-center gap-6 mr-2">
             <a href="/" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Home</a>
-            <a href="/cart" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Cart</a>
             <a href="/contact" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Contact</a>
           </nav>
 
-          <!-- AUTH BUTTON (Login / Profile) – JS injects here -->
-          <div id="auth-container" class="relative"></div>
+          <!-- AUTH BUTTON (Login / Profile) – desktop only -->
+          <div id="auth-container" class="relative hidden md:block"></div>
 
-          <!-- CART ICON -->
+          <!-- CART ICON (kept) -->
           <button onclick="window.router.navigateTo('/cart')"
                   class="relative p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
             <span class="material-icons text-xl">shopping_cart</span>
@@ -92,6 +90,8 @@
            data-link>Home</a>
         <a href="/cart" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
            data-link>My Cart</a>
+        <a href="/contact" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
+           data-link>Contact</a>
         <a href="/profile" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
            data-link>My Profile</a>
 
