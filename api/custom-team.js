@@ -36,8 +36,13 @@ export default async function handler(req, res) {
     : 'New custom team';
 
   const playersSummary = players
-    .map((p, i) => `${i + 1}. ${p.name} (${p.playerType}, #${p.jerseyNumber})`)
-    .join('\n');
+  .map((p, i) =>
+    `${i + 1}. ${p.name}
+   Type: ${p.playerType}, Jersey: #${p.jerseyNumber}
+   Bat: ${p.battingHand}, Bowl: ${p.bowlingHand}
+   BatType: ${p.batsmanType}, BowlType: ${p.bowlerType}`
+  )
+  .join('\n\n');
 
   const message = `
 👥 <b>NEW CUSTOM TEAM REQUEST</b>
