@@ -20,7 +20,8 @@ this.addRoute('/creator-jersey', 'creator');
 this.addRoute('/creator-team', 'creator'); 
 this.addRoute('/creator-history', 'creator');
 this.addRoute('/creator-plans', 'creator');
-this.addRoute('/creator-admin', 'creatorAdmin'); // admin stays separate
+this.addRoute('/creator-admin', 'creatorAdmin');
+        this.addRoute('/privacy', 'privacy');
         this.addRoute('/terms', 'terms');
         
         // Redirects
@@ -120,6 +121,7 @@ this.addRoute('/creator-admin', 'creatorAdmin'); // admin stays separate
             'admin': 'AdminPage',
             'contact': 'ContactPage',
             'terms': 'TermsPage',
+            'privacy': 'PrivacyPage',
             creatorAdmin: 'CreatorAdminPage',
             '404': 'NotFoundPage' // Virtual function
             
