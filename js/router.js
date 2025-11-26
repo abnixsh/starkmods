@@ -17,6 +17,7 @@ class Router {
        this.addRoute('/creator', 'creator');
 this.addRoute('/creator-player', 'creator');
 this.addRoute('/creator-jersey', 'creator'); 
+this.addRoute('/creator-team', 'creator'); 
 this.addRoute('/creator-history', 'creator');
 this.addRoute('/creator-plans', 'creator');
 this.addRoute('/creator-admin', 'creatorAdmin'); // admin stays separate
@@ -100,6 +101,7 @@ this.addRoute('/creator-admin', 'creatorAdmin'); // admin stays separate
 
     if (path === '/creator-player')  return 'CreatorPlayerPage';
     if (path === '/creator-jersey')  return 'CreatorJerseyPage';
+    if (path === '/creator-team')    return 'CreatorTeamPage';
     if (path === '/creator-history') return 'CreatorHistoryPage';
     if (path === '/creator-plans')   return 'CreatorPlansPage';
 
