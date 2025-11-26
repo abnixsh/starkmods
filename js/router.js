@@ -14,11 +14,11 @@ class Router {
         this.addRoute('/contact', 'contact');
         this.addRoute('/profile', 'profile');
         this.addRoute('/admin', 'admin');
-        this.addRoute('/creator', 'creator');
-        this.addRoute('/creator-history', 'creatorHistory');
-        this.addRoute('/creator-plans', 'creatorPlans');
-        this.addRoute('/creator-admin', 'creatorAdmin');
-        this.addRoute('/creator-player', 'creatorPlayer');
+       this.addRoute('/creator', 'creator');
+this.addRoute('/creator-player', 'creator');
+this.addRoute('/creator-history', 'creator');
+this.addRoute('/creator-plans', 'creator');
+this.addRoute('/creator-admin', 'creatorAdmin'); // admin stays separate
         this.addRoute('/terms', 'terms');
         
         // Redirects
@@ -85,6 +85,17 @@ class Router {
     }
 
     getFunctionName(pageName) {
+        if (pageName === 'creator') {
+    const path = location.pathname.replace(/\/$/, ''); // remove trailing slash
+
+    if (path === '/creator-player')  return 'CreatorPlayerPage';
+    if (path === '/creator-history') return 'CreatorHistoryPage';
+    if (path === '/creator-plans')   return 'CreatorPlansPage';
+
+    // default: /creator
+    return 'CreatorPage';
+  }
+
         const map = {
             'home': 'HomePage',
             'rc20': 'Rc20Page',
@@ -96,10 +107,6 @@ class Router {
             'admin': 'AdminPage',
             'contact': 'ContactPage',
             'terms': 'TermsPage',
-            creator: 'CreatorPage',
-            creatorHistory: 'CreatorHistoryPage',
-            creatorPlans: 'CreatorPlansPage',
-            creatorPlayer: 'CreatorPlayerPage',
             creatorAdmin: 'CreatorAdminPage',
             '404': 'NotFoundPage' // Virtual function
             
