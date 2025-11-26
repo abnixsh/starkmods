@@ -14,6 +14,7 @@ class Router {
         this.addRoute('/contact', 'contact');
         this.addRoute('/profile', 'profile');
         this.addRoute('/admin', 'admin');
+        this.addRoute('/creator', 'creator');
         this.addRoute('/terms', 'terms');
         
         // Redirects
@@ -91,6 +92,7 @@ class Router {
             'admin': 'AdminPage',
             'contact': 'ContactPage',
             'terms': 'TermsPage',
+            creator: 'CreatorPage',
             '404': 'NotFoundPage' // Virtual function
             
         };
