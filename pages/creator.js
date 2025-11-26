@@ -235,13 +235,15 @@ function CreatorTeamPage() {
 
         <div class="flex flex-wrap gap-4 mb-3 text-xs">
           <label class="flex items-center gap-2">
-            <input type="radio" name="ct-mode" value="new" checked onchange="window.setTeamMode('new')">
-            Create New Team
-          </label>
-          <label class="flex items-center gap-2">
-            <input type="radio" name="ct-mode" value="replace" onchange="window.setTeamMode('replace')">
-            Replace Existing Team
-          </label>
+  <input type="radio" name="ct-mode" value="new" checked
+         onchange="window.setTeamMode('new')" class="accent-blue-600">
+  Create New Team
+</label>
+<label class="flex items-center gap-2">
+  <input type="radio" name="ct-mode" value="replace"
+         onchange="window.setTeamMode('replace')" class="accent-blue-600">
+  Replace Existing Team
+</label>
         </div>
 
         <div class="grid sm:grid-cols-2 gap-4 mb-3">
@@ -807,10 +809,48 @@ window.checkCreatorSubBeforeRequest = function () {
 window.checkCreatorSubForTeam = function () {
   if (!window.checkCreatorSubBeforeRequest()) return false;
   const sub = window.creatorSub;
-  if (!sub || (sub.planCode !== 'P300' && sub.planCode !== 'P1000')) {
+
+  if (!sub) {
     alert('Custom Team is only available for Pro or Elite plans.');
     return false;
   }
+
+  // Starter plan: offer upgrade to Pro for ₹200
+  if (sub.planCode === 'P100') {
+    const confirmUpgrade = confirm(
+      'Custom Team is only available for Pro or Elite plans.\n\n' +
+      'You are on the Starter plan. Upgrade to Pro for ₹200?'
+    );
+    if (confirmUpgrade) {
+      const plan = CREATOR_PLANS.P300;
+      if (!plan) {
+        alert('Pro plan not found.');
+        return false;
+      }
+
+      window.cart = [{
+        gameId: 'sub_UP_P300',
+        gameName: 'Mod Creator Pro Upgrade',
+        planName: 'Upgrade Starter → Pro (Custom Team)',
+        price: 200,
+        image: 'assets/icons/icon_site.jpg',
+        subPlanCode: 'P300',
+        subPlanName: plan.name,
+        subMaxRequests: plan.maxRequests || null,
+        subPeriodDays: plan.periodDays
+      }];
+
+      if (window.updateCartBadge) window.updateCartBadge();
+      if (window.router) window.router.navigateTo('/checkout');
+    }
+    return false;
+  }
+
+  if (sub.planCode !== 'P300' && sub.planCode !== 'P1000') {
+    alert('Custom Team is only available for Pro or Elite plans.');
+    return false;
+  }
+
   return true;
 };
 
