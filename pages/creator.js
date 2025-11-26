@@ -101,7 +101,7 @@ function CreatorPage() {
         </button>
 
         <button class="p-5 rounded-2xl border border-green-500 bg-green-50 dark:bg-green-900/20 text-left hover:bg-green-100 dark:hover:bg-green-900/40 transition"
-                onclick="window.router && window.router.navigateTo('/creator-jersey')">
+        onclick="window.goToCreatorJersey()">
           <div class="flex items-center gap-3">
             <span class="material-icons text-3xl text-green-600">checkroom</span>
             <div>
@@ -111,8 +111,8 @@ function CreatorPage() {
           </div>
         </button>
 
-        <button class="p-5 rounded-2xl border border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-left hover:bg-purple-100 dark:hover:bg-purple-900/40 transition"
-                onclick="window.router && window.router.navigateTo('/creator-team')">
+       <button class="p-5 rounded-2xl border border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-left hover:bg-purple-100 dark:hover:bg-purple-900/40 transition"
+        onclick="window.goToCreatorTeam()">
           <div class="flex items-center gap-3">
             <span class="material-icons text-3xl text-purple-600">groups</span>
             <div>
