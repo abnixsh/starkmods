@@ -1,5 +1,38 @@
+// pages/creator.js
+
+// --- PLAN CONFIG (client side) ---
+const CREATOR_PLANS = {
+  P100: {
+    code: 'P100',
+    name: 'Starter',
+    priceINR: 100,
+    maxRequests: 20,
+    periodDays: 30,
+    description: '20 requests · 30 days'
+  },
+  P300: {
+    code: 'P300',
+    name: 'Pro',
+    priceINR: 300,
+    maxRequests: 70,
+    periodDays: 30,
+    description: '70 requests · 30 days'
+  },
+  P1000: {
+    code: 'P1000',
+    name: 'Elite',
+    priceINR: 1000,
+    maxRequests: null, // unlimited
+    periodDays: 60,
+    description: 'Unlimited requests · 60 days'
+  }
+};
+
+window.creatorSub = null;
+
+/* ---------------- MAIN PAGES ---------------- */
+
 function CreatorPage() {
-  // If not logged in, show login CTA
   if (!window.currentUser) {
     return `
       <div class="max-w-4xl mx-auto py-20 text-center animate-fade-in">
@@ -16,20 +49,25 @@ function CreatorPage() {
       </div>`;
   }
 
-  // Logged-in view – call history loader
+  // Load subscription info after render
   setTimeout(() => {
-    if (window.loadCreatorHistory) window.loadCreatorHistory();
-  }, 300);
+    if (window.loadCreatorSubscription) window.loadCreatorSubscription();
+  }, 200);
 
   return `
     <div class="max-w-4xl mx-auto animate-fade-in pb-20">
       <h1 class="text-3xl font-bold mb-2 text-slate-900 dark:text-white">Mod Creator</h1>
-      <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
         Create custom content for your game. Right now only <span class="font-semibold">Custom Player</span> is available.
       </p>
 
+      <!-- Subscription status -->
+      <div id="creator-sub-status" class="mb-6 text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+        Loading subscription...
+      </div>
+
       <!-- MAIN BUTTONS -->
-      <div class="grid sm:grid-cols-2 gap-4 mb-8">
+      <div class="grid sm:grid-cols-2 gap-4 mb-4">
         <button class="p-5 rounded-2xl border border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-left hover:bg-blue-100 dark:hover:bg-blue-900/40 transition"
                 onclick="window.showCreatorSection('player')">
           <div class="flex items-center gap-3">
@@ -72,25 +110,59 @@ function CreatorPage() {
         </button>
       </div>
 
+      <button onclick="window.router.navigateTo('/creator-history')"
+              class="mb-6 text-xs sm:text-sm bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-4 py-2 rounded-lg font-bold flex items-center gap-1">
+        <span class="material-icons text-xs">history</span> View Request History
+      </button>
+
       <!-- SECTION CONTENT -->
       <div id="creator-section">
-        ${renderCustomPlayerForm()}
-      </div>
-
-      <div class="mt-10">
-        <h2 class="text-lg font-bold mb-3 text-slate-900 dark:text-white">Your Custom Player Requests</h2>
-        <div id="creator-history" class="space-y-3 text-sm">
-          <div class="text-slate-400 text-xs">Loading...</div>
-        </div>
+        <!-- empty until user clicks Custom Player -->
       </div>
     </div>
   `;
 }
 
-/* --------- RENDER HELPERS --------- */
+function CreatorHistoryPage() {
+  if (!window.currentUser) {
+    setTimeout(() => window.router.navigateTo('/'), 50);
+    return '';
+  }
+
+  setTimeout(() => {
+    if (window.loadCreatorHistory) window.loadCreatorHistory();
+  }, 200);
+
+  return `
+    <div class="max-w-4xl mx-auto animate-fade-in pb-20">
+      <h1 class="text-2xl font-bold mb-3 text-slate-900 dark:text-white">Mod Creator History</h1>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+        All your custom player requests and their status.
+      </p>
+      <div id="creator-history" class="space-y-3 text-sm">
+        <div class="text-slate-400 text-xs">Loading...</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------------- SECTION RENDERING ---------------- */
+
+window.showCreatorSection = function (section) {
+  const container = document.getElementById('creator-section');
+  if (!container) return;
+
+  if (section === 'player') {
+    container.innerHTML = renderCustomPlayerForm();
+  } else {
+    container.innerHTML = '';
+  }
+};
+
+/* ---------------- CUSTOM PLAYER FORM ---------------- */
 
 function renderCustomPlayerForm() {
-  // build face options 1-80
+  // face 1-80
   let faceOptions = '<option value="">Select Face (1–80)</option>';
   for (let i = 1; i <= 80; i++) {
     faceOptions += `<option value="${i}">Face ${i}</option>`;
@@ -103,9 +175,7 @@ function renderCustomPlayerForm() {
       <form onsubmit="window.submitCustomPlayer(event)" class="space-y-4 text-sm">
         <div>
           <label class="block font-semibold mb-1">Team Name (where player will be added)</label>
-          <input id="cp-team" type="text"
-                 class="form-input"
-                 placeholder="e.g. India, CSK, Custom Team">
+          <input id="cp-team" type="text" class="form-input" placeholder="e.g. India, CSK, Custom Team">
         </div>
 
         <div class="grid sm:grid-cols-2 gap-4">
@@ -113,7 +183,6 @@ function renderCustomPlayerForm() {
             <label class="block font-semibold mb-1">Player Name</label>
             <input id="cp-name" type="text" class="form-input" placeholder="Your custom player name">
           </div>
-
           <div>
             <label class="block font-semibold mb-1">Player Type</label>
             <select id="cp-type" class="form-input">
@@ -176,7 +245,6 @@ function renderCustomPlayerForm() {
             <input id="cp-jersey" type="number" min="0" max="999"
                    class="form-input" placeholder="e.g. 7">
           </div>
-
           <div>
             <label class="block font-semibold mb-1">Face (1–80)</label>
             <select id="cp-face" class="form-input" onchange="window.updateFacePreview()">
@@ -211,16 +279,7 @@ function renderCustomPlayerForm() {
   `;
 }
 
-/* --------- UI helpers for face ---------- */
-
-window.showCreatorSection = function (section) {
-  // For now only 'player' exists
-  const container = document.getElementById('creator-section');
-  if (!container) return;
-  if (section === 'player') {
-    container.innerHTML = renderCustomPlayerForm();
-  }
-};
+/* ---------- Face preview helpers ---------- */
 
 window.updateFacePreview = function () {
   const select = document.getElementById('cp-face');
@@ -263,14 +322,222 @@ window.toggleCustomFace = function () {
   }
 };
 
-/* --------- SUBMIT CUSTOM PLAYER --------- */
+/* ---------- Subscription helpers ---------- */
+
+window.loadCreatorSubscription = function () {
+  if (!window.currentUser || !window.db) return;
+  const statusEl = document.getElementById('creator-sub-status');
+  if (!statusEl) return;
+
+  db.collection('creatorSubs').doc(window.currentUser.uid)
+    .onSnapshot(snap => {
+      window.creatorSub = snap.exists ? snap.data() : null;
+      statusEl.innerHTML = renderSubStatusHtml(window.creatorSub);
+    }, err => {
+      console.error(err);
+      statusEl.innerHTML = `<span class="text-red-500 text-xs">Error loading subscription.</span>`;
+    });
+};
+
+function renderSubStatusHtml(sub) {
+  const now = Date.now();
+
+  if (!sub || !sub.status || sub.status === 'rejected') {
+    return `
+      <div>
+        <div class="font-semibold text-slate-800 dark:text-slate-100 mb-1">No active subscription</div>
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+          You need an active Mod Creator subscription to submit custom player requests.
+          Click <b>Custom Player</b> and choose a plan when asked.
+        </p>
+      </div>`;
+  }
+
+  const plan = CREATOR_PLANS[sub.planCode] || null;
+  const expiresAt = sub.expiresAt && sub.expiresAt.toDate ? sub.expiresAt.toDate() : null;
+  const expired = !expiresAt || expiresAt.getTime() < now || sub.status !== 'active';
+
+  if (expired) {
+    return `
+      <div>
+        <div class="font-semibold text-slate-800 dark:text-slate-100 mb-1">Subscription expired</div>
+        <p class="text-xs text-slate-500 dark:text-slate-400">
+          Your last plan has expired. Please choose a new plan when submitting a custom player.
+        </p>
+      </div>`;
+  }
+
+  const used = sub.usedRequests || 0;
+  const max = sub.maxRequests || null;
+  const remaining = max ? Math.max(0, max - used) : null;
+
+  const remainingText = max
+    ? `${remaining}/${max} requests left`
+    : 'Unlimited requests';
+
+  const dateStr = expiresAt.toLocaleDateString();
+
+  return `
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div>
+        <div class="font-semibold text-slate-800 dark:text-slate-100">
+          Active plan: ${plan ? plan.name : (sub.planCode || '')}
+        </div>
+        <div class="text-xs text-slate-500 dark:text-slate-400">
+          ${remainingText} · Expires on ${dateStr}
+        </div>
+      </div>
+      <div class="text-[11px] px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold uppercase">
+        ACTIVE
+      </div>
+    </div>`;
+}
+
+window.checkCreatorSubBeforeRequest = function () {
+  const sub = window.creatorSub;
+  if (!window.currentUser) {
+    alert('Please login first.');
+    return false;
+  }
+
+  const now = Date.now();
+
+  if (!sub || !sub.status || sub.status === 'rejected') {
+    window.showCreatorPlans('You need an active subscription to submit custom player requests.');
+    return false;
+  }
+
+  const expiresAt = sub.expiresAt && sub.expiresAt.toDate ? sub.expiresAt.toDate() : null;
+  const expired = !expiresAt || expiresAt.getTime() < now || sub.status !== 'active';
+
+  if (expired) {
+    window.showCreatorPlans('Your subscription has expired.');
+    return false;
+  }
+
+  const max = sub.maxRequests || null;
+  const used = sub.usedRequests || 0;
+  if (max && used >= max) {
+    window.showCreatorPlans('You have used all requests for this plan.');
+    return false;
+  }
+
+  return true;
+};
+
+window.showCreatorPlans = function (reason) {
+  const container = document.getElementById('creator-section');
+  if (!container) return;
+
+  let reasonHtml = reason
+    ? `<div class="text-xs text-red-500 mb-3">${reason}</div>`
+    : '';
+
+  container.innerHTML = `
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
+      <h2 class="text-xl font-bold mb-2 text-slate-900 dark:text-white">Choose a Subscription Plan</h2>
+      ${reasonHtml}
+      <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
+        After you choose a plan, complete the payment as instructed (UPI / EasyPaisa etc.). We will verify and
+        <b>approve your subscription manually</b> from the admin panel.
+      </p>
+
+      <div class="grid sm:grid-cols-3 gap-4">
+        ${renderPlanCard('P100')}
+        ${renderPlanCard('P300')}
+        ${renderPlanCard('P1000')}
+      </div>
+    </div>
+  `;
+};
+
+function renderPlanCard(code) {
+  const p = CREATOR_PLANS[code];
+  if (!p) return '';
+
+  return `
+    <div class="border border-slate-200 dark:border-slate-700 rounded-2xl p-4 bg-slate-50 dark:bg-slate-900 flex flex-col justify-between">
+      <div>
+        <div class="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1">${p.name}</div>
+        <div class="text-2xl font-black text-blue-600 mb-1">₹${p.priceINR}</div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 mb-2">${p.description}</div>
+      </div>
+      <button onclick="window.requestCreatorSub('${code}')"
+              class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-xs font-bold">
+        Request ${p.name} Plan
+      </button>
+    </div>`;
+}
+
+window.requestCreatorSub = async function (planCode) {
+  if (!window.currentUser) {
+    alert('Please login first.');
+    window.googleLogin();
+    return;
+  }
+  const plan = CREATOR_PLANS[planCode];
+  if (!plan) {
+    alert('Unknown plan.');
+    return;
+  }
+
+  try {
+    const ref = db.collection('creatorSubs').doc(window.currentUser.uid);
+    await ref.set({
+      userId: window.currentUser.uid,
+      email: window.currentUser.email,
+      planCode,
+      status: 'pending',
+      requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      planName: plan.name,
+      priceINR: plan.priceINR,
+      maxRequests: plan.maxRequests || null,
+      usedRequests: 0,
+      expiresAt: null
+    }, { merge: true });
+
+    await fetch('/api/creator-sub', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: window.currentUser.uid,
+        email: window.currentUser.email,
+        planCode,
+        planName: plan.name,
+        priceINR: plan.priceINR
+      })
+    });
+
+    alert('Subscription request sent. We will approve it after verifying your payment.');
+  } catch (e) {
+    console.error(e);
+    alert('Error: ' + e.message);
+  }
+};
+
+window.incrementCreatorUsage = async function () {
+  if (!window.currentUser) return;
+  try {
+    await db.collection('creatorSubs')
+      .doc(window.currentUser.uid)
+      .update({
+        usedRequests: firebase.firestore.FieldValue.increment(1),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+  } catch (e) {
+    console.warn('incrementCreatorUsage failed:', e.message);
+  }
+};
+
+/* ---------- SUBMIT CUSTOM PLAYER ---------- */
 
 async function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result;
-      const base64 = result.split(',')[1]; // remove data:... prefix
+      const base64 = result.split(',')[1];
       resolve(base64);
     };
     reader.onerror = reject;
@@ -284,6 +551,11 @@ window.submitCustomPlayer = async function (evt) {
   if (!window.currentUser) {
     alert('Please login first.');
     window.googleLogin();
+    return;
+  }
+
+  // Subscription check
+  if (!window.checkCreatorSubBeforeRequest()) {
     return;
   }
 
@@ -351,7 +623,7 @@ window.submitCustomPlayer = async function (evt) {
   };
 
   try {
-    // save minimal data to Firestore
+    // Save to Firestore
     await db.collection('modRequests').add({
       ...requestData,
       status: 'pending',
@@ -360,7 +632,10 @@ window.submitCustomPlayer = async function (evt) {
       downloadUrl: null
     });
 
-    // send to Telegram via backend (include custom face only there)
+    // Increment subscription usage
+    await window.incrementCreatorUsage();
+
+    // Notify Telegram
     await fetch('/api/custom-player', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -372,8 +647,7 @@ window.submitCustomPlayer = async function (evt) {
     });
 
     alert('✅ Custom player request submitted! We will review and send your file after approval.');
-    // reload section & history
-    if (window.router) window.router.handleRoute('/creator');
+    if (window.router) window.router.navigateTo('/creator-history');
   } catch (e) {
     console.error(e);
     alert('Error: ' + e.message);
@@ -384,7 +658,7 @@ window.submitCustomPlayer = async function (evt) {
   }
 };
 
-/* --------- History (list of player requests) --------- */
+/* ---------- HISTORY LIST ---------- */
 
 window.loadCreatorHistory = function () {
   const container = document.getElementById('creator-history');
@@ -403,9 +677,9 @@ window.loadCreatorHistory = function () {
       let html = '';
       snapshot.forEach(doc => {
         const r = doc.data();
-        let statusBadge = 'bg-yellow-100 text-yellow-700';
-        if (r.status === 'approved') statusBadge = 'bg-green-100 text-green-700';
-        if (r.status === 'rejected') statusBadge = 'bg-red-100 text-red-700';
+        let badgeClass = 'bg-yellow-100 text-yellow-700';
+        if (r.status === 'approved') badgeClass = 'bg-green-100 text-green-700';
+        if (r.status === 'rejected') badgeClass = 'bg-red-100 text-red-700';
 
         const downloadBtn =
           r.status === 'approved' && r.downloadUrl
@@ -424,7 +698,7 @@ window.loadCreatorHistory = function () {
               </div>
               ${downloadBtn}
             </div>
-            <span class="badge ${statusBadge} text-[10px] uppercase font-bold">
+            <span class="badge ${badgeClass} text-[10px] uppercase font-bold">
               ${r.status || 'pending'}
             </span>
           </div>`;
@@ -437,6 +711,7 @@ window.loadCreatorHistory = function () {
     });
 };
 
+/* ---------- REGISTER PAGE FUNCTIONS ---------- */
 
-// register for router
 window.CreatorPage = CreatorPage;
+window.CreatorHistoryPage = CreatorHistoryPage;
