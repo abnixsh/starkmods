@@ -27,6 +27,19 @@ function CreatorPage() {
   }
 
   // Logged-in view
+    // Logged-in view
+
+  // ensure history is loaded when this page is rendered
+  setTimeout(() => {
+    if (window.loadCreatorHistory) {
+      window.loadCreatorHistory();
+    }
+  }, 300);
+
+  return `
+    <div class="max-w-4xl mx-auto animate-fade-in pb-20">
+      ...
+  `;
   return `
     <div class="max-w-4xl mx-auto animate-fade-in pb-20">
       <h1 class="text-3xl font-bold mb-2 text-slate-900 dark:text-white">Mod Creator</h1>
@@ -443,13 +456,6 @@ window.loadCreatorHistory = function () {
     });
 };
 
-// call history loader when page is ready
-document.addEventListener('DOMContentLoaded', () => {
-  // history is also refreshed when router re-renders, but this is safe
-  if (window.currentUser) {
-    setTimeout(() => window.loadCreatorHistory(), 500);
-  }
-});
 
 // register for router
 window.CreatorPage = CreatorPage;
