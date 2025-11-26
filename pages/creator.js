@@ -75,9 +75,9 @@ function CreatorPage() {
 
   return `
     <div class="max-w-4xl mx-auto animate-fade-in pb-20">
-      <h1 class="text-3xl font-bold mb-2 text-slate-900 dark:text-white">RC25 Mod Creator</h1>
+      <h1 class="text-3xl font-bold mb-2 text-slate-900 dark:text-white">Mod Creator</h1>
       <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
-        Create custom content for Real Cricket 25 (fan-made). <span class="font-semibold">Custom Player</span>, <span class="font-semibold">Custom Jersey</span>,
+        Create custom content for your game. Use <span class="font-semibold">Custom Player</span>, <span class="font-semibold">Custom Jersey</span>,
         or <span class="font-semibold">Custom Team</span>.
       </p>
 
@@ -89,7 +89,8 @@ function CreatorPage() {
 
       <!-- MAIN BUTTONS -->
       <div class="grid sm:grid-cols-3 gap-4 mb-4">
-        <button class="p-5 rounded-2xl border border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-left hover:bg-blue-100 dark:hover:bg-blue-900/40 transition"
+        <!-- Player: always accessible (subscription checked on submit) -->
+        <button class="creator-feature-player p-5 rounded-2xl border border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-left hover:bg-blue-100 dark:hover:bg-blue-900/40 transition"
                 onclick="window.router && window.router.navigateTo('/creator-player')">
           <div class="flex items-center gap-3">
             <span class="material-icons text-3xl text-blue-600">person</span>
@@ -100,25 +101,29 @@ function CreatorPage() {
           </div>
         </button>
 
-        <button class="p-5 rounded-2xl border border-green-500 bg-green-50 dark:bg-green-900/20 text-left hover:bg-green-100 dark:hover:bg-green-900/40 transition"
-        onclick="window.goToCreatorJersey()">
+        <!-- Jersey: locked until any active subscription -->
+        <button class="creator-feature-jersey p-5 rounded-2xl border border-green-500 bg-green-50 dark:bg-green-900/20 text-left transition"
+                onclick="window.goToCreatorJersey()">
           <div class="flex items-center gap-3">
             <span class="material-icons text-3xl text-green-600">checkroom</span>
-            <div>
+            <div class="flex-1">
               <div class="font-bold text-slate-900 dark:text-white">Custom Jersey</div>
               <div class="text-xs text-slate-500 dark:text-slate-400">Upload textures for any team jersey.</div>
             </div>
+            <span class="material-icons text-xs text-slate-400 feature-lock-jersey">lock</span>
           </div>
         </button>
 
-       <button class="p-5 rounded-2xl border border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-left hover:bg-purple-100 dark:hover:bg-purple-900/40 transition"
-        onclick="window.goToCreatorTeam()">
+        <!-- Team: locked until Pro / Elite -->
+        <button class="creator-feature-team p-5 rounded-2xl border border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-left transition"
+                onclick="window.goToCreatorTeam()">
           <div class="flex items-center gap-3">
             <span class="material-icons text-3xl text-purple-600">groups</span>
-            <div>
+            <div class="flex-1">
               <div class="font-bold text-slate-900 dark:text-white">Custom Team</div>
               <div class="text-xs text-slate-500 dark:text-slate-400">Create or replace a full team with custom squad.</div>
             </div>
+            <span class="material-icons text-xs text-slate-400 feature-lock-team">lock</span>
           </div>
         </button>
       </div>
@@ -235,15 +240,15 @@ function CreatorTeamPage() {
 
         <div class="flex flex-wrap gap-4 mb-3 text-xs">
           <label class="flex items-center gap-2">
-  <input type="radio" name="ct-mode" value="new" checked
-         onchange="window.setTeamMode('new')" class="accent-blue-600">
-  Create New Team
-</label>
-<label class="flex items-center gap-2">
-  <input type="radio" name="ct-mode" value="replace"
-         onchange="window.setTeamMode('replace')" class="accent-blue-600">
-  Replace Existing Team
-</label>
+            <input type="radio" name="ct-mode" value="new" checked
+                   onchange="window.setTeamMode('new')" class="accent-blue-600">
+            Create New Team
+          </label>
+          <label class="flex items-center gap-2">
+            <input type="radio" name="ct-mode" value="replace"
+                   onchange="window.setTeamMode('replace')" class="accent-blue-600">
+            Replace Existing Team
+          </label>
         </div>
 
         <div class="grid sm:grid-cols-2 gap-4 mb-3">
@@ -689,7 +694,51 @@ window.toggleCustomFace = function () {
   }
 };
 
-/* ---------- Subscription helpers ---------- */
+/* ---------- Subscription helpers & button lock visuals ---------- */
+
+function styleFeatureButtonsForSub(sub) {
+  const jerseyBtn = document.querySelector('.creator-feature-jersey');
+  const teamBtn   = document.querySelector('.creator-feature-team');
+  const jLock     = document.querySelector('.feature-lock-jersey');
+  const tLock     = document.querySelector('.feature-lock-team');
+
+  if (!jerseyBtn || !teamBtn) return;
+
+  const now = Date.now();
+  let active = false;
+  let planCode = null;
+
+  if (sub && sub.status === 'active' && sub.expiresAt && sub.expiresAt.toDate) {
+    const t = sub.expiresAt.toDate().getTime();
+    if (t > now) {
+      active = true;
+      planCode = sub.planCode;
+    }
+  }
+
+  // Jersey: any active sub
+  if (active) {
+    jerseyBtn.style.opacity = '1';
+    jerseyBtn.style.cursor = 'pointer';
+    if (jLock) jLock.classList.add('hidden');
+  } else {
+    jerseyBtn.style.opacity = '0.5';
+    jerseyBtn.style.cursor = 'not-allowed';
+    if (jLock) jLock.classList.remove('hidden');
+  }
+
+  // Team: only Pro / Elite
+  const teamAllowed = active && (planCode === 'P300' || planCode === 'P1000');
+  if (teamAllowed) {
+    teamBtn.style.opacity = '1';
+    teamBtn.style.cursor = 'pointer';
+    if (tLock) tLock.classList.add('hidden');
+  } else {
+    teamBtn.style.opacity = '0.5';
+    teamBtn.style.cursor = 'not-allowed';
+    if (tLock) tLock.classList.remove('hidden');
+  }
+}
 
 window.loadCreatorSubscription = function () {
   if (!window.currentUser || !window.db) return;
@@ -698,8 +747,10 @@ window.loadCreatorSubscription = function () {
 
   db.collection('creatorSubs').doc(window.currentUser.uid)
     .onSnapshot(snap => {
-      window.creatorSub = snap.exists ? snap.data() : null;
-      statusEl.innerHTML = renderSubStatusHtml(window.creatorSub);
+      const sub = snap.exists ? snap.data() : null;
+      window.creatorSub = sub;
+      statusEl.innerHTML = renderSubStatusHtml(sub);
+      styleFeatureButtonsForSub(sub);
     }, err => {
       console.error(err);
       statusEl.innerHTML = `<span class="text-red-500 text-xs">Error loading subscription.</span>`;
@@ -761,13 +812,7 @@ function renderSubStatusHtml(sub) {
     </div>`;
 }
 
-window.showCreatorPlans = function (reason) {
-  window.creatorPlansReason = reason || null;
-  if (window.router) {
-    window.router.navigateTo('/creator-plans');
-  }
-};
-
+// for any request (player/jersey)
 window.checkCreatorSubBeforeRequest = function () {
   const sub = window.creatorSub;
   if (!window.currentUser) {
@@ -805,11 +850,10 @@ window.checkCreatorSubBeforeRequest = function () {
   return true;
 };
 
-// For Custom Team: only Pro or Elite
+// For Custom Team: only Pro or Elite, Starter may upgrade to Pro at ₹200
 window.checkCreatorSubForTeam = function () {
   if (!window.checkCreatorSubBeforeRequest()) return false;
   const sub = window.creatorSub;
-
   if (!sub) {
     alert('Custom Team is only available for Pro or Elite plans.');
     return false;
@@ -854,6 +898,13 @@ window.checkCreatorSubForTeam = function () {
   return true;
 };
 
+window.showCreatorPlans = function (reason) {
+  window.creatorPlansReason = reason || null;
+  if (window.router) {
+    window.router.navigateTo('/creator-plans');
+  }
+};
+
 function renderPlanCard(code) {
   const p = CREATOR_PLANS[code];
   if (!p) return '';
@@ -871,38 +922,6 @@ function renderPlanCard(code) {
       </button>
     </div>`;
 }
-
-// --- Navigation helpers for feature buttons ---
-
-window.goToCreatorJersey = function () {
-  if (!window.currentUser) {
-    alert('Please login first.');
-    if (window.googleLogin) window.googleLogin();
-    return;
-  }
-
-  // Any active subscription is fine for Jersey
-  if (typeof window.checkCreatorSubBeforeRequest === 'function') {
-    if (!window.checkCreatorSubBeforeRequest()) return;
-  }
-
-  if (window.router) window.router.navigateTo('/creator-jersey');
-};
-
-window.goToCreatorTeam = function () {
-  if (!window.currentUser) {
-    alert('Please login first.');
-    if (window.googleLogin) window.googleLogin();
-    return;
-  }
-
-  // Custom Team: only Pro / Elite (and Starter upgrade logic) via this function
-  if (typeof window.checkCreatorSubForTeam === 'function') {
-    if (!window.checkCreatorSubForTeam()) return;
-  }
-
-  if (window.router) window.router.navigateTo('/creator-team');
-};
 
 window.requestCreatorSub = function (planCode) {
   if (!window.currentUser) {
@@ -944,6 +963,37 @@ window.incrementCreatorUsage = async function () {
   } catch (e) {
     console.warn('incrementCreatorUsage failed:', e.message);
   }
+};
+
+/* ---------- Navigation helpers for locking buttons ---------- */
+
+window.goToCreatorJersey = function () {
+  if (!window.currentUser) {
+    alert('Please login first.');
+    if (window.googleLogin) window.googleLogin();
+    return;
+  }
+
+  // Any active subscription is fine for Jersey
+  if (typeof window.checkCreatorSubBeforeRequest === 'function') {
+    if (!window.checkCreatorSubBeforeRequest()) return;
+  }
+
+  if (window.router) window.router.navigateTo('/creator-jersey');
+};
+
+window.goToCreatorTeam = function () {
+  if (!window.currentUser) {
+    alert('Please login first.');
+    if (window.googleLogin) window.googleLogin();
+    return;
+  }
+
+  if (typeof window.checkCreatorSubForTeam === 'function') {
+    if (!window.checkCreatorSubForTeam()) return;
+  }
+
+  if (window.router) window.router.navigateTo('/creator-team');
 };
 
 /* ---------- SUBMIT HELPERS ---------- */
