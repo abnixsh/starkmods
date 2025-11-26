@@ -1,6 +1,6 @@
 // pages/profile.js
 
-// ---------- CONFIG: update these ----------
+// ---------- CONFIG ----------
 window.downloadLinks = {
   rc20: 'https://your-download-link.com/rc20.apk',
   wcc3: 'https://your-download-link.com/wcc3.apk',
@@ -12,7 +12,6 @@ const MIN_WITHDRAW_USD = 5;
 // -----------------------------------------
 
 function ProfilePage() {
-  // Wait until Firebase auth state is known (set in firebase-config.js)
   if (!window.authReady) {
     return `
       <div class="max-w-4xl mx-auto py-20 text-center">
@@ -21,19 +20,19 @@ function ProfilePage() {
       </div>`;
   }
 
-  // If auth is ready and no user, go home
   if (!window.currentUser) {
     setTimeout(() => window.router.navigateTo('/'), 50);
     return '';
   }
 
-  // Load data after render
+  // load data after render
   setTimeout(() => {
     window.loadUserOrders();
     if (window.isElite) {
       window.loadWalletInfo();
       window.loadWithdrawHistory();
     }
+    if (window.loadCreatorSubForProfile) window.loadCreatorSubForProfile();
   }, 300);
 
   const isAdmin = !!window.isAdmin;
@@ -47,7 +46,9 @@ function ProfilePage() {
           <img src="${window.currentUser.photoURL || '/assets/icons/default_user.png'}"
                class="w-16 h-16 rounded-full border-2 border-blue-600">
           <div>
-            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">${window.currentUser.displayName}</h1>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white" id="profile-name-line">
+              ${window.currentUser.displayName}
+            </h1>
             <p class="text-slate-500 text-sm">${window.currentUser.email}</p>
             <button onclick="window.logout()" class="text-red-500 text-xs font-bold hover:underline mt-1">
               Logout
@@ -56,16 +57,16 @@ function ProfilePage() {
         </div>
 
         ${isAdmin ? `
-  <div class="flex flex-col gap-2 items-end">
-    <button onclick="window.router.navigateTo('/admin')"
-            class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow w-full">
-      Orders Admin
-    </button>
-    <button onclick="window.router.navigateTo('/creator-admin')"
-            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow w-full">
-      Mod Creator Admin
-    </button>
-  </div>
+          <div class="flex flex-col gap-2 items-end">
+            <button onclick="window.router.navigateTo('/admin')"
+                    class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow w-full">
+              Orders Admin
+            </button>
+            <button onclick="window.router.navigateTo('/creator-admin')"
+                    class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow w-full">
+              Mod Creator Admin
+            </button>
+          </div>
         ` : ''}
       </div>
 
@@ -228,12 +229,13 @@ window.requestWithdrawal = async function () {
       });
     });
 
+    // Notify Telegram
     try {
       await fetch('/api/withdraw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: uid,
+          userId: window.currentUser.uid,
           email: window.currentUser.email,
           amountUSD,
           paymentMethod: method
@@ -263,7 +265,7 @@ window.loadWithdrawHistory = function () {
 
   db.collection('withdrawRequests')
     .where('userId', '==', uid)
-    .orderBy('createdAt', 'desc')
+    .orderBy('createdAt', 'desc') // may require index: userId asc, createdAt desc
     .onSnapshot(snapshot => {
       if (snapshot.empty) {
         container.innerHTML = `<div class="text-slate-400 text-xs">No withdrawals yet.</div>`;
@@ -299,6 +301,36 @@ window.loadWithdrawHistory = function () {
     });
 };
 
+/* ---------- Creator sub crown on profile ---------- */
+
+window.loadCreatorSubForProfile = function () {
+  if (!window.currentUser || !window.db) return;
+
+  const uid = window.currentUser.uid;
+  const nameEl = document.getElementById('profile-name-line');
+  if (!nameEl) return;
+
+  db.collection('creatorSubs').doc(uid)
+    .onSnapshot(snap => {
+      const data = snap.exists ? snap.data() : null;
+      let hasActive = false;
+
+      if (data && data.status === 'active' && data.expiresAt && data.expiresAt.toDate) {
+        const t = data.expiresAt.toDate().getTime();
+        hasActive = t > Date.now();
+      }
+
+      if (hasActive) {
+        nameEl.innerHTML = `
+          ${window.currentUser.displayName}
+          <span class="material-icons text-amber-400 text-base align-middle ml-1">workspace_premium</span>
+        `;
+      } else {
+        nameEl.textContent = window.currentUser.displayName;
+      }
+    });
+};
+
 /* ---------- Orders ---------- */
 
 window.loadUserOrders = function () {
@@ -310,7 +342,7 @@ window.loadUserOrders = function () {
 
   window.db.collection('orders')
     .where('userId', '==', window.currentUser.uid)
-    .orderBy('timestamp', 'desc')
+    .orderBy('timestamp', 'desc') // index: userId asc, timestamp desc
     .onSnapshot(snapshot => {
       if (snapshot.empty) {
         list.innerHTML = `<div class="text-center py-10 text-slate-400">No orders found.</div>`;
@@ -321,52 +353,26 @@ window.loadUserOrders = function () {
       snapshot.forEach(doc => {
         const o = doc.data();
 
-        const statusBadge =
+        let statusBadge =
           o.status === 'approved'
             ? `<span class="text-green-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">check_circle</span> Approved</span>`
             : o.status === 'rejected'
             ? `<span class="text-red-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">cancel</span> Rejected</span>`
             : `<span class="text-yellow-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">schedule</span> Pending</span>`;
 
-        const dlLink = window.downloadLinks[o.item?.gameId];
-        const downloadBtn =
-          o.status === 'approved' && dlLink
-            ? `<button onclick="window.downloadMod('${o.item.gameId}')"
-                       class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-bold flex items-center gap-1">
-                 <span class="material-icons text-xs">download</span> Download Mod
-               </button>`
-            : '';
-
-        const keySection =
-          o.status === 'approved'
-            ? (o.key
-                ? `<button onclick="window.showKey('${o.key}')"
-                          class="mt-2 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs font-bold flex items-center gap-1">
-                     <span class="material-icons text-xs">vpn_key</span> Get Key
-                   </button>`
-                : `<div class="mt-2 text-[11px] text-slate-400">Key will be added soon. Please wait or contact support.</div>`)
-            : '';
-
-        const contactBtn = `
-          <button onclick="window.contactSupport('${o.transId || ''}')"
-                  class="mt-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-3 py-1 rounded text-xs font-bold flex items-center gap-1">
-            <span class="material-icons text-xs">support_agent</span> Contact Admin
-          </button>`;
+        const isSub = o.gameId && String(o.gameId).startsWith('sub_');
+        const title = isSub ? (o.item?.gameName || 'Subscription') : (o.item?.gameName || 'Unknown Item');
+        const planLabel = o.item?.planName || (isSub ? 'Subscription Plan' : '-');
 
         html += `
           <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-start gap-4">
             <div>
-              <div class="font-bold text-slate-900 dark:text-white">${o.item?.gameName || 'Unknown Item'}</div>
+              <div class="font-bold text-slate-900 dark:text-white">${title}</div>
               <div class="text-xs text-slate-500">
-                Plan: ${o.item?.planName || '-'} | ₹${o.amount}
+                Plan: ${planLabel} | ₹${o.amount}
               </div>
               <div class="text-[10px] text-slate-400 font-mono mt-1">
                 Order: ${o.orderId || '-'} · UTR: ${o.transId}
-              </div>
-              <div class="mt-2 flex flex-wrap gap-2">
-                ${downloadBtn}
-                ${keySection}
-                ${contactBtn}
               </div>
             </div>
             <div class="text-right">
@@ -397,12 +403,11 @@ window.showKey = function (key) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(key).catch(() => {});
   }
-  alert('Your key: ' + key + '\\n\\n(If allowed, it was copied to your clipboard.)');
+  alert('Your key: ' + key + '\n\n(If allowed, it was copied to your clipboard.)');
 };
 
 window.contactSupport = function () {
   window.open(SUPPORT_TELEGRAM_URL, '_blank');
 };
 
-// --------- REGISTER FOR ROUTER ---------
 window.ProfilePage = ProfilePage;
