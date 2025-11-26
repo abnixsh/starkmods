@@ -1,4 +1,4 @@
-/* css/styles.css - Simplified, theme-safe stylesheet */
+/* css/styles.css - Clean theme-safe stylesheet */
 
 /* ---- Global ---- */
 
@@ -109,7 +109,7 @@ body {
 .dark .app-card,
 .dark .content-card,
 .dark .info-box {
-  background-color: #020617; /* slate-950-ish */
+  background-color: #020617; /* dark card */
   border-color: rgba(51, 65, 85, 0.9);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
@@ -301,12 +301,6 @@ body {
   line-height: 1.6;
 }
 
-/* ---- Footer ---- */
-
-footer {
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
 /* ---- Loading bar ---- */
 
 #loading-indicator {
@@ -317,16 +311,10 @@ footer {
   opacity: 1;
 }
 
-/* ---- Dropdown "More" menu ---- */
+/* ---- Dropdown ---- */
 
 .dropdown-container {
   position: relative;
-}
-
-/* ---- Mobile menu ---- */
-
-#mobile-menu {
-  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* ---- Forms ---- */
@@ -385,13 +373,6 @@ a.quick-link {
 a.quick-link:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
-}
-
-/* ---- Contact green info box ---- */
-
-.contact-info-box {
-  border-radius: 0.75rem;
-  padding: 1rem;
 }
 
 /* ---- FAQ ---- */
