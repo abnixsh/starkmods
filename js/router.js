@@ -133,5 +133,10 @@ class Router {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    window.router = new Router();
+  window.router = new Router();
+
+  // If auth is already ready (user known), re-render current path
+  if (window.authReady) {
+    window.router.handleRoute(location.pathname);
+  }
 });
