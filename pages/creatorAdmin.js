@@ -150,7 +150,7 @@ window.loadCreatorSubs = function () {
     });
 };
 
-window.approveCreatorSub = function (userId, planCode) {
+window.approveCreatorSub = async function (userId, planCode) {
   const plan = CREATOR_PLANS_ADMIN[planCode];
   if (!plan) {
     alert('Unknown plan code: ' + planCode);
@@ -161,18 +161,48 @@ window.approveCreatorSub = function (userId, planCode) {
 
   const expiresAt = new Date(Date.now() + plan.periodDays * 24 * 60 * 60 * 1000);
 
-  db.collection('creatorSubs').doc(userId).set({
-    status: 'active',
-    maxRequests: plan.maxRequests || null,
-    usedRequests: 0,
-    expiresAt,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }, { merge: true }).then(() => {
+  try {
+    // 1) Mark subscription as active
+    await db.collection('creatorSubs').doc(userId).set({
+      status: 'active',
+      maxRequests: plan.maxRequests || null,
+      usedRequests: 0,
+      expiresAt,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    // 2) Mark latest subscription order as approved
+    await window.markLatestSubOrderApproved(userId);
+
     alert('Subscription approved.');
-  }).catch(err => {
+  } catch (err) {
     console.error(err);
     alert(err.message);
-  });
+  }
+};
+
+window.markLatestSubOrderApproved = async function (userId) {
+  try {
+    const snap = await db.collection('orders')
+      .where('userId', '==', userId)
+      .orderBy('timestamp', 'desc')
+      .limit(10)
+      .get();
+
+    let updated = false;
+    snap.forEach(doc => {
+      if (updated) return;
+      const o = doc.data();
+      if (o.gameId && o.gameId.startsWith('sub_') && o.status === 'pending') {
+        doc.ref.update({ status: 'approved' });
+        updated = true;
+      }
+    });
+  } catch (e) {
+    console.error('markLatestSubOrderApproved error:', e);
+    // If Firestore asks for an index here, follow the link to create:
+    // Collection: orders, fields: userId (asc), timestamp (desc)
+  }
 };
 
 window.rejectCreatorSub = function (userId) {
