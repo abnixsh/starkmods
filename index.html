@@ -17,9 +17,15 @@
   <!-- Make all relative paths resolve from site root -->
   <base href="/" />
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
+ <!-- Tailwind CSS (force dark mode by .dark class, not by OS) -->
+<script>
+  tailwind = tailwind || {};
+  tailwind.config = {
+    darkMode: 'class'
+  };
+</script>
+<script src="https://cdn.tailwindcss.com"></script>
+  
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
