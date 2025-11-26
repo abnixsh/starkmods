@@ -1,3 +1,4 @@
+// js/app.js
 (function () {
   'use strict';
 
@@ -8,16 +9,16 @@
       name: 'RC20 Mod',
       icon: 'assets/icons/icon_rc20.jpg',
       plans: {
-        '1month': { name: '1 Month', price: 300 },
-        'lifetime': { name: 'Lifetime', price: 1000 }
+        '1month': { name: '1 Month', price: 250 },
+        'lifetime': { name: 'Lifetime', price: 1500 }
       }
     },
     wcc3: {
       name: 'WCC3 Mod',
       icon: 'assets/icons/icon_wcc3.png',
       plans: {
-        '1month': { name: '1 Month', price: 300 },
-        'lifetime': { name: 'Lifetime', price: 1500 }
+        '1month': { name: '1 Month', price: 350 },
+        'lifetime': { name: 'Lifetime', price: 2000 }
       }
     },
     rc25: {
@@ -64,14 +65,14 @@
   }
   window.updateCartBadge = updateCartBadge;
 
-  // --- 2. THEME LOGIC ---
+  // --- 2. THEME LOGIC (pure .dark class, no OS dependency) ---
   const THEME_KEY = 'stark_theme_dark';
 
   function applyTheme(isDark) {
-    // Tailwind expects .dark on <html>, CSS uses .dark body
+    // Tailwind and your CSS both look at .dark on <html>
     document.documentElement.classList.toggle('dark', isDark);
-    document.body.classList.toggle('dark', isDark);
 
+    // update icons
     const iconDesktop = document.getElementById('theme-icon');
     const iconMobile = document.querySelector('#theme-toggle-mobile .material-icons');
     if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
@@ -80,7 +81,11 @@
 
   function initializeTheme() {
     const saved = localStorage.getItem(THEME_KEY);
-    const isDark = saved === '1';
+    let isDark;
+    if (saved === '1') isDark = true;
+    else if (saved === '0') isDark = false;
+    else isDark = false; // default light
+
     applyTheme(isDark);
   }
 
@@ -90,16 +95,15 @@
     localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
   }
 
-  // --- 3. CAROUSEL LOGIC (AUTO + MANUAL) ---
+  // --- 3. CAROUSEL LOGIC (unchanged) ---
   function initializeCarousels() {
     document.querySelectorAll('.screenshot-carousel').forEach((carousel) => {
-      // Avoid double-initialization when navigating with router
       if (carousel.dataset.carouselInit === '1') return;
       carousel.dataset.carouselInit = '1';
 
       const track = carousel.querySelector('.screenshot-carousel-track');
       const slides = carousel.querySelectorAll('.screenshot-carousel-slide');
-      if (!track || slides.length <= 1) return; // nothing to slide
+      if (!track || slides.length <= 1) return;
 
       let index = 0;
       const total = slides.length;
@@ -107,7 +111,6 @@
       const prevBtn = carousel.querySelector('.screenshot-carousel-nav.prev');
       const nextBtn = carousel.querySelector('.screenshot-carousel-nav.next');
 
-      // Indicators (dots) – optional container
       const indicatorsContainer = carousel.querySelector('.screenshot-carousel-indicators');
       const indicators = [];
       if (indicatorsContainer) {
@@ -153,12 +156,11 @@
         });
       }
 
-      // Autoplay
       let autoplayId = null;
 
       function startAutoplay() {
         if (autoplayId) return;
-        autoplayId = setInterval(goNext, 4000); // 4s
+        autoplayId = setInterval(goNext, 4000);
       }
 
       function stopAutoplay() {
@@ -175,7 +177,6 @@
       carousel.addEventListener('mouseenter', stopAutoplay);
       carousel.addEventListener('mouseleave', startAutoplay);
 
-      // Initial state
       update();
       startAutoplay();
     });
