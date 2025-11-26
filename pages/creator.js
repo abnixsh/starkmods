@@ -872,6 +872,38 @@ function renderPlanCard(code) {
     </div>`;
 }
 
+// --- Navigation helpers for feature buttons ---
+
+window.goToCreatorJersey = function () {
+  if (!window.currentUser) {
+    alert('Please login first.');
+    if (window.googleLogin) window.googleLogin();
+    return;
+  }
+
+  // Any active subscription is fine for Jersey
+  if (typeof window.checkCreatorSubBeforeRequest === 'function') {
+    if (!window.checkCreatorSubBeforeRequest()) return;
+  }
+
+  if (window.router) window.router.navigateTo('/creator-jersey');
+};
+
+window.goToCreatorTeam = function () {
+  if (!window.currentUser) {
+    alert('Please login first.');
+    if (window.googleLogin) window.googleLogin();
+    return;
+  }
+
+  // Custom Team: only Pro / Elite (and Starter upgrade logic) via this function
+  if (typeof window.checkCreatorSubForTeam === 'function') {
+    if (!window.checkCreatorSubForTeam()) return;
+  }
+
+  if (window.router) window.router.navigateTo('/creator-team');
+};
+
 window.requestCreatorSub = function (planCode) {
   if (!window.currentUser) {
     alert('Please login first.');
