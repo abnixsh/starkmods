@@ -33,7 +33,7 @@ window.creatorSub = null;
 window.creatorPlansReason = null;
 window.creatorSelectedPlanCode = null;
 
-/* ---------------- MAIN PAGES ---------------- */
+/* ------------------------- PAGES ------------------------- */
 
 function CreatorPage() {
   if (!window.currentUser) {
@@ -65,14 +65,15 @@ function CreatorPage() {
       </p>
 
       <!-- Subscription status -->
-      <div id="creator-sub-status" class="mb-6 text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
+      <div id="creator-sub-status"
+           class="mb-6 text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
         Loading subscription...
       </div>
 
       <!-- MAIN BUTTONS -->
       <div class="grid sm:grid-cols-2 gap-4 mb-4">
         <button class="p-5 rounded-2xl border border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-left hover:bg-blue-100 dark:hover:bg-blue-900/40 transition"
-        onclick="window.router && window.router.navigateTo('/creator-player')">
+                onclick="window.router && window.router.navigateTo('/creator-player')">
           <div class="flex items-center gap-3">
             <span class="material-icons text-3xl text-blue-600">person</span>
             <div>
@@ -117,11 +118,35 @@ function CreatorPage() {
               class="mb-6 text-xs sm:text-sm bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-4 py-2 rounded-lg font-bold flex items-center gap-1">
         <span class="material-icons text-xs">history</span> View Request History
       </button>
+    </div>
+  `;
+}
 
-      <!-- SECTION CONTENT -->
-      <div id="creator-section">
-        <!-- empty until user clicks Custom Player -->
+function CreatorPlayerPage() {
+  if (!window.currentUser) {
+    setTimeout(() => window.router.navigateTo('/creator'), 50);
+    return '';
+  }
+
+  setTimeout(() => {
+    if (window.loadCreatorSubscription) window.loadCreatorSubscription();
+  }, 200);
+
+  return `
+    <div class="max-w-4xl mx-auto animate-fade-in pb-20">
+      <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Custom Player</h1>
+
+      <div id="creator-sub-status"
+           class="mb-4 text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-3">
+        Loading subscription...
       </div>
+
+      <button onclick="window.router.navigateTo('/creator-history')"
+              class="mb-4 text-xs sm:text-sm bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-4 py-2 rounded-lg font-bold flex items-center gap-1">
+        <span class="material-icons text-xs">history</span> View Request History
+      </button>
+
+      ${renderCustomPlayerForm()}
     </div>
   `;
 }
@@ -173,19 +198,6 @@ function CreatorPlansPage() {
     </div>
   `;
 }
-
-/* ---------------- SECTION RENDERING ---------------- */
-
-window.showCreatorSection = function (section) {
-  const container = document.getElementById('creator-section');
-  if (!container) return;
-
-  if (section === 'player') {
-    container.innerHTML = renderCustomPlayerForm();
-  } else {
-    container.innerHTML = '';
-  }
-};
 
 /* ---------------- CUSTOM PLAYER FORM ---------------- */
 
@@ -407,8 +419,9 @@ function renderSubStatusHtml(sub) {
   return `
     <div class="flex flex-wrap items-center justify-between gap-2">
       <div>
-        <div class="font-semibold text-slate-800 dark:text-slate-100">
-          Active plan: ${plan ? plan.name : (sub.planCode || '')}
+        <div class="font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-1">
+          <span>Active plan: ${plan ? plan.name : (sub.planCode || '')}</span>
+          <span class="material-icons text-amber-400 text-base">workspace_premium</span>
         </div>
         <div class="text-xs text-slate-500 dark:text-slate-400">
           ${remainingText} · Expires on ${dateStr}
@@ -703,6 +716,11 @@ window.loadCreatorHistory = function () {
         if (r.status === 'approved') badgeClass = 'bg-green-100 text-green-700';
         if (r.status === 'rejected') badgeClass = 'bg-red-100 text-red-700';
 
+        let statusLabel = r.status || 'pending';
+        if (statusLabel === 'pending') {
+          statusLabel = 'Checking (24–48 hrs)';
+        }
+
         const downloadBtn =
           r.status === 'approved' && r.downloadUrl
             ? `<button onclick="window.open('${r.downloadUrl}','_blank')"
@@ -711,17 +729,27 @@ window.loadCreatorHistory = function () {
                </button>`
             : '';
 
+        const checkingNote =
+          r.status === 'pending'
+            ? `<div class="mt-1 text-[11px] text-amber-500">
+                 Your request is being checked. It usually takes 24–48 hours before the download is available.
+               </div>`
+            : '';
+
         html += `
           <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 flex justify-between items-start gap-2">
             <div>
-              <div class="font-semibold text-slate-900 dark:text-white">${r.playerName} <span class="text-xs text-slate-400">(${r.teamName})</span></div>
+              <div class="font-semibold text-slate-900 dark:text-white">
+                ${r.playerName} <span class="text-xs text-slate-400">(${r.teamName})</span>
+              </div>
               <div class="text-[11px] text-slate-500">
                 ${r.playerType}, Bat: ${r.battingHand}, Bowl: ${r.bowlingHand} · Jersey #${r.jerseyNumber}
               </div>
               ${downloadBtn}
+              ${checkingNote}
             </div>
             <span class="badge ${badgeClass} text-[10px] uppercase font-bold">
-              ${r.status || 'pending'}
+              ${statusLabel}
             </span>
           </div>`;
       });
@@ -736,5 +764,6 @@ window.loadCreatorHistory = function () {
 /* ---------- REGISTER PAGE FUNCTIONS ---------- */
 
 window.CreatorPage = CreatorPage;
+window.CreatorPlayerPage = CreatorPlayerPage;
 window.CreatorHistoryPage = CreatorHistoryPage;
 window.CreatorPlansPage = CreatorPlansPage;
