@@ -16,6 +16,7 @@ class Router {
         this.addRoute('/admin', 'admin');
         this.addRoute('/creator', 'creator');
         this.addRoute('/creator-history', 'creatorHistory');
+        this.addRoute('/creator-plans', 'creatorPlans');
         this.addRoute('/creator-admin', 'creatorAdmin');
         this.addRoute('/terms', 'terms');
         
@@ -96,6 +97,7 @@ class Router {
             'terms': 'TermsPage',
             creator: 'CreatorPage',
             creatorHistory: 'CreatorHistoryPage',
+            creatorPlans: 'CreatorPlansPage',
             creatorAdmin: 'CreatorAdminPage',
             '404': 'NotFoundPage' // Virtual function
             
