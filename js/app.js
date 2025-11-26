@@ -65,35 +65,39 @@
   }
   window.updateCartBadge = updateCartBadge;
 
-  // --- 2. THEME LOGIC (pure .dark class, no OS dependency) ---
-  const THEME_KEY = 'stark_theme_dark';
+// --- 2. THEME LOGIC (body.dark like your friend's CSS) ---
+const THEME_KEY = 'stark_theme_dark';
 
-  function applyTheme(isDark) {
-    // Tailwind and your CSS both look at .dark on <html>
-    document.documentElement.classList.toggle('dark', isDark);
+function applyTheme(isDark) {
+  const body = document.body;
+  if (!body) return;
 
-    // update icons
-    const iconDesktop = document.getElementById('theme-icon');
-    const iconMobile = document.querySelector('#theme-toggle-mobile .material-icons');
-    if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
-    if (iconMobile) iconMobile.textContent = isDark ? 'light_mode' : 'dark_mode';
-  }
+  // This matches your CSS: body.dark { ... }
+  body.classList.toggle('dark', isDark);
 
-  function initializeTheme() {
-    const saved = localStorage.getItem(THEME_KEY);
-    let isDark;
-    if (saved === '1') isDark = true;
-    else if (saved === '0') isDark = false;
-    else isDark = false; // default light
+  // Update icons
+  const iconDesktop = document.getElementById('theme-icon');
+  const iconMobile = document.querySelector('#theme-toggle-mobile .material-icons');
+  if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
+  if (iconMobile) iconMobile.textContent = isDark ? 'light_mode' : 'dark_mode';
+}
 
-    applyTheme(isDark);
-  }
+function initializeTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  let isDark;
+  if (saved === '1') isDark = true;
+  else if (saved === '0') isDark = false;
+  else isDark = false; // default light
 
-  function toggleTheme() {
-    const isDark = !document.documentElement.classList.contains('dark');
-    applyTheme(isDark);
-    localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
-  }
+  applyTheme(isDark);
+}
+
+function toggleTheme() {
+  const body = document.body;
+  const isDark = !body.classList.contains('dark');
+  applyTheme(isDark);
+  localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
+}
 
   // --- 3. CAROUSEL LOGIC (unchanged) ---
   function initializeCarousels() {
@@ -183,22 +187,20 @@
   }
 
   // --- INIT ---
-  document.addEventListener('DOMContentLoaded', () => {
-    initializeTheme();
-    updateCartBadge();
+ document.addEventListener('DOMContentLoaded', () => {
+  initializeTheme();
+  updateCartBadge();
 
-    // Theme toggle buttons
-    document
-      .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
-      .forEach((btn) => btn.addEventListener('click', toggleTheme));
+  document
+    .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
+    .forEach(btn => btn.addEventListener('click', toggleTheme));
 
-    // Mobile menu toggle
-    const menuBtn = document.getElementById('mobile-menu-button');
-    const menu = document.getElementById('mobile-menu');
-    if (menuBtn && menu) {
-      menuBtn.addEventListener('click', () => menu.classList.toggle('hidden'));
-    }
-  });
+  const menuBtn = document.getElementById('mobile-menu-button');
+  const menu = document.getElementById('mobile-menu');
+  if (menuBtn && menu) {
+    menuBtn.addEventListener('click', () => menu.classList.toggle('hidden'));
+  }
+});
 
   // Called by router after each page render
   window.initializeComponents = function () {
