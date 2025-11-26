@@ -2,13 +2,36 @@
 
 // --- PLAN CONFIG (client side) ---
 const CREATOR_PLANS = {
-  // globals for subscription flow
+  P100: {
+    code: 'P100',
+    name: 'Starter',
+    priceINR: 100,
+    maxRequests: 20,
+    periodDays: 30,
+    description: '20 requests · 30 days'
+  },
+  P300: {
+    code: 'P300',
+    name: 'Pro',
+    priceINR: 300,
+    maxRequests: 70,
+    periodDays: 30,
+    description: '70 requests · 30 days'
+  },
+  P1000: {
+    code: 'P1000',
+    name: 'Elite',
+    priceINR: 1000,
+    maxRequests: null, // unlimited
+    periodDays: 60,
+    description: 'Unlimited requests · 60 days'
+  }
+};
+
+// globals for subscription flow
 window.creatorSub = null;
 window.creatorPlansReason = null;
 window.creatorSelectedPlanCode = null;
-};
-
-window.creatorSub = null;
 
 /* ---------------- MAIN PAGES ---------------- */
 
@@ -151,10 +174,6 @@ function CreatorPlansPage() {
   `;
 }
 
-window.CreatorPlansPage = CreatorPlansPage;
-
-
-
 /* ---------------- SECTION RENDERING ---------------- */
 
 window.showCreatorSection = function (section) {
@@ -171,7 +190,6 @@ window.showCreatorSection = function (section) {
 /* ---------------- CUSTOM PLAYER FORM ---------------- */
 
 function renderCustomPlayerForm() {
-  // face 1-80
   let faceOptions = '<option value="">Select Face (1–80)</option>';
   for (let i = 1; i <= 80; i++) {
     faceOptions += `<option value="${i}">Face ${i}</option>`;
@@ -411,13 +429,11 @@ window.checkCreatorSubBeforeRequest = function () {
 
   const now = Date.now();
 
-  // No subscription or rejected
   if (!sub || !sub.status || sub.status === 'rejected') {
     window.showCreatorPlans('You need an active Mod Creator subscription to submit custom player requests.');
     return false;
   }
 
-  // Pending subscription
   if (sub.status === 'pending') {
     alert('Your subscription request is still pending. We will approve it after verifying payment.');
     return false;
@@ -446,24 +462,6 @@ window.showCreatorPlans = function (reason) {
   if (window.router) {
     window.router.navigateTo('/creator-plans');
   }
-};
-
-  container.innerHTML = `
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
-      <h2 class="text-xl font-bold mb-2 text-slate-900 dark:text-white">Choose a Subscription Plan</h2>
-      ${reasonHtml}
-      <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-        After you choose a plan, complete the payment as instructed (UPI / EasyPaisa etc.). We will verify and
-        <b>approve your subscription manually</b> from the admin panel.
-      </p>
-
-      <div class="grid sm:grid-cols-3 gap-4">
-        ${renderPlanCard('P100')}
-        ${renderPlanCard('P300')}
-        ${renderPlanCard('P1000')}
-      </div>
-    </div>
-  `;
 };
 
 function renderPlanCard(code) {
@@ -497,7 +495,7 @@ window.requestCreatorSub = async function (planCode) {
   }
 
   try {
-    // 1) Create / update subscription document as PENDING
+    // create/update sub doc
     const ref = db.collection('creatorSubs').doc(window.currentUser.uid);
     await ref.set({
       userId: window.currentUser.uid,
@@ -513,7 +511,7 @@ window.requestCreatorSub = async function (planCode) {
       expiresAt: null
     }, { merge: true });
 
-    // 2) Send Telegram message about subscription request (no payment info yet)
+    // telegram notify
     await fetch('/api/creator-sub', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -526,13 +524,13 @@ window.requestCreatorSub = async function (planCode) {
       })
     });
 
-    // 3) Put subscription "product" into cart and go to normal checkout
+    // put subscription in cart and go to checkout
     window.cart = [{
       gameId: `sub_${planCode}`,
       gameName: 'Mod Creator Subscription',
       planName: `${plan.name} (${plan.description})`,
       price: plan.priceINR,
-      image: 'assets/icons/icon_site.jpg' // or your own subscription icon
+      image: 'assets/icons/icon_site.jpg'
     }];
 
     if (window.updateCartBadge) window.updateCartBadge();
@@ -582,7 +580,6 @@ window.submitCustomPlayer = async function (evt) {
     return;
   }
 
-  // Subscription check
   if (!window.checkCreatorSubBeforeRequest()) {
     return;
   }
@@ -651,7 +648,6 @@ window.submitCustomPlayer = async function (evt) {
   };
 
   try {
-    // Save to Firestore
     await db.collection('modRequests').add({
       ...requestData,
       status: 'pending',
@@ -660,10 +656,8 @@ window.submitCustomPlayer = async function (evt) {
       downloadUrl: null
     });
 
-    // Increment subscription usage
     await window.incrementCreatorUsage();
 
-    // Notify Telegram
     await fetch('/api/custom-player', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -743,3 +737,4 @@ window.loadCreatorHistory = function () {
 
 window.CreatorPage = CreatorPage;
 window.CreatorHistoryPage = CreatorHistoryPage;
+window.CreatorPlansPage = CreatorPlansPage;
