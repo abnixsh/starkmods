@@ -72,7 +72,7 @@ function CreatorPage() {
       <!-- MAIN BUTTONS -->
       <div class="grid sm:grid-cols-2 gap-4 mb-4">
         <button class="p-5 rounded-2xl border border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-left hover:bg-blue-100 dark:hover:bg-blue-900/40 transition"
-                onclick="window.showCreatorSection('player')">
+        onclick="window.router && window.router.navigateTo('/creator-player')">
           <div class="flex items-center gap-3">
             <span class="material-icons text-3xl text-blue-600">person</span>
             <div>
