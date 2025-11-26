@@ -2,30 +2,10 @@
 
 // --- PLAN CONFIG (client side) ---
 const CREATOR_PLANS = {
-  P100: {
-    code: 'P100',
-    name: 'Starter',
-    priceINR: 100,
-    maxRequests: 20,
-    periodDays: 30,
-    description: '20 requests · 30 days'
-  },
-  P300: {
-    code: 'P300',
-    name: 'Pro',
-    priceINR: 300,
-    maxRequests: 70,
-    periodDays: 30,
-    description: '70 requests · 30 days'
-  },
-  P1000: {
-    code: 'P1000',
-    name: 'Elite',
-    priceINR: 1000,
-    maxRequests: null, // unlimited
-    periodDays: 60,
-    description: 'Unlimited requests · 60 days'
-  }
+  // globals for subscription flow
+window.creatorSub = null;
+window.creatorPlansReason = null;
+window.creatorSelectedPlanCode = null;
 };
 
 window.creatorSub = null;
@@ -145,6 +125,35 @@ function CreatorHistoryPage() {
     </div>
   `;
 }
+
+function CreatorPlansPage() {
+  if (!window.currentUser) {
+    setTimeout(() => window.router.navigateTo('/'), 50);
+    return '';
+  }
+
+  const reason = window.creatorPlansReason;
+  window.creatorPlansReason = null;
+
+  return `
+    <div class="max-w-4xl mx-auto animate-fade-in pb-20">
+      <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Choose Mod Creator Plan</h1>
+      ${reason ? `<p class="text-xs text-red-500 mb-2">${reason}</p>` : ''}
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+        After you select a plan, you will be taken to the normal checkout screen to complete payment.
+      </p>
+      <div class="grid sm:grid-cols-3 gap-4">
+        ${renderPlanCard('P100')}
+        ${renderPlanCard('P300')}
+        ${renderPlanCard('P1000')}
+      </div>
+    </div>
+  `;
+}
+
+window.CreatorPlansPage = CreatorPlansPage;
+
+
 
 /* ---------------- SECTION RENDERING ---------------- */
 
@@ -402,8 +411,15 @@ window.checkCreatorSubBeforeRequest = function () {
 
   const now = Date.now();
 
+  // No subscription or rejected
   if (!sub || !sub.status || sub.status === 'rejected') {
-    window.showCreatorPlans('You need an active subscription to submit custom player requests.');
+    window.showCreatorPlans('You need an active Mod Creator subscription to submit custom player requests.');
+    return false;
+  }
+
+  // Pending subscription
+  if (sub.status === 'pending') {
+    alert('Your subscription request is still pending. We will approve it after verifying payment.');
     return false;
   }
 
@@ -411,7 +427,7 @@ window.checkCreatorSubBeforeRequest = function () {
   const expired = !expiresAt || expiresAt.getTime() < now || sub.status !== 'active';
 
   if (expired) {
-    window.showCreatorPlans('Your subscription has expired.');
+    window.showCreatorPlans('Your subscription has expired. Please choose a new plan.');
     return false;
   }
 
@@ -426,12 +442,11 @@ window.checkCreatorSubBeforeRequest = function () {
 };
 
 window.showCreatorPlans = function (reason) {
-  const container = document.getElementById('creator-section');
-  if (!container) return;
-
-  let reasonHtml = reason
-    ? `<div class="text-xs text-red-500 mb-3">${reason}</div>`
-    : '';
+  window.creatorPlansReason = reason || null;
+  if (window.router) {
+    window.router.navigateTo('/creator-plans');
+  }
+};
 
   container.innerHTML = `
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
@@ -464,7 +479,7 @@ function renderPlanCard(code) {
       </div>
       <button onclick="window.requestCreatorSub('${code}')"
               class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-xs font-bold">
-        Request ${p.name} Plan
+        Get ${p.name} Plan
       </button>
     </div>`;
 }
@@ -482,6 +497,7 @@ window.requestCreatorSub = async function (planCode) {
   }
 
   try {
+    // 1) Create / update subscription document as PENDING
     const ref = db.collection('creatorSubs').doc(window.currentUser.uid);
     await ref.set({
       userId: window.currentUser.uid,
@@ -497,6 +513,7 @@ window.requestCreatorSub = async function (planCode) {
       expiresAt: null
     }, { merge: true });
 
+    // 2) Send Telegram message about subscription request (no payment info yet)
     await fetch('/api/creator-sub', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -509,7 +526,18 @@ window.requestCreatorSub = async function (planCode) {
       })
     });
 
-    alert('Subscription request sent. We will approve it after verifying your payment.');
+    // 3) Put subscription "product" into cart and go to normal checkout
+    window.cart = [{
+      gameId: `sub_${planCode}`,
+      gameName: 'Mod Creator Subscription',
+      planName: `${plan.name} (${plan.description})`,
+      price: plan.priceINR,
+      image: 'assets/icons/icon_site.jpg' // or your own subscription icon
+    }];
+
+    if (window.updateCartBadge) window.updateCartBadge();
+    if (window.router) window.router.navigateTo('/checkout');
+
   } catch (e) {
     console.error(e);
     alert('Error: ' + e.message);
