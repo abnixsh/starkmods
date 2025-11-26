@@ -72,10 +72,8 @@ function applyTheme(isDark) {
   const body = document.body;
   if (!body) return;
 
-  // This matches your CSS: body.dark { ... }
   body.classList.toggle('dark', isDark);
 
-  // Update icons
   const iconDesktop = document.getElementById('theme-icon');
   const iconMobile = document.querySelector('#theme-toggle-mobile .material-icons');
   if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
@@ -87,7 +85,7 @@ function initializeTheme() {
   let isDark;
   if (saved === '1') isDark = true;
   else if (saved === '0') isDark = false;
-  else isDark = false; // default light
+  else isDark = false;
 
   applyTheme(isDark);
 }
@@ -99,6 +97,13 @@ function toggleTheme() {
   localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  initializeTheme();
+  // ...
+  document
+    .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
+    .forEach(btn => btn.addEventListener('click', toggleTheme));
+});
   // --- 3. CAROUSEL LOGIC (unchanged) ---
   function initializeCarousels() {
     document.querySelectorAll('.screenshot-carousel').forEach((carousel) => {
