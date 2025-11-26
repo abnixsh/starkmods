@@ -129,16 +129,25 @@ window.loadCreatorSubs = function () {
               ${expText}
             </td>
             <td class="p-3 align-top flex gap-2">
-              ${s.status === 'pending' ? `
-                <button onclick="window.approveCreatorSub('${uid}', '${s.planCode || ''}')"
-                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs flex items-center gap-1">
-                  <span class="material-icons text-xs">check</span> Approve
-                </button>
-                <button onclick="window.rejectCreatorSub('${uid}')"
-                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs flex items-center gap-1">
-                  <span class="material-icons text-xs">close</span> Reject
-                </button>
-              ` : ''}
+  ${s.status === 'pending' ? `
+    <button onclick="window.approveCreatorSub('${uid}', '${s.planCode || ''}')"
+            class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs flex items-center gap-1">
+      <span class="material-icons text-xs">check</span> Approve
+    </button>
+    <button onclick="window.rejectCreatorSub('${uid}')"
+            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs flex items-center gap-1">
+      <span class="material-icons text-xs">close</span> Reject
+    </button>
+  ` : ''}
+
+
+ 
+  ${s.status === 'active' ? `
+    <button onclick="window.cancelCreatorSub('${uid}')"
+            class="bg-slate-300 hover:bg-slate-400 text-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-100 px-3 py-1 rounded text-xs flex items-center gap-1">
+      <span class="material-icons text-xs">block</span> Cancel
+    </button>
+  ` : ''}
             </td>
           </tr>`;
       });
@@ -219,6 +228,24 @@ window.rejectCreatorSub = function (userId) {
   });
 };
 
+window.cancelCreatorSub = function (userId) {
+  if (!confirm('Cancel this subscription?')) return;
+
+  db.collection('creatorSubs').doc(userId).set({
+    status: 'cancelled',
+    expiresAt: firebase.firestore.FieldValue.serverTimestamp(),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }, { merge: true })
+  .then(() => {
+    alert('Subscription cancelled.');
+  })
+  .catch(err => {
+    console.error(err);
+    alert(err.message);
+  });
+};
+
+
 /* ---------- MOD REQUESTS TABLE (unchanged from previous version, but included for completeness) ---------- */
 
 window.loadModRequests = function () {
@@ -274,23 +301,32 @@ window.loadModRequests = function () {
               ${downloadCell}
             </td>
             <td class="p-3 align-top flex gap-2">
-              <button onclick="window.setModDownloadLink('${id}', '${r.playerName || ''}')"
-                      class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded text-xs flex items-center gap-1">
-                <span class="material-icons text-xs">link</span> Link
-              </button>
-              ${r.status !== 'approved' ? `
-                <button onclick="window.updateModStatus('${id}', 'approved')"
-                        class="bg-green-600 hover:bg-green-700 text-white p-2 rounded text-xs flex items-center gap-1">
-                  <span class="material-icons text-xs">check</span>
-                </button>
-              ` : ''}
-              ${r.status !== 'rejected' ? `
-                <button onclick="window.updateModStatus('${id}', 'rejected')"
-                        class="bg-red-500 hover:bg-red-600 text-white p-2 rounded text-xs flex items-center gap-1">
-                  <span class="material-icons text-xs">close</span>
-                </button>
-              ` : ''}
-            </td>
+  <button onclick="window.setModDownloadLink('${id}', '${r.playerName || ''}')"
+          class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded text-xs flex items-center gap-1">
+    <span class="material-icons text-xs">link</span> Link
+  </button>
+
+  ${r.status !== 'approved' ? `
+    <button onclick="window.updateModStatus('${id}', 'approved')"
+            class="bg-green-600 hover:bg-green-700 text-white p-2 rounded text-xs flex items-center gap-1">
+      <span class="material-icons text-xs">check</span>
+    </button>
+  ` : ''}
+
+  ${r.status !== 'rejected' ? `
+    <button onclick="window.updateModStatus('${id}', 'rejected')"
+            class="bg-red-500 hover:bg-red-600 text-white p-2 rounded text-xs flex items-center gap-1">
+      <span class="material-icons text-xs">close</span>
+    </button>
+  ` : ''}
+
+  ${r.status !== 'pending' ? `
+    <button onclick="window.deleteModRequest('${id}')"
+            class="bg-slate-300 hover:bg-slate-400 text-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-100 p-2 rounded text-xs flex items-center gap-1">
+      <span class="material-icons text-xs">delete</span>
+    </button>
+  ` : ''}
+</td>
           </tr>`;
       });
 
@@ -312,6 +348,19 @@ window.updateModStatus = function (id, status) {
     console.error(err);
     alert(err.message);
   });
+};
+
+window.deleteModRequest = function (id) {
+  if (!confirm('Delete this mod creator request? This cannot be undone.')) return;
+
+  db.collection('modRequests').doc(id).delete()
+    .then(() => {
+      alert('Request deleted.');
+    })
+    .catch(err => {
+      console.error(err);
+      alert(err.message);
+    });
 };
 
 window.setModDownloadLink = function (id, playerName) {
