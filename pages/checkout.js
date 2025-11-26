@@ -362,20 +362,66 @@ window.submitOrder = async function () {
   };
 
   try {
-    // 1. Save to Firestore
+    // 1) Save order
     await db.collection('orders').add(orderData);
 
-    // 2. Notify Telegram via Vercel backend
-    await fetch('/api/order', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(orderData)
-    });
+    // 2) Agar subscription order hai to creatorSubs doc bhi banao + Telegram send karo
+    if (orderData.item && String(orderData.item.gameId || '').startsWith('sub_')) {
+      const subItem = orderData.item;
+      const planCode = subItem.subPlanCode || String(subItem.gameId).replace('sub_', '');
+      const planName = subItem.subPlanName || planCode;
+      const maxReq   = subItem.subMaxRequests || null;
 
-    alert("✅ Order Submitted! Check 'My Profile' for updates.");
+      // Firestore me pending subscription entry
+      await db.collection('creatorSubs').doc(orderData.userId).set({
+        userId: orderData.userId,
+        email: orderData.email,
+        planCode,
+        planName,
+        status: 'pending',
+        requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        priceINR: subItem.price,
+        maxRequests: maxReq,
+        usedRequests: 0,
+        expiresAt: null
+      }, { merge: true });
+
+      // Telegram par subscription request msg
+      try {
+        await fetch('/api/creator-sub', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: orderData.userId,
+            email: orderData.email,
+            planCode,
+            planName,
+            priceINR: subItem.price
+          })
+        });
+      } catch (e) {
+        console.warn('creator-sub telegram error:', e);
+      }
+    }
+
+    // 3) Normal Telegram order notification (mods + subscription dono ke liye)
+    try {
+      await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+    } catch (e) {
+      console.warn('order telegram error:', e);
+    }
+
+    // 4) Success UI
+    alert("✅ Order Submitted! Check 'My Profile' or 'Mod Creator' for updates.");
     window.cart = [];
     updateCartBadge();
     window.router.navigateTo('/profile');
+
   } catch (e) {
     console.error(e);
     alert("Error: " + e.message);
