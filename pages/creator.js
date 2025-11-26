@@ -27,7 +27,7 @@ function CreatorPage() {
   }
 
   // Logged-in view
-    // Logged-in view
+     // Logged-in view
 
   // ensure history is loaded when this page is rendered
   setTimeout(() => {
