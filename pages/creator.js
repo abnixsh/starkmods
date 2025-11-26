@@ -569,7 +569,7 @@ function renderPlanCard(code) {
     </div>`;
 }
 
-window.requestCreatorSub = async function (planCode) {
+window.requestCreatorSub = function (planCode) {
   if (!window.currentUser) {
     alert('Please login first.');
     window.googleLogin();
@@ -581,49 +581,21 @@ window.requestCreatorSub = async function (planCode) {
     return;
   }
 
-  try {
-    const ref = db.collection('creatorSubs').doc(window.currentUser.uid);
-    await ref.set({
-      userId: window.currentUser.uid,
-      email: window.currentUser.email,
-      planCode,
-      status: 'pending',
-      requestedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      planName: plan.name,
-      priceINR: plan.priceINR,
-      maxRequests: plan.maxRequests || null,
-      usedRequests: 0,
-      expiresAt: null
-    }, { merge: true });
+  // Sirf cart me subscription product daalo
+  window.cart = [{
+    gameId: `sub_${planCode}`,
+    gameName: 'Mod Creator Subscription',
+    planName: `${plan.name} (${plan.description})`,
+    price: plan.priceINR,
+    image: 'assets/icons/icon_site.jpg',
+    subPlanCode: planCode,
+    subPlanName: plan.name,
+    subMaxRequests: plan.maxRequests || null,
+    subPeriodDays: plan.periodDays
+  }];
 
-    await fetch('/api/creator-sub', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: window.currentUser.uid,
-        email: window.currentUser.email,
-        planCode,
-        planName: plan.name,
-        priceINR: plan.priceINR
-      })
-    });
-
-    window.cart = [{
-      gameId: `sub_${planCode}`,
-      gameName: 'Mod Creator Subscription',
-      planName: `${plan.name} (${plan.description})`,
-      price: plan.priceINR,
-      image: 'assets/icons/icon_site.jpg'
-    }];
-
-    if (window.updateCartBadge) window.updateCartBadge();
-    if (window.router) window.router.navigateTo('/checkout');
-
-  } catch (e) {
-    console.error(e);
-    alert('Error: ' + e.message);
-  }
+  if (window.updateCartBadge) window.updateCartBadge();
+  if (window.router) window.router.navigateTo('/checkout');
 };
 
 window.incrementCreatorUsage = async function () {
