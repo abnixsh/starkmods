@@ -98,6 +98,7 @@ this.addRoute('/creator-admin', 'creatorAdmin'); // admin stays separate
     const path = location.pathname.replace(/\/$/, ''); // remove trailing slash
 
     if (path === '/creator-player')  return 'CreatorPlayerPage';
+    if (path === '/creator-jersey')  return 'CreatorJerseyPage';
     if (path === '/creator-history') return 'CreatorHistoryPage';
     if (path === '/creator-plans')   return 'CreatorPlansPage';
 
