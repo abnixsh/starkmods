@@ -66,13 +66,19 @@
   window.updateCartBadge = updateCartBadge;
 
 // --- 2. THEME LOGIC (body.dark like your friend's CSS) ---
+// --- THEME LOGIC ---
 const THEME_KEY = 'stark_theme_dark';
 
 function applyTheme(isDark) {
-  const body = document.body;
-  if (!body) return;
+  const html = document.documentElement;
+  if (!html) return;
 
-  body.classList.toggle('dark', isDark);
+  // Put .dark on <html> so Tailwind + CSS both work
+  html.classList.toggle('dark', isDark);
+
+  // (optional) if you still have body.dark somewhere, you can sync it:
+  // const body = document.body;
+  // if (body) body.classList.toggle('dark', isDark);
 
   const iconDesktop = document.getElementById('theme-icon');
   const iconMobile = document.querySelector('#theme-toggle-mobile .material-icons');
@@ -85,21 +91,21 @@ function initializeTheme() {
   let isDark;
   if (saved === '1') isDark = true;
   else if (saved === '0') isDark = false;
-  else isDark = false;
+  else isDark = false; // default light
 
   applyTheme(isDark);
 }
 
 function toggleTheme() {
-  const body = document.body;
-  const isDark = !body.classList.contains('dark');
+  const html = document.documentElement;
+  const isDark = !html.classList.contains('dark');
   applyTheme(isDark);
   localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   initializeTheme();
-  // ...
+  // ... keep your existing cart / menu code
   document
     .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
     .forEach(btn => btn.addEventListener('click', toggleTheme));
