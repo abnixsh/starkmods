@@ -28,12 +28,15 @@ const CREATOR_PLANS = {
   }
 };
 
+// Optional: app you want them to use to design jerseys
+const JERSEY_TESTER_LINK = 'https://your-jersey-tester-link.com'; // CHANGE THIS
+
 // globals for subscription flow
 window.creatorSub = null;
 window.creatorPlansReason = null;
 window.creatorSelectedPlanCode = null;
 
-/* ------------------------- PAGES ------------------------- */
+/* ------------------------- MAIN PAGES ------------------------- */
 
 function CreatorPage() {
   if (!window.currentUser) {
@@ -52,7 +55,6 @@ function CreatorPage() {
       </div>`;
   }
 
-  // Load subscription info after render
   setTimeout(() => {
     if (window.loadCreatorSubscription) window.loadCreatorSubscription();
   }, 200);
@@ -61,7 +63,7 @@ function CreatorPage() {
     <div class="max-w-4xl mx-auto animate-fade-in pb-20">
       <h1 class="text-3xl font-bold mb-2 text-slate-900 dark:text-white">Mod Creator</h1>
       <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
-        Create custom content for your game. Right now only <span class="font-semibold">Custom Player</span> is available.
+        Create custom content for your game. Currently <span class="font-semibold">Custom Player</span> and <span class="font-semibold">Custom Jersey</span> are available.
       </p>
 
       <!-- Subscription status -->
@@ -83,12 +85,13 @@ function CreatorPage() {
           </div>
         </button>
 
-        <button class="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-left opacity-60 cursor-not-allowed">
+        <button class="p-5 rounded-2xl border border-green-500 bg-green-50 dark:bg-green-900/20 text-left hover:bg-green-100 dark:hover:bg-green-900/40 transition"
+                onclick="window.router && window.router.navigateTo('/creator-jersey')">
           <div class="flex items-center gap-3">
-            <span class="material-icons text-3xl text-slate-400">checkroom</span>
+            <span class="material-icons text-3xl text-green-600">checkroom</span>
             <div>
-              <div class="font-bold text-slate-600 dark:text-slate-300">Custom Jersey</div>
-              <div class="text-xs text-slate-400">Coming soon.</div>
+              <div class="font-bold text-slate-900 dark:text-white">Custom Jersey</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400">Upload textures for any team jersey.</div>
             </div>
           </div>
         </button>
@@ -151,6 +154,49 @@ function CreatorPlayerPage() {
   `;
 }
 
+function CreatorJerseyPage() {
+  if (!window.currentUser) {
+    setTimeout(() => window.router.navigateTo('/creator'), 50);
+    return '';
+  }
+
+  setTimeout(() => {
+    if (window.loadCreatorSubscription) window.loadCreatorSubscription();
+  }, 200);
+
+  return `
+    <div class="max-w-4xl mx-auto animate-fade-in pb-20">
+      <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Custom Jersey</h1>
+
+      <div id="creator-sub-status"
+           class="mb-4 text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-3">
+        Loading subscription...
+      </div>
+
+      <div class="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-2xl p-4 text-xs text-slate-700 dark:text-slate-200">
+        <div class="font-semibold mb-1 flex items-center gap-1">
+          <span class="material-icons text-sm text-green-600">apps</span>
+          <span>Design your jersey with Stark Tester</span>
+        </div>
+        <p class="mb-2">
+          Use our dedicated app to design your jersey texture, then upload the final PNG/JPG file here.
+        </p>
+        <button onclick="window.open('${JERSEY_TESTER_LINK}', '_blank')"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1">
+          <span class="material-icons text-xs">download</span> Download Stark Jersey Tester
+        </button>
+      </div>
+
+      <button onclick="window.router.navigateTo('/creator-history')"
+              class="mb-4 text-xs sm:text-sm bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-4 py-2 rounded-lg font-bold flex items-center gap-1">
+        <span class="material-icons text-xs">history</span> View Request History
+      </button>
+
+      ${renderCustomJerseyForm()}
+    </div>
+  `;
+}
+
 function CreatorHistoryPage() {
   if (!window.currentUser) {
     setTimeout(() => window.router.navigateTo('/'), 50);
@@ -165,7 +211,7 @@ function CreatorHistoryPage() {
     <div class="max-w-4xl mx-auto animate-fade-in pb-20">
       <h1 class="text-2xl font-bold mb-3 text-slate-900 dark:text-white">Mod Creator History</h1>
       <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">
-        All your custom player requests and their status.
+        All your custom player &amp; jersey requests and their status.
       </p>
       <div id="creator-history" class="space-y-3 text-sm">
         <div class="text-slate-400 text-xs">Loading...</div>
@@ -199,7 +245,7 @@ function CreatorPlansPage() {
   `;
 }
 
-/* ---------------- CUSTOM PLAYER FORM ---------------- */
+/* ---------------- FORMS ---------------- */
 
 function renderCustomPlayerForm() {
   let faceOptions = '<option value="">Select Face (1–80)</option>';
@@ -318,6 +364,34 @@ function renderCustomPlayerForm() {
   `;
 }
 
+function renderCustomJerseyForm() {
+  return `
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
+      <h2 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">Custom Jersey</h2>
+
+      <form onsubmit="window.submitCustomJersey(event)" class="space-y-4 text-sm">
+        <div>
+          <label class="block font-semibold mb-1">Team Name (jersey to update)</label>
+          <input id="cj-team" type="text" class="form-input" placeholder="e.g. India, RCB, CSK">
+        </div>
+
+        <div>
+          <label class="block font-semibold mb-1">Jersey Texture (PNG/JPG)</label>
+          <input id="cj-file" type="file" accept="image/png,image/jpeg" class="text-xs">
+          <p class="text-[11px] text-slate-500 mt-1">
+            Export the final jersey texture from Stark Tester and upload it here. Max 1 MB recommended.
+          </p>
+        </div>
+
+        <button type="submit"
+                class="mt-6 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">
+          Submit Custom Jersey Request
+        </button>
+      </form>
+    </div>
+  `;
+}
+
 /* ---------- Face preview helpers ---------- */
 
 window.updateFacePreview = function () {
@@ -386,8 +460,8 @@ function renderSubStatusHtml(sub) {
       <div>
         <div class="font-semibold text-slate-800 dark:text-slate-100 mb-1">No active subscription</div>
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          You need an active Mod Creator subscription to submit custom player requests.
-          Click <b>Custom Player</b> and choose a plan when asked.
+          You need an active Mod Creator subscription to submit custom requests.
+          Choose a plan when asked.
         </p>
       </div>`;
   }
@@ -401,7 +475,7 @@ function renderSubStatusHtml(sub) {
       <div>
         <div class="font-semibold text-slate-800 dark:text-slate-100 mb-1">Subscription expired</div>
         <p class="text-xs text-slate-500 dark:text-slate-400">
-          Your last plan has expired. Please choose a new plan when submitting a custom player.
+          Your last plan has expired. Please choose a new plan when submitting a request.
         </p>
       </div>`;
   }
@@ -443,7 +517,7 @@ window.checkCreatorSubBeforeRequest = function () {
   const now = Date.now();
 
   if (!sub || !sub.status || sub.status === 'rejected') {
-    window.showCreatorPlans('You need an active Mod Creator subscription to submit custom player requests.');
+    window.showCreatorPlans('You need an active Mod Creator subscription to submit requests.');
     return false;
   }
 
@@ -508,7 +582,6 @@ window.requestCreatorSub = async function (planCode) {
   }
 
   try {
-    // create/update sub doc
     const ref = db.collection('creatorSubs').doc(window.currentUser.uid);
     await ref.set({
       userId: window.currentUser.uid,
@@ -524,7 +597,6 @@ window.requestCreatorSub = async function (planCode) {
       expiresAt: null
     }, { merge: true });
 
-    // telegram notify
     await fetch('/api/creator-sub', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -537,7 +609,6 @@ window.requestCreatorSub = async function (planCode) {
       })
     });
 
-    // put subscription in cart and go to checkout
     window.cart = [{
       gameId: `sub_${planCode}`,
       gameName: 'Mod Creator Subscription',
@@ -569,7 +640,7 @@ window.incrementCreatorUsage = async function () {
   }
 };
 
-/* ---------- SUBMIT CUSTOM PLAYER ---------- */
+/* ---------- SUBMIT HELPERS ---------- */
 
 async function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
@@ -693,6 +764,88 @@ window.submitCustomPlayer = async function (evt) {
   }
 };
 
+window.submitCustomJersey = async function (evt) {
+  evt.preventDefault();
+
+  if (!window.currentUser) {
+    alert('Please login first.');
+    window.googleLogin();
+    return;
+  }
+
+  if (!window.checkCreatorSubBeforeRequest()) {
+    return;
+  }
+
+  const team = document.getElementById('cj-team').value.trim();
+  const fileInput = document.getElementById('cj-file');
+
+  if (!team) {
+    alert('Please enter the team name.');
+    return;
+  }
+
+  const file = fileInput.files[0];
+  if (!file) {
+    alert('Please upload the jersey texture image.');
+    return;
+  }
+  if (file.size > 1024 * 1024) {
+    alert('Jersey texture should be within 1 MB.');
+    return;
+  }
+
+  const jerseyMime = file.type || 'image/png';
+  const jerseyBase64 = await readFileAsBase64(file);
+
+  const submitBtn = evt.target.querySelector('button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+  }
+
+  const requestData = {
+    type: 'jersey',
+    userId: window.currentUser.uid,
+    email: window.currentUser.email,
+    userName: window.currentUser.displayName || '',
+    teamName: team,
+    createdAt: new Date().toISOString()
+  };
+
+  try {
+    await db.collection('modRequests').add({
+      ...requestData,
+      status: 'pending',
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      hasDownload: false,
+      downloadUrl: null
+    });
+
+    await window.incrementCreatorUsage();
+
+    await fetch('/api/custom-jersey', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...requestData,
+        jerseyBase64,
+        jerseyMime
+      })
+    });
+
+    alert('✅ Custom jersey request submitted! We will review and send your file after approval.');
+    if (window.router) window.router.navigateTo('/creator-history');
+  } catch (e) {
+    console.error(e);
+    alert('Error: ' + e.message);
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Custom Jersey Request';
+    }
+  }
+};
+
 /* ---------- HISTORY LIST ---------- */
 
 window.loadCreatorHistory = function () {
@@ -701,17 +854,18 @@ window.loadCreatorHistory = function () {
 
   db.collection('modRequests')
     .where('userId', '==', window.currentUser.uid)
-    .where('type', '==', 'player')
-    .orderBy('timestamp', 'desc')
+    .orderBy('timestamp', 'desc') // index: userId asc, timestamp desc
     .onSnapshot(snapshot => {
       if (snapshot.empty) {
-        container.innerHTML = `<div class="text-slate-400 text-xs">No custom player requests yet.</div>`;
+        container.innerHTML = `<div class="text-slate-400 text-xs">No Mod Creator requests yet.</div>`;
         return;
       }
 
       let html = '';
       snapshot.forEach(doc => {
         const r = doc.data();
+        const type = r.type || 'player';
+
         let badgeClass = 'bg-yellow-100 text-yellow-700';
         if (r.status === 'approved') badgeClass = 'bg-green-100 text-green-700';
         if (r.status === 'rejected') badgeClass = 'bg-red-100 text-red-700';
@@ -719,6 +873,17 @@ window.loadCreatorHistory = function () {
         let statusLabel = r.status || 'pending';
         if (statusLabel === 'pending') {
           statusLabel = 'Checking (24–48 hrs)';
+        }
+
+        let mainLine = '';
+        let detailLine = '';
+
+        if (type === 'jersey') {
+          mainLine = `Custom Jersey <span class="text-xs text-slate-400">(${r.teamName})</span>`;
+          detailLine = 'Jersey texture update request';
+        } else {
+          mainLine = `${r.playerName} <span class="text-xs text-slate-400">(${r.teamName})</span>`;
+          detailLine = `${r.playerType}, Bat: ${r.battingHand}, Bowl: ${r.bowlingHand} · Jersey #${r.jerseyNumber}`;
         }
 
         const downloadBtn =
@@ -739,12 +904,8 @@ window.loadCreatorHistory = function () {
         html += `
           <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 flex justify-between items-start gap-2">
             <div>
-              <div class="font-semibold text-slate-900 dark:text-white">
-                ${r.playerName} <span class="text-xs text-slate-400">(${r.teamName})</span>
-              </div>
-              <div class="text-[11px] text-slate-500">
-                ${r.playerType}, Bat: ${r.battingHand}, Bowl: ${r.bowlingHand} · Jersey #${r.jerseyNumber}
-              </div>
+              <div class="font-semibold text-slate-900 dark:text-white">${mainLine}</div>
+              <div class="text-[11px] text-slate-500">${detailLine}</div>
               ${downloadBtn}
               ${checkingNote}
             </div>
@@ -765,5 +926,6 @@ window.loadCreatorHistory = function () {
 
 window.CreatorPage = CreatorPage;
 window.CreatorPlayerPage = CreatorPlayerPage;
+window.CreatorJerseyPage = CreatorJerseyPage;
 window.CreatorHistoryPage = CreatorHistoryPage;
 window.CreatorPlansPage = CreatorPlansPage;
