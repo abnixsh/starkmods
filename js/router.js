@@ -16,6 +16,7 @@ class Router {
         this.addRoute('/admin', 'admin');
        this.addRoute('/creator', 'creator');
 this.addRoute('/creator-player', 'creator');
+this.addRoute('/creator-jersey', 'creator'); 
 this.addRoute('/creator-history', 'creator');
 this.addRoute('/creator-plans', 'creator');
 this.addRoute('/creator-admin', 'creatorAdmin'); // admin stays separate
