@@ -8,7 +8,7 @@ const CREATOR_PLANS = {
     priceINR: 100,
     maxRequests: 20,
     periodDays: 30,
-    description: '20 requests · 30 days'
+    description: '20 credits · 30 days'
   },
   P300: {
     code: 'P300',
@@ -16,7 +16,7 @@ const CREATOR_PLANS = {
     priceINR: 300,
     maxRequests: 70,
     periodDays: 30,
-    description: '70 requests · 30 days'
+    description: '70 credits + Team Creator · 30 days'
   },
   P1000: {
     code: 'P1000',
@@ -24,7 +24,7 @@ const CREATOR_PLANS = {
     priceINR: 1000,
     maxRequests: null, // unlimited
     periodDays: 60,
-    description: 'Unlimited requests · 60 days'
+    description: 'Unlimited credits · 60 days'
   }
 };
 
