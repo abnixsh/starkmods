@@ -18,6 +18,7 @@ class Router {
         this.addRoute('/creator-history', 'creatorHistory');
         this.addRoute('/creator-plans', 'creatorPlans');
         this.addRoute('/creator-admin', 'creatorAdmin');
+        this.addRoute('/creator-player', 'creatorPlayer');
         this.addRoute('/terms', 'terms');
         
         // Redirects
@@ -98,6 +99,7 @@ class Router {
             creator: 'CreatorPage',
             creatorHistory: 'CreatorHistoryPage',
             creatorPlans: 'CreatorPlansPage',
+            creatorPlayer: 'CreatorPlayerPage',
             creatorAdmin: 'CreatorAdminPage',
             '404': 'NotFoundPage' // Virtual function
             
