@@ -77,7 +77,7 @@ function CreatorPage() {
     <div class="max-w-4xl mx-auto animate-fade-in pb-20">
       <h1 class="text-3xl font-bold mb-2 text-slate-900 dark:text-white">Mod Creator</h1>
       <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
-        Create custom content for your game. Use <span class="font-semibold">Custom Player</span>, <span class="font-semibold">Custom Jersey</span>,
+        Create custom content for Real Cricket 25 (fan-made). <span class="font-semibold">Custom Player</span>, <span class="font-semibold">Custom Jersey</span>,
         or <span class="font-semibold">Custom Team</span>.
       </p>
 
