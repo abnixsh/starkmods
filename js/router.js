@@ -27,12 +27,21 @@ this.addRoute('/creator-admin', 'creatorAdmin'); // admin stays separate
         window.addEventListener('popstate', () => this.handleRoute(location.pathname));
         
         document.addEventListener('click', (e) => {
-            const link = e.target.closest('[data-link]');
-            if (link) {
-                e.preventDefault();
-                this.navigateTo(link.getAttribute('href'));
-            }
-        });
+  const link = e.target.closest('[data-link]');
+  if (link) {
+    e.preventDefault();
+    const href = link.getAttribute('href');
+
+    // Navigate
+    this.navigateTo(href);
+
+    // If the link is inside the mobile menu, close the menu
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu && !mobileMenu.classList.contains('hidden') && mobileMenu.contains(link)) {
+      mobileMenu.classList.add('hidden');
+    }
+  }
+});
 
         this.handleRoute(location.pathname);
     }
