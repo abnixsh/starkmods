@@ -56,10 +56,16 @@ function ProfilePage() {
         </div>
 
         ${isAdmin ? `
-          <button onclick="window.router.navigateTo('/admin')"
-                  class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow">
-            Admin Panel
-          </button>
+  <div class="flex flex-col gap-2 items-end">
+    <button onclick="window.router.navigateTo('/admin')"
+            class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow w-full">
+      Orders Admin
+    </button>
+    <button onclick="window.router.navigateTo('/creator-admin')"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow w-full">
+      Mod Creator Admin
+    </button>
+  </div>
         ` : ''}
       </div>
 
