@@ -1,15 +1,5 @@
-// pages/creator.js
-
 function CreatorPage() {
-  // Wait for auth state first
-  if (!window.authReady) {
-    return `
-      <div class="max-w-4xl mx-auto py-20 text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p class="text-slate-500">Checking login...</p>
-      </div>`;
-  }
-
+  // If not logged in, show login CTA
   if (!window.currentUser) {
     return `
       <div class="max-w-4xl mx-auto py-20 text-center animate-fade-in">
@@ -26,20 +16,11 @@ function CreatorPage() {
       </div>`;
   }
 
-  // Logged-in view
-     // Logged-in view
-
-  // ensure history is loaded when this page is rendered
+  // Logged-in view – call history loader
   setTimeout(() => {
-    if (window.loadCreatorHistory) {
-      window.loadCreatorHistory();
-    }
+    if (window.loadCreatorHistory) window.loadCreatorHistory();
   }, 300);
 
-  return `
-    <div class="max-w-4xl mx-auto animate-fade-in pb-20">
-      ...
-  `;
   return `
     <div class="max-w-4xl mx-auto animate-fade-in pb-20">
       <h1 class="text-3xl font-bold mb-2 text-slate-900 dark:text-white">Mod Creator</h1>
