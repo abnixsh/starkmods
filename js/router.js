@@ -13,28 +13,34 @@ class Router {
     this.addRoute('/rc25', 'rc25');
     this.addRoute('/contact', 'contact');
     this.addRoute('/profile', 'profile');
+
+    // Admin routes
     this.addRoute('/admin', 'admin');
+    this.addRoute('/admin-orders', 'admin');
+    this.addRoute('/admin-sub-orders', 'admin');
+    this.addRoute('/admin-user-orders', 'admin');
+    this.addRoute('/admin-elite-wallets', 'admin');
 
     // Creator routes
     this.addRoute('/creator', 'creator');
     this.addRoute('/creator-player', 'creator');
-    this.addRoute('/creator-jersey', 'creator'); 
-    this.addRoute('/creator-team', 'creator'); 
+    this.addRoute('/creator-jersey', 'creator');
+    this.addRoute('/creator-team', 'creator');
     this.addRoute('/creator-history', 'creator');
     this.addRoute('/creator-plans', 'creator');
 
-    // Creator admin routes (BOTH use pages/creatorAdmin.js)
+    // Creator admin routes (both use pages/creatorAdmin.js)
     this.addRoute('/creator-admin', 'creatorAdmin');
     this.addRoute('/creator-admin-user', 'creatorAdmin');
 
     this.addRoute('/privacy', 'privacy');
     this.addRoute('/terms', 'terms');
-    
+
     // Redirects
-    this.addRoute('/plans', 'cart'); 
+    this.addRoute('/plans', 'cart');
 
     window.addEventListener('popstate', () => this.handleRoute(location.pathname));
-    
+
     document.addEventListener('click', (e) => {
       const link = e.target.closest('[data-link]');
       if (link) {
@@ -72,14 +78,17 @@ class Router {
 
   loadPage(pageName) {
     const content = document.getElementById('app-content');
-    
+
     // Special Case for 404 (Don't look for file)
     if (pageName === '404') {
       this.renderPage('404');
       return;
     }
 
-    content.innerHTML = `<div class="flex justify-center pt-20"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div></div>`;
+    content.innerHTML = `
+      <div class="flex justify-center pt-20">
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+      </div>`;
 
     const funcName = this.getFunctionName(pageName);
     if (window[funcName]) {
@@ -89,16 +98,16 @@ class Router {
 
     const script = document.createElement('script');
     script.src = `pages/${pageName}.js`;
-    
+
     script.onload = () => {
       this.renderPage(funcName);
     };
-    
+
     script.onerror = () => {
       // Fallback if file fails to load
       this.renderPage('404');
     };
-    
+
     document.head.appendChild(script);
   }
 
@@ -122,12 +131,25 @@ class Router {
       const path = location.pathname.replace(/\/$/, '');
 
       if (path === '/creator-admin-user') {
-        // second page that shows a single user's requests
+        // page that shows a single user's creator requests
         return 'CreatorAdminUserRequestsPage';
       }
 
       // default: /creator-admin
       return 'CreatorAdminPage';
+    }
+
+    // Special handling for /admin* routes
+    if (pageName === 'admin') {
+      const path = location.pathname.replace(/\/$/, '');
+
+      if (path === '/admin-orders')        return 'AdminOrdersPage';
+      if (path === '/admin-sub-orders')    return 'AdminSubOrdersPage';
+      if (path === '/admin-user-orders')   return 'AdminUserOrdersPage';
+      if (path === '/admin-elite-wallets') return 'AdminEliteWalletsPage';
+
+      // default: /admin
+      return 'AdminPage';
     }
 
     const map = {
@@ -138,11 +160,11 @@ class Router {
       'cart': 'CartPage',
       'checkout': 'CheckoutPage',
       'profile': 'ProfilePage',
-      'admin': 'AdminPage',
+      'admin': 'AdminPage',        // fallback if special case not used
       'contact': 'ContactPage',
       'terms': 'TermsPage',
       'privacy': 'PrivacyPage',
-      creatorAdmin: 'CreatorAdminPage', // still ok as default
+      creatorAdmin: 'CreatorAdminPage', // fallback if special case not used
       '404': 'NotFoundPage' // Virtual function
     };
     return map[pageName];
@@ -150,7 +172,7 @@ class Router {
 
   renderPage(funcName) {
     const content = document.getElementById('app-content');
-    
+
     // Handle 404 explicitly
     if (funcName === '404' || funcName === 'NotFoundPage') {
       content.innerHTML = `
@@ -169,7 +191,7 @@ class Router {
         content.innerHTML = window[funcName]();
         window.scrollTo(0, 0);
         if (window.initializeComponents) window.initializeComponents();
-      } catch(e) {
+      } catch (e) {
         console.error(e);
         content.innerHTML = `<div class="text-center py-20 text-red-500">Render Error: ${e.message}</div>`;
       }
