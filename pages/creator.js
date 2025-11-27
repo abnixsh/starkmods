@@ -150,9 +150,9 @@ function CreatorPlayerPage() {
       <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Custom Player</h1>
 
       <div id="creator-sub-status"
-           class="mb-4 text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-3">
-        Loading subscription...
-      </div>
+     class="glass mb-4 text-sm text-slate-700 dark:text-slate-200 p-3">
+  Loading subscription...
+</div>
 
       <button onclick="window.router.navigateTo('/creator-history')"
               class="mb-4 text-xs sm:text-sm bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-4 py-2 rounded-lg font-bold flex items-center gap-1">
@@ -179,9 +179,9 @@ function CreatorJerseyPage() {
       <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Custom Jersey</h1>
 
       <div id="creator-sub-status"
-           class="mb-4 text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-3">
-        Loading subscription...
-      </div>
+     class="glass mb-4 text-sm text-slate-700 dark:text-slate-200 p-3">
+  Loading subscription...
+</div>
 
       <div class="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-2xl p-4 text-xs text-slate-700 dark:text-slate-200">
         <div class="font-semibold mb-1 flex items-center gap-1">
