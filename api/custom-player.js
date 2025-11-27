@@ -20,7 +20,8 @@ export default async function handler(req, res) {
     faceId,
     useCustomFace,
     customFaceBase64,
-    customFaceMime
+    customFaceMime,
+    gameId
   } = req.body || {};
 
   if (!userId || !email || !playerName || !teamName) {
@@ -34,6 +35,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Bot config missing. Set TG_BOT_TOKEN and TG_CHAT_ID.' });
   }
 
+  const gameName = gameId ? gameId.toUpperCase() : '-';
+
   const message = `
 🎨 <b>NEW CUSTOM PLAYER REQUEST</b>
 -----------------------------
@@ -41,6 +44,7 @@ export default async function handler(req, res) {
 📧 <b>Email:</b> ${email}
 🆔 <b>User ID:</b> <code>${userId}</code>
 -----------------------------
+🎮 <b>Game:</b> ${gameName}
 🏏 <b>Team:</b> ${teamName}
 ⭐ <b>Player:</b> ${playerName}
 🎭 <b>Type:</b> ${playerType}
@@ -77,7 +81,11 @@ export default async function handler(req, res) {
       const buffer = Buffer.from(customFaceBase64, 'base64');
       const form = new FormData();
       form.append('chat_id', CHAT_ID);
-      form.append('document', new Blob([buffer], { type: customFaceMime || 'image/png' }), 'custom-face.png');
+      form.append(
+        'document',
+        new Blob([buffer], { type: customFaceMime || 'image/png' }),
+        'custom-face.png'
+      );
 
       const docUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`;
       const docResp = await fetch(docUrl, {
