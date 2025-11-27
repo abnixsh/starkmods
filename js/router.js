@@ -14,6 +14,7 @@ class Router {
         this.addRoute('/contact', 'contact');
         this.addRoute('/profile', 'profile');
         this.addRoute('/admin', 'admin');
+        this.addRoute('/creator-admin-user', 'creatorAdmin');
        this.addRoute('/creator', 'creator');
 this.addRoute('/creator-player', 'creator');
 this.addRoute('/creator-jersey', 'creator'); 
@@ -96,9 +97,9 @@ this.addRoute('/creator-admin', 'creatorAdmin');
         document.head.appendChild(script);
     }
 
-    getFunctionName(pageName) {
-        if (pageName === 'creator') {
-    const path = location.pathname.replace(/\/$/, ''); // remove trailing slash
+   getFunctionName(pageName) {
+  if (pageName === 'creator') {
+    const path = location.pathname.replace(/\/$/, '');
 
     if (path === '/creator-player')  return 'CreatorPlayerPage';
     if (path === '/creator-jersey')  return 'CreatorJerseyPage';
@@ -106,28 +107,37 @@ this.addRoute('/creator-admin', 'creatorAdmin');
     if (path === '/creator-history') return 'CreatorHistoryPage';
     if (path === '/creator-plans')   return 'CreatorPlansPage';
 
-    // default: /creator
     return 'CreatorPage';
   }
 
-        const map = {
-            'home': 'HomePage',
-            'rc20': 'Rc20Page',
-            'wcc3': 'Wcc3Page',
-            'rc25': 'Rc25Page',
-            'cart': 'CartPage',
-            'checkout': 'CheckoutPage',
-            'profile': 'ProfilePage',
-            'admin': 'AdminPage',
-            'contact': 'ContactPage',
-            'terms': 'TermsPage',
-            'privacy': 'PrivacyPage',
-            creatorAdmin: 'CreatorAdminPage',
-            '404': 'NotFoundPage' // Virtual function
-            
-        };
-        return map[pageName];
+  if (pageName === 'creatorAdmin') {
+    const path = location.pathname.replace(/\/$/, '');
+
+    if (path === '/creator-admin-user') {
+      return 'CreatorAdminUserRequestsPage';
     }
+
+    // default: /creator-admin
+    return 'CreatorAdminPage';
+  }
+
+  const map = {
+    'home': 'HomePage',
+    'rc20': 'Rc20Page',
+    'wcc3': 'Wcc3Page',
+    'rc25': 'Rc25Page',
+    'cart': 'CartPage',
+    'checkout': 'CheckoutPage',
+    'profile': 'ProfilePage',
+    'admin': 'AdminPage',
+    'contact': 'ContactPage',
+    'terms': 'TermsPage',
+    'privacy': 'PrivacyPage',
+    creatorAdmin: 'CreatorAdminPage',
+    '404': 'NotFoundPage'
+  };
+  return map[pageName];
+}
 
     renderPage(funcName) {
         const content = document.getElementById('app-content');
