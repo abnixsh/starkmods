@@ -72,7 +72,7 @@ function ProfilePage() {
 
       <!-- Elite wallet -->
       ${isElite ? `
-      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-8" id="wallet-card">
+     <div class="glass p-6 mb-8" id="wallet-card">
         <h2 class="text-lg font-bold mb-1">Team Wallet</h2>
         <p class="text-xs text-slate-500 mb-4">
           You earn 10% of each approved order you handle. Minimum withdrawal $${MIN_WITHDRAW_USD}.
