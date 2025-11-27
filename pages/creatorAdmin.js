@@ -43,11 +43,10 @@ function CreatorAdminPage() {
         </div>
       </section>
 
-      <!-- MOD REQUESTS (USER SUMMARY + PER-USER DETAILS) -->
+      <!-- MOD REQUESTS (USER SUMMARY) -->
       <section>
         <h2 class="text-lg font-bold mb-3">Mod Requests (by User)</h2>
 
-        <!-- USER SUMMARY TABLE -->
         <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
@@ -65,37 +64,6 @@ function CreatorAdminPage() {
               <tr><td colspan="7" class="p-6 text-center text-slate-400">Loading requests...</td></tr>
             </tbody>
           </table>
-        </div>
-
-        <!-- PER-USER REQUEST DETAILS PANEL -->
-        <div id="user-requests-panel" class="mt-6 hidden">
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="text-md font-bold">
-              Requests for <span id="user-requests-email" class="font-mono text-xs"></span>
-            </h3>
-            <button onclick="window.closeUserRequestsPanel()"
-                    class="text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-3 py-1 rounded flex items-center gap-1">
-              <span class="material-icons text-xs">close</span> Close
-            </button>
-          </div>
-
-          <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-            <table class="w-full text-left text-sm">
-              <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-                <tr>
-                  <th class="p-3">Player / Team</th>
-                  <th class="p-3">Game</th>
-                  <th class="p-3">Details</th>
-                  <th class="p-3">Status</th>
-                  <th class="p-3">Download</th>
-                  <th class="p-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="user-requests-list">
-                <tr><td colspan="6" class="p-6 text-center text-slate-400">Select a user to view requests.</td></tr>
-              </tbody>
-            </table>
-          </div>
         </div>
       </section>
     </div>
@@ -138,7 +106,6 @@ window.loadCreatorSubs = function () {
 
         const planLabel = planCfg ? planCfg.name : (s.planName || s.planCode || '-');
         const usageText = max ? `${used}/${max}` : `${used} / ∞`;
-
         const expText = expiresAt ? expiresAt.toLocaleDateString() : '-';
 
         html += `
@@ -273,9 +240,8 @@ window.cancelCreatorSub = function (userId) {
   });
 };
 
-/* ---------- MOD REQUESTS: USER SUMMARY + PER-USER DETAIL ---------- */
+/* ---------- MOD REQUESTS: USER SUMMARY (on /creator-admin) ---------- */
 
-// Will store aggregated info so we can show email when opening detail panel
 window.modRequestsByUser = {};
 window.currentUserRequestsUnsub = null;
 
@@ -370,26 +336,86 @@ window.loadModRequests = function () {
     });
 };
 
+// When clicking "View Requests" on summary, store user info and go to another page.
 window.viewUserModRequests = function (userId) {
-  const panel = document.getElementById('user-requests-panel');
-  const emailSpan = document.getElementById('user-requests-email');
-  const list = document.getElementById('user-requests-list');
-  if (!panel || !emailSpan || !list || !window.db) return;
-
   const info = window.modRequestsByUser && window.modRequestsByUser[userId];
-  const email = info ? info.email : 'Unknown';
+  window.adminSelectedUserId = userId;
+  window.adminSelectedUserEmail = info ? info.email : 'Unknown';
 
-  emailSpan.textContent = `${email} (UID: ${userId})`;
+  if (window.router) {
+    window.router.navigateTo('/creator-admin-user');
+  }
+};
 
-  panel.classList.remove('hidden');
+/* ---------- PER-USER REQUEST PAGE (/creator-admin-user) ---------- */
 
-  // Unsubscribe previous user listener if any
+function CreatorAdminUserRequestsPage() {
+  if (!window.isAdmin) {
+    window.router.navigateTo('/');
+    return '';
+  }
+
+  // If no user selected, go back to main admin page
+  if (!window.adminSelectedUserId) {
+    if (window.router) window.router.navigateTo('/creator-admin');
+    return '';
+  }
+
+  const email = window.adminSelectedUserEmail || 'Unknown';
+  const uid = window.adminSelectedUserId;
+
+  setTimeout(() => {
+    window.loadAdminUserRequests();
+  }, 100);
+
+  return `
+    <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold mb-1">User Requests</h1>
+          <div class="text-xs text-slate-500">
+            ${email} · UID: <span class="font-mono">${uid}</span>
+          </div>
+        </div>
+        <button onclick="window.router.navigateTo('/creator-admin')"
+                class="text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-3 py-1 rounded flex items-center gap-1">
+          <span class="material-icons text-xs">arrow_back</span> Back
+        </button>
+      </div>
+
+      <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+            <tr>
+              <th class="p-3">Player / Team</th>
+              <th class="p-3">Game</th>
+              <th class="p-3">Details</th>
+              <th class="p-3">Status</th>
+              <th class="p-3">Download</th>
+              <th class="p-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-user-requests-list">
+            <tr><td colspan="6" class="p-6 text-center text-slate-400">Loading user requests...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+window.loadAdminUserRequests = function () {
+  const list = document.getElementById('admin-user-requests-list');
+  if (!list || !window.db || !window.adminSelectedUserId) return;
+
+  const userId = window.adminSelectedUserId;
+
+  // Unsubscribe old listener if any
   if (window.currentUserRequestsUnsub) {
     window.currentUserRequestsUnsub();
     window.currentUserRequestsUnsub = null;
   }
 
-  // Listen to this user's requests
   window.currentUserRequestsUnsub = db.collection('modRequests')
     .where('userId', '==', userId)
     .orderBy('timestamp', 'desc')
@@ -417,7 +443,6 @@ window.viewUserModRequests = function (userId) {
 
         const gameLabel = r.gameId ? r.gameId.toUpperCase() : '-';
 
-        // Build details line depending on type
         let detailsHtml = '';
         if (r.type === 'jersey') {
           detailsHtml =
@@ -439,6 +464,7 @@ window.viewUserModRequests = function (userId) {
         }
 
         const mainLabel = r.playerName || r.teamName || (r.type === 'jersey' ? 'Custom Jersey' : 'Request');
+        const safeName = (r.playerName || r.teamName || 'this request').replace(/'/g, "\\'");
 
         html += `
           <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
@@ -461,7 +487,7 @@ window.viewUserModRequests = function (userId) {
               ${downloadCell}
             </td>
             <td class="p-3 align-top flex gap-2">
-  <button onclick="window.setModDownloadLink('${id}', '${(r.playerName || r.teamName || 'this request').replace(/'/g, "\\'")}')"
+  <button onclick="window.setModDownloadLink('${id}', '${safeName}')"
           class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded text-xs flex items-center gap-1">
     <span class="material-icons text-xs">link</span>
   </button>
@@ -497,22 +523,7 @@ window.viewUserModRequests = function (userId) {
     });
 };
 
-window.closeUserRequestsPanel = function () {
-  const panel = document.getElementById('user-requests-panel');
-  const list = document.getElementById('user-requests-list');
-  const emailSpan = document.getElementById('user-requests-email');
-  if (panel) panel.classList.add('hidden');
-  if (list) {
-    list.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">Select a user to view requests.</td></tr>`;
-  }
-  if (emailSpan) emailSpan.textContent = '';
-  if (window.currentUserRequestsUnsub) {
-    window.currentUserRequestsUnsub();
-    window.currentUserRequestsUnsub = null;
-  }
-};
-
-/* ---------- REQUEST ACTIONS (unchanged logic) ---------- */
+/* ---------- REQUEST ACTIONS ---------- */
 
 window.updateModStatus = function (id, status) {
   if (!confirm(`Mark this request as ${status}?`)) return;
@@ -556,4 +567,7 @@ window.setModDownloadLink = function (id, playerName) {
   });
 };
 
+/* ---------- EXPORT PAGES ---------- */
+
 window.CreatorAdminPage = CreatorAdminPage;
+window.CreatorAdminUserRequestsPage = CreatorAdminUserRequestsPage;
