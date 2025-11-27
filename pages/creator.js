@@ -39,6 +39,9 @@ window.creatorSelectedPlanCode = null;
 // Selected game for custom player
 window.currentPlayerGame = 'rc25';
 
+// Selected game for custom jersey
+window.currentJerseyGame = 'rc25';
+
 // Team builder state
 window.teamBuilder = null;
 function resetTeamBuilder() {
@@ -199,6 +202,18 @@ function CreatorJerseyPage() {
     if (window.loadCreatorSubscription) window.loadCreatorSubscription();
   }, 200);
 
+  const g = window.currentJerseyGame || 'rc25';
+
+  const gameBtn = (id, label) => `
+    <button onclick="window.setJerseyGame('${id}')"
+            class="px-3 py-1 rounded-full border text-xs sm:text-sm font-semibold
+                   ${g === id
+                     ? 'bg-blue-600 text-white border-blue-600'
+                     : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700'}">
+      ${label}
+    </button>
+  `;
+
   return `
     <div class="max-w-4xl mx-auto animate-fade-in pb-20">
       <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Custom Jersey</h1>
@@ -206,6 +221,13 @@ function CreatorJerseyPage() {
       <div id="creator-sub-status"
            class="glass mb-4 text-sm text-slate-700 dark:text-slate-200 p-3">
         Loading subscription...
+      </div>
+
+      <!-- Game selector -->
+      <div class="mb-4 flex flex-wrap gap-2 text-xs sm:text-sm">
+        ${gameBtn('rc25', 'RC25')}
+        ${gameBtn('rc24', 'RC24')}
+        ${gameBtn('rcswipe', 'RC Swipe')}
       </div>
 
       <div class="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-2xl p-4 text-xs text-slate-700 dark:text-slate-200">
@@ -661,9 +683,13 @@ function renderCustomPlayerForm() {
 }
 
 function renderCustomJerseyForm() {
+  const game = window.currentJerseyGame || 'rc25';
+
   return `
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
-      <h2 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">Custom Jersey</h2>
+      <h2 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">
+        Custom Jersey · ${game.toUpperCase()}
+      </h2>
 
       <form onsubmit="window.submitCustomJersey(event)" class="space-y-4 text-sm">
         <div>
@@ -1033,11 +1059,16 @@ window.goToCreatorTeam = function () {
   if (window.router) window.router.navigateTo('/creator-team');
 };
 
-/* ---------- Player game switch ---------- */
+/* ---------- Player & Jersey game switch ---------- */
 
 window.setPlayerGame = function (gameId) {
   window.currentPlayerGame = gameId || 'rc25';
   if (window.router) window.router.handleRoute('/creator-player');
+};
+
+window.setJerseyGame = function (gameId) {
+  window.currentJerseyGame = gameId || 'rc25';
+  if (window.router) window.router.handleRoute('/creator-jersey');
 };
 
 /* ---------- SUBMIT HELPERS ---------- */
@@ -1191,6 +1222,8 @@ window.submitCustomJersey = async function (evt) {
     return;
   }
 
+  const game = window.currentJerseyGame || 'rc25';
+
   const team = document.getElementById('cj-team').value.trim();
   const fileInput = document.getElementById('cj-file');
 
@@ -1220,6 +1253,7 @@ window.submitCustomJersey = async function (evt) {
 
   const requestData = {
     type: 'jersey',
+    gameId: game,
     userId: window.currentUser.uid,
     email: window.currentUser.email,
     userName: window.currentUser.displayName || '',
@@ -1386,7 +1420,8 @@ window.loadCreatorHistory = function () {
         let detailLine = '';
 
         if (type === 'jersey') {
-          mainLine = `Custom Jersey <span class="text-xs text-slate-400">(${r.teamName})</span>`;
+          const gameText = r.gameId ? ` · ${r.gameId.toUpperCase()}` : '';
+          mainLine = `Custom Jersey <span class="text-xs text-slate-400">(${r.teamName}${gameText})</span>`;
           detailLine = 'Jersey texture update request';
         } else if (type === 'team') {
           const modeText = r.mode === 'replace'
