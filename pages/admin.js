@@ -4,6 +4,13 @@
 const INR_PER_USD = 90;
 const COMMISSION_RATE = 0.10; // 10%
 
+// State for orders summary & per-user orders
+window.ordersSummaryByUser = {};
+window.adminSelectedOrderUserId = null;
+window.adminSelectedOrderUserEmail = null;
+window.ordersUnsub = null;
+window.currentUserOrdersUnsub = null;
+
 function AdminPage() {
   if (!window.isAdmin) {
     window.router.navigateTo('/');
@@ -11,41 +18,70 @@ function AdminPage() {
   }
 
   setTimeout(() => {
-    window.loadAllOrders();
-    window.loadWithdrawRequests();
-    window.loadEliteWallets();
+    // Only withdrawals on main page to keep it light
+    if (window.loadWithdrawRequests) window.loadWithdrawRequests();
   }, 100);
 
   return `
     <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-10">
-      <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+      <h1 class="text-2xl font-bold mb-2">Admin Dashboard</h1>
 
-      <!-- ORDERS -->
+      <!-- QUICK NAV -->
       <section>
-        <h2 class="text-lg font-bold mb-3">Orders</h2>
-        <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-              <tr>
-                <th class="p-4">User</th>
-                <th class="p-4">Item</th>
-                <th class="p-4">UTR</th>
-                <th class="p-4">Amount</th>
-                <th class="p-4">Status</th>
-                <th class="p-4">Key</th>
-                <th class="p-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="admin-list">
-              <tr><td colspan="7" class="p-8 text-center">Loading orders...</td></tr>
-            </tbody>
-          </table>
+        <h2 class="text-lg font-bold mb-3">Quick Navigation</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button onclick="window.router.navigateTo('/admin-orders')"
+                  class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-left hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons text-blue-600">receipt_long</span>
+              <span class="font-bold text-sm">Orders (Normal)</span>
+            </div>
+            <div class="text-[11px] text-slate-500">
+              View normal game / plan orders by user.
+            </div>
+          </button>
+
+          <button onclick="window.router.navigateTo('/admin-sub-orders')"
+                  class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-left hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons text-purple-600">workspace_premium</span>
+              <span class="font-bold text-sm">Subscription Orders</span>
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Only Mod Creator subscription & upgrade payments.
+            </div>
+          </button>
+
+          <button onclick="window.router.navigateTo('/admin-elite-wallets')"
+                  class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-left hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons text-emerald-600">account_balance_wallet</span>
+              <span class="font-bold text-sm">Elite Wallets</span>
+            </div>
+            <div class="text-[11px] text-slate-500">
+              View and manually credit Elite wallets.
+            </div>
+          </button>
+
+          <button onclick="window.router.navigateTo('/creator-admin')"
+                  class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-left hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="material-icons text-amber-500">build</span>
+              <span class="font-bold text-sm">Creator Admin</span>
+            </div>
+            <div class="text-[11px] text-slate-500">
+              Approve Mod Creator subscriptions & mod requests.
+            </div>
+          </button>
         </div>
       </section>
 
       <!-- WITHDRAWALS -->
       <section>
-        <h2 class="text-lg font-bold mb-3">Withdrawal Requests</h2>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-bold">Withdrawal Requests</h2>
+          <span class="text-[11px] text-slate-500">From Elite wallets</span>
+        </div>
         <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
@@ -63,70 +99,349 @@ function AdminPage() {
           </table>
         </div>
       </section>
-
-      <!-- ELITE WALLETS -->
-      <section>
-        <h2 class="text-lg font-bold mb-3">Elite Wallets (Manual Credit)</h2>
-        <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-              <tr>
-                <th class="p-4">User</th>
-                <th class="p-4">Balance</th>
-                <th class="p-4">Total Earned</th>
-                <th class="p-4">Payment Method</th>
-                <th class="p-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="elite-list">
-              <tr><td colspan="5" class="p-8 text-center">Loading wallets...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
     </div>
   `;
 }
 
-/* ---------- ORDERS ---------- */
+/* ---------- ORDERS: SUMMARY BY USER (NORMAL / SUBS) ---------- */
 
-window.loadAllOrders = function () {
-  const list = document.getElementById('admin-list');
+window.loadOrdersSummary = function (subOnly = false) {
+  const list = document.getElementById('orders-users-list');
+  if (!list || !window.db) return;
 
-  db.collection('orders')
+  // Unsubscribe previous listener if any
+  if (window.ordersUnsub) {
+    window.ordersUnsub();
+    window.ordersUnsub = null;
+  }
+
+  window.ordersUnsub = db.collection('orders')
     .orderBy('timestamp', 'desc')
     .onSnapshot(snapshot => {
+      if (snapshot.empty) {
+        list.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No orders yet.</td></tr>`;
+        window.ordersSummaryByUser = {};
+        return;
+      }
+
+      const byUser = {};
+
+      snapshot.forEach(doc => {
+        const o = doc.data();
+        const uid = o.userId || 'unknown';
+        const isSubOrder = o.gameId && o.gameId.startsWith('sub_'); // sub_ or sub_UP_
+
+        // Filter by type
+        if (subOnly && !isSubOrder) return;
+        if (!subOnly && isSubOrder) return;
+
+        if (!byUser[uid]) {
+          byUser[uid] = {
+            userId: uid,
+            email: o.email || 'Unknown',
+            total: 0,
+            approved: 0,
+            pending: 0,
+            rejected: 0,
+            lastTimestamp: 0
+          };
+        }
+
+        const u = byUser[uid];
+        u.total += 1;
+        const status = o.status || 'pending';
+        if (status === 'approved') u.approved += 1;
+        else if (status === 'rejected') u.rejected += 1;
+        else u.pending += 1;
+
+        const ts = o.timestamp && o.timestamp.toDate ? o.timestamp.toDate().getTime() : 0;
+        if (ts > u.lastTimestamp) u.lastTimestamp = ts;
+      });
+
+      window.ordersSummaryByUser = byUser;
+
+      const usersArr = Object.values(byUser).sort(
+        (a, b) => (b.lastTimestamp || 0) - (a.lastTimestamp || 0)
+      );
+
+      if (!usersArr.length) {
+        list.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No orders for this filter.</td></tr>`;
+        return;
+      }
+
+      let html = '';
+      usersArr.forEach(u => {
+        const lastDate = u.lastTimestamp
+          ? new Date(u.lastTimestamp).toLocaleString()
+          : '-';
+
+        html += `
+          <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+            <td class="p-3 align-top">
+              <div class="font-bold">${u.email}</div>
+              <div class="text-[11px] text-slate-400">UID: ${u.userId}</div>
+            </td>
+            <td class="p-3 align-top text-[11px] text-slate-500">
+              ${u.total}
+            </td>
+            <td class="p-3 align-top text-[11px] text-green-600">
+              ${u.approved}
+            </td>
+            <td class="p-3 align-top text-[11px] text-amber-600">
+              ${u.pending}
+            </td>
+            <td class="p-3 align-top text-[11px] text-red-600">
+              ${u.rejected}
+            </td>
+            <td class="p-3 align-top text-[11px] text-slate-500">
+              ${lastDate}
+            </td>
+            <td class="p-3 align-top">
+              <button onclick="window.viewUserOrders('${u.userId}')"
+                      class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs flex items-center gap-1">
+                <span class="material-icons text-xs">visibility</span> View Orders
+              </button>
+            </td>
+          </tr>`;
+      });
+
+      list.innerHTML = html;
+    }, err => {
+      console.error(err);
+      list.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500">Error loading orders.</td></tr>`;
+    });
+};
+
+window.viewUserOrders = function (userId) {
+  const info = window.ordersSummaryByUser && window.ordersSummaryByUser[userId];
+  window.adminSelectedOrderUserId = userId;
+  window.adminSelectedOrderUserEmail = info ? info.email : 'Unknown';
+
+  if (window.router) {
+    window.router.navigateTo('/admin-user-orders');
+  }
+};
+
+/* ---------- PAGES: ORDERS SUMMARY ---------- */
+
+function AdminOrdersPage() {
+  if (!window.isAdmin) {
+    window.router.navigateTo('/');
+    return '';
+  }
+
+  setTimeout(() => {
+    window.loadOrdersSummary(false); // normal orders only
+  }, 100);
+
+  return `
+    <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">Orders (Normal)</h1>
+        <div class="flex gap-2">
+          <button onclick="window.router.navigateTo('/admin-sub-orders')"
+                  class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded hover:bg-purple-200">
+            Subscription Orders
+          </button>
+          <button onclick="window.router.navigateTo('/admin')"
+                  class="text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-3 py-1 rounded flex items-center gap-1">
+            <span class="material-icons text-xs">arrow_back</span> Back
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+            <tr>
+              <th class="p-3">User</th>
+              <th class="p-3">Total</th>
+              <th class="p-3">Approved</th>
+              <th class="p-3">Pending</th>
+              <th class="p-3">Rejected</th>
+              <th class="p-3">Last Order</th>
+              <th class="p-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-users-list">
+            <tr><td colspan="7" class="p-6 text-center text-slate-400">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+function AdminSubOrdersPage() {
+  if (!window.isAdmin) {
+    window.router.navigateTo('/');
+    return '';
+  }
+
+  setTimeout(() => {
+    window.loadOrdersSummary(true); // subscription orders only
+  }, 100);
+
+  return `
+    <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">Subscription Orders (Mod Creator)</h1>
+        <div class="flex gap-2">
+          <button onclick="window.router.navigateTo('/admin-orders')"
+                  class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200">
+            Normal Orders
+          </button>
+          <button onclick="window.router.navigateTo('/admin')"
+                  class="text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-3 py-1 rounded flex items-center gap-1">
+            <span class="material-icons text-xs">arrow_back</span> Back
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+            <tr>
+              <th class="p-3">User</th>
+              <th class="p-3">Total</th>
+              <th class="p-3">Approved</th>
+              <th class="p-3">Pending</th>
+              <th class="p-3">Rejected</th>
+              <th class="p-3">Last Order</th>
+              <th class="p-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="orders-users-list">
+            <tr><td colspan="7" class="p-6 text-center text-slate-400">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- PER-USER ORDERS PAGE ---------- */
+
+function AdminUserOrdersPage() {
+  if (!window.isAdmin) {
+    window.router.navigateTo('/');
+    return '';
+  }
+
+  if (!window.adminSelectedOrderUserId) {
+    if (window.router) window.router.navigateTo('/admin-orders');
+    return '';
+  }
+
+  const email = window.adminSelectedOrderUserEmail || 'Unknown';
+  const uid = window.adminSelectedOrderUserId;
+
+  setTimeout(() => {
+    window.loadAdminUserOrders();
+  }, 100);
+
+  return `
+    <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold mb-1">User Orders</h1>
+          <div class="text-xs text-slate-500">
+            ${email} · UID: <span class="font-mono">${uid}</span>
+          </div>
+        </div>
+        <button onclick="window.router.navigateTo('/admin-orders')"
+                class="text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-3 py-1 rounded flex items-center gap-1">
+          <span class="material-icons text-xs">arrow_back</span> Back
+        </button>
+      </div>
+
+      <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+            <tr>
+              <th class="p-3">Type</th>
+              <th class="p-3">Item</th>
+              <th class="p-3">UTR</th>
+              <th class="p-3">Amount</th>
+              <th class="p-3">Status</th>
+              <th class="p-3">Key</th>
+              <th class="p-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-user-orders-list">
+            <tr><td colspan="7" class="p-6 text-center text-slate-400">Loading orders...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+window.loadAdminUserOrders = function () {
+  const list = document.getElementById('admin-user-orders-list');
+  if (!list || !window.db || !window.adminSelectedOrderUserId) return;
+
+  const userId = window.adminSelectedOrderUserId;
+
+  // Unsubscribe old listener if any
+  if (window.currentUserOrdersUnsub) {
+    window.currentUserOrdersUnsub();
+    window.currentUserOrdersUnsub = null;
+  }
+
+  window.currentUserOrdersUnsub = db.collection('orders')
+    .where('userId', '==', userId)
+    .orderBy('timestamp', 'desc')
+    .onSnapshot(snapshot => {
+      if (snapshot.empty) {
+        list.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No orders for this user.</td></tr>`;
+        return;
+      }
+
       let html = '';
       snapshot.forEach(doc => {
         const o = doc.data();
         const id = doc.id;
+        const isSubOrder = o.gameId && o.gameId.startsWith('sub_');
         const userName = o.userName || o.email || 'Unknown';
+
+        const statusBadgeClass =
+          o.status === 'pending'
+            ? 'bg-yellow-100 text-yellow-700'
+            : o.status === 'approved'
+            ? 'bg-green-100 text-green-700'
+            : 'bg-red-100 text-red-700';
+
+        const typeLabel = isSubOrder ? 'Subscription' : 'Normal';
+
+        const itemTitle = o.item?.gameName || '-';
+        const planName  = o.item?.planName || '';
+
+        const safeName = (itemTitle || 'this order').replace(/'/g, "\\'");
 
         html += `
           <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
-            <td class="p-4">
-              <div class="font-bold">${userName}</div>
-              <div class="text-xs text-slate-500">${o.email || ''}</div>
-              <div class="text-[10px] text-slate-400">UID: ${o.userId || '-'}</div>
+            <td class="p-3 align-top">
+              <div class="font-semibold">${typeLabel}</div>
+              <div class="text-[11px] text-slate-500">${o.gameId || ''}</div>
             </td>
-            <td class="p-4">
-              ${o.item?.gameName || '-'}<br>
-              <span class="text-xs text-slate-500">${o.item?.planName || ''}</span>
+            <td class="p-3 align-top">
+              <div class="font-bold">${itemTitle}</div>
+              <div class="text-xs text-slate-500">${planName}</div>
+              <div class="text-[10px] text-slate-400">${userName}</div>
             </td>
-            <td class="p-4 font-mono select-all">${o.transId}</td>
-            <td class="p-4 font-bold text-blue-600">₹${o.amount}</td>
-            <td class="p-4">
-              <span class="badge text-xs uppercase font-bold px-2 py-1 rounded ${
-                o.status === 'pending'
-                  ? 'bg-yellow-100 text-yellow-700'
-                  : o.status === 'approved'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700'
-              }">
-                ${o.status}
+            <td class="p-3 align-top font-mono text-xs select-all">
+              ${o.transId || '-'}
+            </td>
+            <td class="p-3 align-top font-bold text-blue-600">
+              ₹${o.amount}
+            </td>
+            <td class="p-3 align-top">
+              <span class="badge text-xs uppercase font-bold px-2 py-1 rounded ${statusBadgeClass}">
+                ${o.status || 'pending'}
               </span>
             </td>
-            <td class="p-4">
+            <td class="p-3 align-top">
               ${o.key
                 ? `<div class="font-mono text-xs mb-1">${o.key}</div>`
                 : `<div class="text-xs text-slate-400 mb-1">Not set</div>`}
@@ -135,7 +450,7 @@ window.loadAllOrders = function () {
                 Set / Edit Key
               </button>
             </td>
-            <td class="p-4 flex gap-2">
+            <td class="p-3 align-top flex gap-2">
               ${o.status === 'pending' ? `
                 <button onclick="window.updateStatus('${id}', 'approved')" class="bg-green-600 text-white p-2 rounded hover:bg-green-700">
                   <span class="material-icons text-sm">check</span>
@@ -147,9 +462,15 @@ window.loadAllOrders = function () {
             </td>
           </tr>`;
       });
-      list.innerHTML = html || `<tr><td colspan="7" class="p-8 text-center text-slate-400">No orders.</td></tr>`;
+
+      list.innerHTML = html;
+    }, err => {
+      console.error(err);
+      list.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500">Error loading user orders.</td></tr>`;
     });
 };
+
+/* ---------- ORDERS: KEY & STATUS + ELITE CREDIT ---------- */
 
 window.setKey = function (docId) {
   const key = prompt('Enter / update key for this order:');
@@ -159,8 +480,6 @@ window.setKey = function (docId) {
     .then(() => alert('Key saved. User will see it in Profile.'))
     .catch(e => alert(e.message));
 };
-
-/* ---------- Update order status + 10% elite credit ---------- */
 
 window.updateStatus = async function (docId, status) {
   if (!confirm(`Mark order as ${status}?`)) return;
@@ -177,7 +496,7 @@ window.updateStatus = async function (docId, status) {
       await window.creditEliteWallet(window.currentUser, order, docId);
     }
 
-    alert("Status updated. User will see it.");
+    alert('Status updated. User will see it.');
   } catch (e) {
     console.error(e);
     alert(e.message);
@@ -219,10 +538,11 @@ window.creditEliteWallet = async function (adminUser, order, orderDocId) {
   });
 };
 
-/* ---------- WITHDRAWAL REQUESTS ---------- */
+/* ---------- WITHDRAWAL REQUESTS (same as before) ---------- */
 
 window.loadWithdrawRequests = function () {
   const list = document.getElementById('withdraw-list');
+  if (!list || !window.db) return;
 
   db.collection('withdrawRequests')
     .orderBy('createdAt', 'desc')
@@ -311,10 +631,51 @@ window.handleWithdrawStatus = async function (requestId, newStatus) {
   alert('Withdrawal updated.');
 };
 
-/* ---------- ELITE WALLETS (MANUAL CREDIT) ---------- */
+/* ---------- ELITE WALLETS PAGE + LOADER ---------- */
+
+function AdminEliteWalletsPage() {
+  if (!window.isAdmin) {
+    window.router.navigateTo('/');
+    return '';
+  }
+
+  setTimeout(() => {
+    window.loadEliteWallets();
+  }, 100);
+
+  return `
+    <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-6">
+      <div class="flex items-center justify-between mb-2">
+        <h1 class="text-2xl font-bold">Elite Wallets</h1>
+        <button onclick="window.router.navigateTo('/admin')"
+                class="text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-3 py-1 rounded flex items-center gap-1">
+          <span class="material-icons text-xs">arrow_back</span> Back
+        </button>
+      </div>
+
+      <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+            <tr>
+              <th class="p-4">User</th>
+              <th class="p-4">Balance</th>
+              <th class="p-4">Total Earned</th>
+              <th class="p-4">Payment Method</th>
+              <th class="p-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="elite-list">
+            <tr><td colspan="5" class="p-8 text-center">Loading wallets...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
 
 window.loadEliteWallets = function () {
   const list = document.getElementById('elite-list');
+  if (!list || !window.db) return;
 
   db.collection('wallets')
     .orderBy('email')
@@ -394,4 +755,10 @@ window.manualCredit = function (userId, email) {
   });
 };
 
+/* ---------- EXPORT PAGES ---------- */
+
 window.AdminPage = AdminPage;
+window.AdminOrdersPage = AdminOrdersPage;
+window.AdminSubOrdersPage = AdminSubOrdersPage;
+window.AdminUserOrdersPage = AdminUserOrdersPage;
+window.AdminEliteWalletsPage = AdminEliteWalletsPage;
