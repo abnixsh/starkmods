@@ -11,7 +11,8 @@ export default async function handler(req, res) {
     userName,
     teamName,
     jerseyBase64,
-    jerseyMime
+    jerseyMime,
+    gameId
   } = req.body || {};
 
   if (!userId || !email || !teamName || !jerseyBase64) {
@@ -25,6 +26,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Bot config missing.' });
   }
 
+  const gameName = gameId ? gameId.toUpperCase() : '-';
+
   const message = `
 🎽 <b>NEW CUSTOM JERSEY REQUEST</b>
 -----------------------------
@@ -32,6 +35,7 @@ export default async function handler(req, res) {
 📧 <b>Email:</b> ${email}
 🆔 <b>User ID:</b> <code>${userId}</code>
 -----------------------------
+🎮 <b>Game:</b> ${gameName}
 🏏 <b>Team:</b> ${teamName}
 🎨 <b>Type:</b> Jersey Texture
 -----------------------------
