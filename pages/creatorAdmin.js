@@ -45,13 +45,14 @@ function CreatorAdminPage() {
 
       <!-- MOD REQUESTS -->
       <section>
-        <h2 class="text-lg font-bold mb-3">Custom Player Requests</h2>
+        <h2 class="text-lg font-bold mb-3">Mod Requests</h2>
         <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
               <tr>
                 <th class="p-3">User</th>
-                <th class="p-3">Player</th>
+                <th class="p-3">Player / Team</th>
+                <th class="p-3">Game</th>
                 <th class="p-3">Details</th>
                 <th class="p-3">Status</th>
                 <th class="p-3">Download</th>
@@ -59,7 +60,7 @@ function CreatorAdminPage() {
               </tr>
             </thead>
             <tbody id="modreq-list">
-              <tr><td colspan="6" class="p-6 text-center text-slate-400">Loading requests...</td></tr>
+              <tr><td colspan="7" class="p-6 text-center text-slate-400">Loading requests...</td></tr>
             </tbody>
           </table>
         </div>
@@ -140,8 +141,6 @@ window.loadCreatorSubs = function () {
     </button>
   ` : ''}
 
-
- 
   ${s.status === 'active' ? `
     <button onclick="window.cancelCreatorSub('${uid}')"
             class="bg-slate-300 hover:bg-slate-400 text-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500 dark:text-slate-100 px-3 py-1 rounded text-xs flex items-center gap-1">
@@ -246,7 +245,7 @@ window.cancelCreatorSub = function (userId) {
 };
 
 
-/* ---------- MOD REQUESTS TABLE (unchanged from previous version, but included for completeness) ---------- */
+/* ---------- MOD REQUESTS TABLE ---------- */
 
 window.loadModRequests = function () {
   const list = document.getElementById('modreq-list');
@@ -256,7 +255,7 @@ window.loadModRequests = function () {
     .orderBy('timestamp', 'desc')
     .onSnapshot(snapshot => {
       if (snapshot.empty) {
-        list.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">No mod creator requests yet.</td></tr>`;
+        list.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No mod creator requests yet.</td></tr>`;
         return;
       }
 
@@ -276,6 +275,8 @@ window.loadModRequests = function () {
              </a>`
           : `<span class="text-xs text-slate-400">Not set</span>`;
 
+        const gameLabel = r.gameId ? r.gameId.toUpperCase() : '-';
+
         html += `
           <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
             <td class="p-3 align-top">
@@ -283,8 +284,11 @@ window.loadModRequests = function () {
               <div class="text-[11px] text-slate-400">UID: ${r.userId || '-'}</div>
             </td>
             <td class="p-3 align-top">
-              <div class="font-semibold">${r.playerName || '-'}</div>
-              <div class="text-[11px] text-slate-500">${r.teamName || ''}</div>
+              <div class="font-semibold">${r.playerName || r.teamName || '-'}</div>
+              <div class="text-[11px] text-slate-500">${r.type || 'player'}</div>
+            </td>
+            <td class="p-3 align-top text-[11px] text-slate-500">
+              ${gameLabel}
             </td>
             <td class="p-3 align-top text-[11px] text-slate-500">
               Type: ${r.playerType || '-'}<br>
@@ -301,7 +305,7 @@ window.loadModRequests = function () {
               ${downloadCell}
             </td>
             <td class="p-3 align-top flex gap-2">
-  <button onclick="window.setModDownloadLink('${id}', '${r.playerName || ''}')"
+  <button onclick="window.setModDownloadLink('${id}', '${r.playerName || r.teamName || ''}')"
           class="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded text-xs flex items-center gap-1">
     <span class="material-icons text-xs">link</span> Link
   </button>
@@ -333,7 +337,7 @@ window.loadModRequests = function () {
       list.innerHTML = html;
     }, err => {
       console.error(err);
-      list.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-red-500">Error loading requests.</td></tr>`;
+      list.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-red-500">Error loading requests.</td></tr>`;
     });
 };
 
