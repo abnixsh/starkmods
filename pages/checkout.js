@@ -102,7 +102,7 @@ function CheckoutPage() {
 
       <!-- STEP 3: PAYMENT SCREEN (Smart QR) -->
       <div id="step-3" class="step-content hidden">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border-2 border-blue-600 p-8 shadow-2xl relative overflow-hidden text-center">
+        <div class="glass border-2 border-blue-600 p-8 shadow-2xl relative overflow-hidden text-center">
           
           <div class="mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
             <p class="text-xs text-slate-500 font-bold uppercase">Total Payable</p>
