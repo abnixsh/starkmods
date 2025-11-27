@@ -8,7 +8,7 @@ const CREATOR_PLANS = {
     priceINR: 100,
     maxRequests: 20,
     periodDays: 30,
-    description: '20 credits · 30 days'
+    description: '20 requests · 30 days'
   },
   P300: {
     code: 'P300',
@@ -16,7 +16,7 @@ const CREATOR_PLANS = {
     priceINR: 300,
     maxRequests: 70,
     periodDays: 30,
-    description: '70 credits + Team Creator · 30 days'
+    description: '70 requests · 30 days'
   },
   P1000: {
     code: 'P1000',
@@ -24,17 +24,20 @@ const CREATOR_PLANS = {
     priceINR: 1000,
     maxRequests: null, // unlimited
     periodDays: 60,
-    description: 'Unlimited credits · 60 days'
+    description: 'Unlimited requests · 60 days'
   }
 };
 
 // App link for designing jerseys (CHANGE THIS)
 const JERSEY_TESTER_LINK = 'https://your-jersey-tester-link.com';
 
-// globals for subscription flow
+// globals for subscription & pages
 window.creatorSub = null;
 window.creatorPlansReason = null;
 window.creatorSelectedPlanCode = null;
+
+// Selected game for custom player
+window.currentPlayerGame = 'rc25';
 
 // Team builder state
 window.teamBuilder = null;
@@ -83,9 +86,10 @@ function CreatorPage() {
 
       <!-- Subscription status -->
       <div id="creator-sub-status"
-     class="glass mb-6 text-sm text-slate-700 dark:text-slate-200 p-4">
-  Loading subscription...
-</div>
+           class="glass mb-6 text-sm text-slate-700 dark:text-slate-200 p-4">
+        Loading subscription...
+      </div>
+
       <!-- MAIN BUTTONS -->
       <div class="grid sm:grid-cols-3 gap-4 mb-4">
         <!-- Player: always accessible (subscription checked on submit) -->
@@ -141,25 +145,46 @@ function CreatorPlayerPage() {
     return '';
   }
 
+  const g = window.currentPlayerGame || 'rc25';
+
   setTimeout(() => {
     if (window.loadCreatorSubscription) window.loadCreatorSubscription();
   }, 200);
+
+  const gameBtn = (id, label) => `
+    <button onclick="window.setPlayerGame('${id}')"
+            class="px-3 py-1 rounded-full border text-xs sm:text-sm font-semibold
+                   ${g === id
+                     ? 'bg-blue-600 text-white border-blue-600'
+                     : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700'}">
+      ${label}
+    </button>
+  `;
 
   return `
     <div class="max-w-4xl mx-auto animate-fade-in pb-20">
       <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Custom Player</h1>
 
       <div id="creator-sub-status"
-     class="glass mb-4 text-sm text-slate-700 dark:text-slate-200 p-3">
-  Loading subscription...
-</div>
+           class="glass mb-4 text-sm text-slate-700 dark:text-slate-200 p-3">
+        Loading subscription...
+      </div>
+
+      <!-- Game selector -->
+      <div class="mb-4 flex flex-wrap gap-2 text-xs sm:text-sm">
+        ${gameBtn('rc25', 'RC25')}
+        ${gameBtn('rc24', 'RC24')}
+        ${gameBtn('rcswipe', 'RC Swipe')}
+      </div>
 
       <button onclick="window.router.navigateTo('/creator-history')"
               class="mb-4 text-xs sm:text-sm bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-4 py-2 rounded-lg font-bold flex items-center gap-1">
         <span class="material-icons text-xs">history</span> View Request History
       </button>
 
-      ${renderCustomPlayerForm()}
+      <div id="player-form-container">
+        ${renderCustomPlayerForm()}
+      </div>
     </div>
   `;
 }
@@ -179,9 +204,9 @@ function CreatorJerseyPage() {
       <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Custom Jersey</h1>
 
       <div id="creator-sub-status"
-     class="glass mb-4 text-sm text-slate-700 dark:text-slate-200 p-3">
-  Loading subscription...
-</div>
+           class="glass mb-4 text-sm text-slate-700 dark:text-slate-200 p-3">
+        Loading subscription...
+      </div>
 
       <div class="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-2xl p-4 text-xs text-slate-700 dark:text-slate-200">
         <div class="font-semibold mb-1 flex items-center gap-1">
@@ -224,7 +249,7 @@ function CreatorTeamPage() {
       <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Custom Team</h1>
 
       <div id="creator-sub-status"
-           class="mb-4 text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-3">
+           class="glass mb-4 text-sm text-slate-700 dark:text-slate-200 p-3">
         Loading subscription...
       </div>
 
@@ -234,7 +259,7 @@ function CreatorTeamPage() {
       </p>
 
       <!-- TEAM INFO -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 mb-5">
+      <div class="glass p-5 mb-5">
         <h2 class="text-sm font-bold mb-3 text-slate-900 dark:text-white">Team Info</h2>
 
         <div class="flex flex-wrap gap-4 mb-3 text-xs">
@@ -279,7 +304,7 @@ function CreatorTeamPage() {
       </div>
 
       <!-- PLAYERS -->
-      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 mb-5">
+      <div class="glass p-5 mb-5">
         <h2 class="text-sm font-bold mb-3 text-slate-900 dark:text-white">Add Players (max 12)</h2>
 
         <form onsubmit="window.addTeamPlayer(event)" class="space-y-3 text-xs">
@@ -506,14 +531,22 @@ window.renderTeamPlayersList = function () {
 /* ---------- FORMS: PLAYER & JERSEY ---------- */
 
 function renderCustomPlayerForm() {
-  let faceOptions = '<option value="">Select Face (1–80)</option>';
-  for (let i = 1; i <= 80; i++) {
-    faceOptions += `<option value="${i}">Face ${i}</option>`;
+  const game = window.currentPlayerGame || 'rc25';
+  const hasFace = (game === 'rc25'); // only RC25 supports face selection / custom face
+
+  let faceOptions = '';
+  if (hasFace) {
+    faceOptions = '<option value="">Select Face (1–80)</option>';
+    for (let i = 1; i <= 80; i++) {
+      faceOptions += `<option value="${i}">Face ${i}</option>`;
+    }
   }
 
   return `
     <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
-      <h2 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">Custom Player</h2>
+      <h2 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">
+        Custom Player · ${game.toUpperCase()}
+      </h2>
 
       <form onsubmit="window.submitCustomPlayer(event)" class="space-y-4 text-sm">
         <div>
@@ -588,14 +621,18 @@ function renderCustomPlayerForm() {
             <input id="cp-jersey" type="number" min="0" max="999"
                    class="form-input" placeholder="e.g. 7">
           </div>
+
+          ${hasFace ? `
           <div>
             <label class="block font-semibold mb-1">Face (1–80)</label>
             <select id="cp-face" class="form-input" onchange="window.updateFacePreview()">
               ${faceOptions}
             </select>
           </div>
+          ` : ''}
         </div>
 
+        ${hasFace ? `
         <div class="flex items-center gap-4 mt-2">
           <div id="cp-face-preview"
                class="w-16 h-16 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-500">
@@ -612,6 +649,7 @@ function renderCustomPlayerForm() {
           <input type="file" id="cp-custom-file" accept="image/png,image/jpeg"
                  class="text-xs" disabled>
         </div>
+        ` : ''}
 
         <button type="submit"
                 class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">
@@ -995,6 +1033,13 @@ window.goToCreatorTeam = function () {
   if (window.router) window.router.navigateTo('/creator-team');
 };
 
+/* ---------- Player game switch ---------- */
+
+window.setPlayerGame = function (gameId) {
+  window.currentPlayerGame = gameId || 'rc25';
+  if (window.router) window.router.handleRoute('/creator-player');
+};
+
 /* ---------- SUBMIT HELPERS ---------- */
 
 async function readFileAsBase64(file) {
@@ -1023,6 +1068,9 @@ window.submitCustomPlayer = async function (evt) {
     return;
   }
 
+  const game = window.currentPlayerGame || 'rc25';
+  const hasFace = (game === 'rc25');
+
   const team = document.getElementById('cp-team').value.trim();
   const name = document.getElementById('cp-name').value.trim();
   const type = document.getElementById('cp-type').value;
@@ -1031,35 +1079,45 @@ window.submitCustomPlayer = async function (evt) {
   const batType = document.getElementById('cp-bat-type').value;
   const bowlType = document.getElementById('cp-bowl-type').value;
   const jersey = document.getElementById('cp-jersey').value.trim();
-  const faceId = document.getElementById('cp-face').value;
-  const useCustom = document.getElementById('cp-use-custom-face').checked;
-  const fileInput = document.getElementById('cp-custom-file');
+
+  let faceId = null;
+  let useCustom = false;
+  let customFaceBase64 = null;
+  let customFaceMime = null;
 
   if (!team || !name || !type || !batHand || !bowlHand || !batType || !bowlType || !jersey) {
     alert('Please fill all fields.');
     return;
   }
 
-  if (!useCustom && !faceId) {
-    alert('Please select a face or enable custom face.');
-    return;
-  }
+  if (hasFace) {
+    const faceSelect = document.getElementById('cp-face');
+    const useCustomEl = document.getElementById('cp-use-custom-face');
+    const fileInput = document.getElementById('cp-custom-file');
 
-  let customFaceBase64 = null;
-  let customFaceMime = null;
+    if (faceSelect && useCustomEl && fileInput) {
+      faceId = faceSelect.value;
+      useCustom = useCustomEl.checked;
 
-  if (useCustom) {
-    const file = fileInput.files[0];
-    if (!file) {
-      alert('Please choose a custom face image.');
-      return;
+      if (!useCustom && !faceId) {
+        alert('Please select a face or enable custom face.');
+        return;
+      }
+
+      if (useCustom) {
+        const file = fileInput.files[0];
+        if (!file) {
+          alert('Please choose a custom face image.');
+          return;
+        }
+        if (file.size > 500 * 1024) {
+          alert('Custom face image must be less than 500 KB.');
+          return;
+        }
+        customFaceMime = file.type || 'image/png';
+        customFaceBase64 = await readFileAsBase64(file);
+      }
     }
-    if (file.size > 500 * 1024) {
-      alert('Custom face image must be less than 500 KB.');
-      return;
-    }
-    customFaceMime = file.type || 'image/png';
-    customFaceBase64 = await readFileAsBase64(file);
   }
 
   const submitBtn = evt.target.querySelector('button[type="submit"]');
@@ -1070,6 +1128,7 @@ window.submitCustomPlayer = async function (evt) {
 
   const requestData = {
     type: 'player',
+    gameId: game,
     userId: window.currentUser.uid,
     email: window.currentUser.email,
     userName: window.currentUser.displayName || '',
@@ -1081,8 +1140,8 @@ window.submitCustomPlayer = async function (evt) {
     batsmanType: batType,
     bowlerType: bowlType,
     jerseyNumber: jersey,
-    faceId: useCustom ? null : (faceId ? parseInt(faceId, 10) : null),
-    useCustomFace: useCustom,
+    faceId: hasFace && faceId ? parseInt(faceId, 10) : null,
+    useCustomFace: hasFace ? useCustom : false,
     createdAt: new Date().toISOString()
   };
 
@@ -1336,7 +1395,8 @@ window.loadCreatorHistory = function () {
           mainLine = `Custom Team: ${r.teamName} <span class="text-xs text-slate-400">(${r.teamShortName || ''})</span>`;
           detailLine = `${modeText} · Players: ${(r.players || []).length}`;
         } else {
-          mainLine = `${r.playerName} <span class="text-xs text-slate-400">(${r.teamName})</span>`;
+          const game = r.gameId ? r.gameId.toUpperCase() : 'RC25';
+          mainLine = `${r.playerName} <span class="text-xs text-slate-400">(${r.teamName} · ${game})</span>`;
           detailLine = `${r.playerType}, Bat: ${r.battingHand}, Bowl: ${r.bowlingHand} · Jersey #${r.jerseyNumber}`;
         }
 
