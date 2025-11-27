@@ -15,6 +15,8 @@ window.currentUserOrdersUnsub = null;
 window.ordersPendingUnsub = null;
 window.withdrawPendingUnsub = null;
 
+/* ---------- MAIN ADMIN PAGE ---------- */
+
 function AdminPage() {
   if (!window.isAdmin) {
     window.router.navigateTo('/');
@@ -22,7 +24,6 @@ function AdminPage() {
   }
 
   setTimeout(() => {
-    // Only withdrawals on main page to keep it light
     if (window.loadWithdrawRequests) window.loadWithdrawRequests();
     if (window.initAdminBadges) window.initAdminBadges(); // start badge listeners
   }, 100);
@@ -394,7 +395,7 @@ function AdminUserOrdersPage() {
     return '';
   }
 
-  const email = window.adminSelectedOrderUserEmail || 'Unknown';
+  const email = window.adminSelectedOrderEmail || window.adminSelectedOrderUserEmail || 'Unknown';
   const uid = window.adminSelectedOrderUserId;
 
   setTimeout(() => {
@@ -842,7 +843,7 @@ window.manualCredit = function (userId, email) {
     tx.set(txRef, {
       type: 'manual',
       amountUSD: amount,
-      note: `Manual credit by ${window.currentUser?.email || 'admin'}`,
+      note: `Manual credit by ${window.currentUser && window.currentUser.email ? window.currentUser.email : 'admin'}`,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
   }).then(() => {
