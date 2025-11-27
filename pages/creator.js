@@ -83,10 +83,9 @@ function CreatorPage() {
 
       <!-- Subscription status -->
       <div id="creator-sub-status"
-           class="mb-6 text-sm text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4">
-        Loading subscription...
-      </div>
-
+     class="glass mb-6 text-sm text-slate-700 dark:text-slate-200 p-4">
+  Loading subscription...
+</div>
       <!-- MAIN BUTTONS -->
       <div class="grid sm:grid-cols-3 gap-4 mb-4">
         <!-- Player: always accessible (subscription checked on submit) -->
