@@ -9,7 +9,10 @@ class Router {
     this.addRoute('/cart', 'cart');
     this.addRoute('/checkout', 'checkout');
     this.addRoute('/rc20', 'rc20');
+    this.addRoute('/rc24', 'rc24');
+    this.addRoute('/rcSWIPE', 'rcSWIPE');
     this.addRoute('/wcc3', 'wcc3');
+    this.addRoute('/wcc2', 'wcc2');
     this.addRoute('/rc25', 'rc25');
     this.addRoute('/contact', 'contact');
     this.addRoute('/profile', 'profile');
@@ -155,7 +158,10 @@ class Router {
     const map = {
       'home': 'HomePage',
       'rc20': 'Rc20Page',
+       'rc24': 'Rc24Page',
+       'rcSWIPE': 'RcSWIPEPage',
       'wcc3': 'Wcc3Page',
+      'wcc2': 'Wcc2Page',
       'rc25': 'Rc25Page',
       'cart': 'CartPage',
       'checkout': 'CheckoutPage',
