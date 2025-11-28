@@ -77,7 +77,7 @@ function AdminPage() {
       </section>
 
       <!-- WITHDRAWALS -->
-      <section>
+      <section id="admin-withdrawals-section">
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-lg font-bold">Withdrawal Requests</h2>
           <span class="text-[11px] text-slate-500">From Elite wallets</span>
@@ -417,8 +417,6 @@ window.loadAdminUserOrders = function () {
         const itemTitle = o.item?.gameName || '-';
         const planName  = o.item?.planName || '';
 
-        const safeName = (itemTitle || 'this order').replace(/'/g, "\\'");
-
         html += `
           <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
             <td class="p-3 align-top">
@@ -538,7 +536,7 @@ window.creditEliteWallet = async function (adminUser, order, orderDocId) {
   });
 };
 
-/* ---------- WITHDRAWAL REQUESTS (same as before) ---------- */
+/* ---------- WITHDRAWAL REQUESTS ---------- */
 
 window.loadWithdrawRequests = function () {
   const list = document.getElementById('withdraw-list');
@@ -631,7 +629,7 @@ window.handleWithdrawStatus = async function (requestId, newStatus) {
   alert('Withdrawal updated.');
 };
 
-/* ---------- ELITE WALLETS PAGE + LOADER ---------- */
+/* ---------- ELITE WALLETS PAGE + BUTTON TO SHOW WITHDRAWALS ---------- */
 
 function AdminEliteWalletsPage() {
   if (!window.isAdmin) {
@@ -647,10 +645,16 @@ function AdminEliteWalletsPage() {
     <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-6">
       <div class="flex items-center justify-between mb-2">
         <h1 class="text-2xl font-bold">Elite Wallets</h1>
-        <button onclick="window.router.navigateTo('/admin')"
-                class="text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-3 py-1 rounded flex items-center gap-1">
-          <span class="material-icons text-xs">arrow_back</span> Back
-        </button>
+        <div class="flex gap-2">
+          <button onclick="window.goToAdminWithdrawals()"
+                  class="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded flex items-center gap-1">
+            <span class="material-icons text-xs">payments</span> Show Withdrawal Requests
+          </button>
+          <button onclick="window.router.navigateTo('/admin')"
+                  class="text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 px-3 py-1 rounded flex items-center gap-1">
+            <span class="material-icons text-xs">arrow_back</span> Back
+          </button>
+        </div>
       </div>
 
       <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
@@ -753,6 +757,23 @@ window.manualCredit = function (userId, email) {
     console.error(e);
     alert(e.message);
   });
+};
+
+/* ---------- NAV HELPER: GO TO WITHDRAWALS FROM ELITE WALLETS ---------- */
+
+window.goToAdminWithdrawals = function () {
+  if (!window.router) return;
+
+  // Navigate to main Admin page
+  window.router.navigateTo('/admin');
+
+  // After route renders, scroll to withdrawals section
+  setTimeout(() => {
+    const el = document.getElementById('admin-withdrawals-section');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 200);
 };
 
 /* ---------- EXPORT PAGES ---------- */
