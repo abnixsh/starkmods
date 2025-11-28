@@ -48,6 +48,78 @@ function HomePage() {
         </div>
       </article>
 
+      <!-- RC24 CARD -->
+      <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition">
+        <div class="app-card-content">
+          <div class="app-card-header flex gap-3 mb-4">
+            <div class="app-icon-container">
+              <img src="assets/icons/icon_rc24.png" alt="RC24 Realastic V1" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=RC25'" />
+            </div>
+            <div class="flex-1">
+              <div class="text-xl font-semibold">RC24 Realistic V1</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.RealCricket</div>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v3.3</span>
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">Patch</span>
+                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Free</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden h-40 bg-black">
+            <img src="assets/img/img_rc24_1.jpg" class="w-full h-full object-cover opacity-90"
+                 onerror="this.src='https://placehold.co/320x180?text=RC25'" />
+          </div>
+
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+            The Most Realistic Patch of RC24 till date!
+          </p>
+
+          <div class="app-card-footer">
+            <button onclick="window.router.navigateTo('/rc24')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+              Download Now
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- RCSWIPE CARD -->
+      <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition">
+        <div class="app-card-content">
+          <div class="app-card-header flex gap-3 mb-4">
+            <div class="app-icon-container">
+              <img src="assets/icons/icon_rcswipe.png" alt="RCSWIPE Realastic V1" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=RC25'" />
+            </div>
+            <div class="flex-1">
+              <div class="text-xl font-semibold">RCSWIPE Realistic V1</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.RealCricketSwipe</div>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v1.9</span>
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">Patch</span>
+                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Free</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden h-40 bg-black">
+            <img src="assets/img/img_rc24_1.jpg" class="w-full h-full object-cover opacity-90"
+                 onerror="this.src='https://placehold.co/320x180?text=RC25'" />
+          </div>
+
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+            The Most Realistic Patch of RCSWIPE till date!
+          </p>
+
+          <div class="app-card-footer">
+            <button onclick="window.router.navigateTo('/rc24')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+              Download Now
+            </button>
+          </div>
+        </div>
+      </article>
+
       <!-- RC20 CARD with CAROUSEL -->
       <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition">
         <div class="app-card-content">
@@ -198,3 +270,4 @@ function HomePage() {
 
 
 window.HomePage = HomePage;
+
