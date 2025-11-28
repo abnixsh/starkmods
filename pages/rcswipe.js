@@ -11,11 +11,11 @@ function RcSWIPEPage() {
 
     <!-- Header Info -->
     <div class="flex items-center gap-4 mb-8">
-      <img src="assets/icons/icon_rcSWIPE.png"
+      <img src="assets/icons/icon_rcswipe.png"
            class="w-20 h-20 rounded-2xl shadow-lg"
            onerror="this.src='https://placehold.co/80?text=RCSWIPE'">
       <div>
-        <h1 class="text-3xl font-bold">RCSWIPE Realistic V1</h1>
+        <h1 class="text-3xl font-bold">RC SWIPE Realistic V1</h1>
         <div class="flex gap-2 mt-2">
           <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">v1.9</span>
           <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">Free</span>
@@ -64,6 +64,7 @@ function RcSWIPEPage() {
         <ul class="space-y-3 text-slate-600 dark:text-slate-300">
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic ODI Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic IPL Jerseys</span></li>
+         <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic TEST Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic T20 Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic PSL Jerseys</span></li>
         </ul>
