@@ -60,8 +60,15 @@
   <a href="/contact" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Contact</a>
 </nav>
 
-          <!-- AUTH BUTTON (Login / Profile) – desktop only -->
+                   <!-- AUTH BUTTON (Login / Profile) – desktop only -->
           <div id="auth-container" class="relative hidden md:block"></div>
+
+          <!-- ADMIN ICON (only for admin; visibility controlled by JS) -->
+          <button id="admin-panel-btn"
+                  onclick="window.router.navigateTo('/admin')"
+                  class="hidden p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
+            <span class="material-icons text-xl">admin_panel_settings</span>
+          </button>
 
           <!-- CART ICON (kept) -->
           <button onclick="window.router.navigateTo('/cart')"
