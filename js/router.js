@@ -8,12 +8,14 @@ class Router {
     this.addRoute('/', 'home');
     this.addRoute('/cart', 'cart');
     this.addRoute('/checkout', 'checkout');
+
     this.addRoute('/rc20', 'rc20');
     this.addRoute('/rc24', 'rc24');
     this.addRoute('/rcswipe', 'rcswipe');
     this.addRoute('/wcc3', 'wcc3');
     this.addRoute('/wcc2', 'wcc2');
     this.addRoute('/rc25', 'rc25');
+
     this.addRoute('/contact', 'contact');
     this.addRoute('/profile', 'profile');
 
@@ -88,10 +90,8 @@ class Router {
       return;
     }
 
-    content.innerHTML = `
-      <div class="flex justify-center pt-20">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-      </div>`;
+    // Show skeleton while we load JS for the page
+    content.innerHTML = this.getSkeletonHtml(pageName);
 
     const funcName = this.getFunctionName(pageName);
     if (window[funcName]) {
@@ -113,6 +113,109 @@ class Router {
 
     document.head.appendChild(script);
   }
+
+  // ---------- SKELETONS ----------
+
+  getSkeletonHtml(pageName) {
+    // Home skeleton
+    if (pageName === 'home') {
+      return `
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 animate-fade-in">
+          <div class="mb-8 space-y-3 animate-pulse">
+            <div class="h-8 w-48 bg-slate-200 dark:bg-slate-700 rounded"></div>
+            <div class="h-4 w-72 bg-slate-200 dark:bg-slate-700 rounded"></div>
+          </div>
+          <div class="grid md:grid-cols-3 gap-6">
+            ${[1,2,3].map(() => `
+              <div class="app-card p-6">
+                <div class="flex gap-3 mb-4 animate-pulse">
+                  <div class="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
+                  <div class="flex-1 space-y-2">
+                    <div class="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                    <div class="h-3 w-40 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                    <div class="flex gap-2 mt-2">
+                      <div class="h-4 w-10 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                      <div class="h-4 w-14 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="h-40 w-full bg-slate-200 dark:bg-slate-700 rounded-lg mb-4 animate-pulse"></div>
+                <div class="h-3 w-full bg-slate-200 dark:bg-slate-700 rounded mb-2 animate-pulse"></div>
+                <div class="h-3 w-3/4 bg-slate-200 dark:bg-slate-700 rounded mb-4 animate-pulse"></div>
+                <div class="h-10 w-full bg-slate-200 dark:bg-slate-700 rounded-xl animate-pulse"></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // Detail pages (mods like rc20, rc24, rcswipe, wcc3, wcc2, rc25)
+    const detailPages = ['rc20', 'rc24', 'rcswipe', 'wcc3', 'wcc2', 'rc25'];
+    if (detailPages.includes(pageName)) {
+      return `
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 animate-fade-in">
+          <div class="mb-6 h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
+
+          <div class="flex items-center gap-4 mb-8 animate-pulse">
+            <div class="w-20 h-20 rounded-2xl bg-slate-200 dark:bg-slate-700"></div>
+            <div class="flex-1 space-y-3">
+              <div class="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              <div class="h-4 w-64 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              <div class="flex gap-2 mt-2">
+                <div class="h-5 w-10 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                <div class="h-5 w-14 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+                <div class="h-5 w-16 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="app-card p-4 rounded-2xl mb-8 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <div class="h-5 w-40 bg-slate-200 dark:bg-slate-700 rounded mb-4 animate-pulse"></div>
+            <div class="h-48 w-full bg-slate-200 dark:bg-slate-700 rounded-xl animate-pulse"></div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="app-card p-6 rounded-2xl animate-pulse">
+              <div class="h-5 w-32 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
+              <div class="space-y-3">
+                <div class="h-4 w-full bg-slate-200 dark:bg-slate-700 rounded"></div>
+                <div class="h-4 w-5/6 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                <div class="h-4 w-4/5 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                <div class="h-4 w-3/4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+              </div>
+            </div>
+
+            <div class="app-card p-6 rounded-2xl flex flex-col justify-between bg-slate-900 text-white animate-pulse">
+              <div class="space-y-3">
+                <div class="h-5 w-40 bg-slate-700 rounded"></div>
+                <div class="h-4 w-5/6 bg-slate-700 rounded"></div>
+              </div>
+              <div class="mt-6 h-11 w-full bg-slate-700 rounded-xl"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Generic skeleton for other pages (cart, checkout, profile, admin, etc.)
+    return `
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-16 animate-fade-in">
+        <div class="space-y-4 animate-pulse">
+          <div class="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded"></div>
+          <div class="h-4 w-64 bg-slate-200 dark:bg-slate-700 rounded"></div>
+          <div class="h-4 w-40 bg-slate-200 dark:bg-slate-700 rounded"></div>
+        </div>
+        <div class="mt-8 space-y-4 animate-pulse">
+          <div class="h-10 w-full bg-slate-200 dark:bg-slate-700 rounded"></div>
+          <div class="h-10 w-full bg-slate-200 dark:bg-slate-700 rounded"></div>
+          <div class="h-10 w-3/4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ---------- FUNCTION NAME RESOLUTION ----------
 
   getFunctionName(pageName) {
     // Special handling for /creator* routes
@@ -158,8 +261,8 @@ class Router {
     const map = {
       'home': 'HomePage',
       'rc20': 'Rc20Page',
-       'rc24': 'Rc24Page',
-       'rcswipe': 'RcSWIPEPage',
+      'rc24': 'Rc24Page',
+      'rcswipe': 'RcSWIPEPage',
       'wcc3': 'Wcc3Page',
       'wcc2': 'Wcc2Page',
       'rc25': 'Rc25Page',
