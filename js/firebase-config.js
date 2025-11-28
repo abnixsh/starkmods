@@ -32,36 +32,14 @@ window.authReady = false;
 
 // ADD ALL ADMIN / ELITE EMAILS HERE
 const ADMIN_EMAILS = ["theabhistark17@gmail.com"]; // you can add more later
-const ELITE_EMAILS = ["theastroabhi18@gmail.com",
-                     "ritamsarkar875@gmail.com",
-                     "thomasbuju62@gmail.com",
-                     "hmishraxd@gmail.com",
-                     "g.eswaravardhan@gmail.com"]; 
-  // for now same list
+const ELITE_EMAILS = [
+  "theastroabhi18@gmail.com",
+  "ritamsarkar875@gmail.com",
+  "thomasbuju62@gmail.com",
+  "hmishraxd@gmail.com",
+  "g.eswaravardhan@gmail.com"
+];
 
-// --- 5. LISTENER ---
-auth.onAuthStateChanged((user) => {
-  console.log("Auth state:", user ? user.email : "none");
-
-  window.currentUser = user || null;
-  const email = user?.email || null;
-
-  window.isAdmin = !!email && ADMIN_EMAILS.includes(email);
-  window.isElite = !!email && ELITE_EMAILS.includes(email);
-  window.authReady = true;
-
-  const applyUI = () => updateAuthUI(user);
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", applyUI, { once: true });
-  } else {
-    applyUI();
-  }
-
-  // Re-render current route so /profile uses the correct auth state
-  if (window.router && typeof window.router.handleRoute === 'function') {
-    window.router.handleRoute(location.pathname);
-  }
-});
 // --- 4. AUTH UI ---
 function updateAuthUI(user) {
   const containers = [
@@ -99,6 +77,34 @@ function updateAuthUI(user) {
   });
 }
 
+// --- 5. LISTENER ---
+auth.onAuthStateChanged((user) => {
+  console.log("Auth state:", user ? user.email : "none");
+
+  window.currentUser = user || null;
+  const email = user?.email || null;
+
+  window.isAdmin = !!email && ADMIN_EMAILS.includes(email);
+  window.isElite = !!email && ELITE_EMAILS.includes(email);
+  window.authReady = true;
+
+  // NEW: update Admin icon visibility based on currentUser + isAdmin
+  if (window.updateAdminIcon) {
+    window.updateAdminIcon();
+  }
+
+  const applyUI = () => updateAuthUI(user);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", applyUI, { once: true });
+  } else {
+    applyUI();
+  }
+
+  // Re-render current route so /profile uses the correct auth state
+  if (window.router && typeof window.router.handleRoute === 'function') {
+    window.router.handleRoute(location.pathname);
+  }
+});
 
 // --- 6. GOOGLE LOGIN ---
 window.googleLogin = function () {
@@ -145,6 +151,10 @@ window.logout = function () {
     console.log("Logged out");
     if (window.router) {
       window.router.navigateTo("/");
+    }
+    // optional: immediate icon update; auth listener will also run
+    if (window.updateAdminIcon) {
+      window.updateAdminIcon();
     }
   });
 };
