@@ -10,7 +10,7 @@ class Router {
     this.addRoute('/checkout', 'checkout');
     this.addRoute('/rc20', 'rc20');
     this.addRoute('/rc24', 'rc24');
-    this.addRoute('/rcSWIPE', 'rcSWIPE');
+     this.addRoute('/rcswipe', 'rcswipe');
     this.addRoute('/wcc3', 'wcc3');
     this.addRoute('/wcc2', 'wcc2');
     this.addRoute('/rc25', 'rc25');
@@ -159,7 +159,7 @@ class Router {
       'home': 'HomePage',
       'rc20': 'Rc20Page',
        'rc24': 'Rc24Page',
-       'rcSWIPE': 'RcSWIPEPage',
+       'rcswipe': 'RcSWIPEPage'
       'wcc3': 'Wcc3Page',
       'wcc2': 'Wcc2Page',
       'rc25': 'Rc25Page',
