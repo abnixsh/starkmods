@@ -1,4 +1,52 @@
 function HomePage() {
+  const isAdmin = !!window.isAdmin;
+
+  // Load hidden card ids from localStorage
+  let hiddenCards = [];
+  try {
+    hiddenCards = JSON.parse(localStorage.getItem('hidden_home_cards') || '[]');
+    if (!Array.isArray(hiddenCards)) hiddenCards = [];
+  } catch (e) {
+    hiddenCards = [];
+  }
+
+  const isHidden = (id) => hiddenCards.includes(id);
+
+  const adminControls = (id) => {
+    if (!isAdmin) return '';
+    const hidden = isHidden(id);
+    const label = hidden ? 'Show' : 'Hide';
+    const icon  = hidden ? 'visibility' : 'visibility_off';
+    const hiddenNote = hidden
+      ? `<div class="mb-1 text-[10px] text-red-500 font-semibold uppercase">Hidden (only admin)</div>`
+      : '';
+
+    return `
+      <div class="flex justify-end mb-1">
+        <button onclick="window.toggleHomeCard('${id}')"
+                class="text-slate-400 hover:text-red-500 text-[11px] flex items-center gap-1">
+          <span class="material-icons text-xs">${icon}</span>
+          <span class="uppercase font-semibold">${label}</span>
+        </button>
+      </div>
+      ${hiddenNote}
+    `;
+  };
+
+  const renderCard = (id, innerHtml) => {
+    // If card is hidden and user is not admin, don't render it at all
+    if (!isAdmin && isHidden(id)) return '';
+    const extraClasses = isHidden(id) ? 'opacity-50' : '';
+
+    return `
+      <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition ${extraClasses}"
+               data-card-id="${id}">
+        ${adminControls(id)}
+        ${innerHtml}
+      </article>
+    `;
+  };
+
   return `
   <div class="max-w-6xl mx-auto pb-20 animate-fade-in">
 
@@ -13,8 +61,8 @@ function HomePage() {
     <!-- MOD CARDS GRID -->
     <section class="grid md:grid-cols-3 gap-6">
 
-      <!-- RC25 CARD -->
-      <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition">
+      ${renderCard('rc25', `
+        <!-- RC25 CARD -->
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
@@ -31,9 +79,26 @@ function HomePage() {
             </div>
           </div>
 
-          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden h-40 bg-black">
-            <img src="assets/img/img_rc25_1.jpg" class="w-full h-full object-cover opacity-90"
-                 onerror="this.src='https://placehold.co/320x180?text=RC25'" />
+          <!-- CAROUSEL -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative h-40">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_rc25_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="RC25 screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=RC25-${i}'">
+                </div>
+              `).join('')}
+            </div>
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
@@ -46,15 +111,15 @@ function HomePage() {
             </button>
           </div>
         </div>
-      </article>
+      `)}
 
-      <!-- RC24 CARD -->
-      <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition">
+      ${renderCard('rc24', `
+        <!-- RC24 CARD -->
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
-              <img src="assets/icons/icon_rc24.png" alt="RC24 Realastic V1" class="h-16 w-16 rounded-lg"
-                   onerror="this.src='https://placehold.co/64?text=RC25'" />
+              <img src="assets/icons/icon_rc24.png" alt="RC24 Realistic V1" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=RC24'" />
             </div>
             <div class="flex-1">
               <div class="text-xl font-semibold">RC24 Realistic V1</div>
@@ -67,13 +132,30 @@ function HomePage() {
             </div>
           </div>
 
-          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden h-40 bg-black">
-            <img src="assets/img/img_rc24_1.jpg" class="w-full h-full object-cover opacity-90"
-                 onerror="this.src='https://placehold.co/320x180?text=RC25'" />
+          <!-- CAROUSEL -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative h-40">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_rc24_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="RC24 screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=RC24-${i}'">
+                </div>
+              `).join('')}
+            </div>
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The Most Realistic Patch of RC24 till date!
+            The most realistic patch of RC24 till date!
           </p>
 
           <div class="app-card-footer">
@@ -82,15 +164,15 @@ function HomePage() {
             </button>
           </div>
         </div>
-      </article>
+      `)}
 
-      <!-- RCSWIPE CARD -->
-      <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition">
+      ${renderCard('rcswipe', `
+        <!-- RCSWIPE CARD -->
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
-              <img src="assets/icons/icon_rcswipe.png" alt="RCSWIPE Realastic V1" class="h-16 w-16 rounded-lg"
-                   onerror="this.src='https://placehold.co/64?text=RC25'" />
+              <img src="assets/icons/icon_rcswipe.png" alt="RCSWIPE Realistic V1" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=SWP'" />
             </div>
             <div class="flex-1">
               <div class="text-xl font-semibold">RCSWIPE Realistic V1</div>
@@ -103,25 +185,42 @@ function HomePage() {
             </div>
           </div>
 
-          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden h-40 bg-black">
-            <img src="assets/img/img_rc24_1.jpg" class="w-full h-full object-cover opacity-90"
-                 onerror="this.src='https://placehold.co/320x180?text=RC25'" />
+          <!-- CAROUSEL -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative h-40">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_rcswipe_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="RCSWIPE screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=SWIPE-${i}'">
+                </div>
+              `).join('')}
+            </div>
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The Most Realistic Patch of RCSWIPE till date!
+            The most realistic patch of RCSWIPE till date!
           </p>
 
           <div class="app-card-footer">
-            <button onclick="window.router.navigateTo('/rc24')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+            <button onclick="window.router.navigateTo('/rcswipe')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
               Download Now
             </button>
           </div>
         </div>
-      </article>
+      `)}
 
-      <!-- RC20 CARD with CAROUSEL -->
-      <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition">
+      ${renderCard('rc20', `
+        <!-- RC20 CARD with CAROUSEL -->
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
@@ -141,26 +240,13 @@ function HomePage() {
           <!-- CAROUSEL AREA -->
           <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
             <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
-              <div class="screenshot-carousel-slide min-w-full h-full">
-                <img src="assets/img/img_rc20_1.jpg" class="w-full h-full object-cover opacity-90"
-                     alt="RC20 screenshot 1"
-                     onerror="this.src='https://placehold.co/320x180?text=RC20-1'">
-              </div>
-              <div class="screenshot-carousel-slide min-w-full h-full">
-                <img src="assets/img/img_rc20_2.jpg" class="w-full h-full object-cover opacity-90"
-                     alt="RC20 screenshot 2"
-                     onerror="this.src='https://placehold.co/320x180?text=RC20-2'">
-              </div>
-              <div class="screenshot-carousel-slide min-w-full h-full">
-                <img src="assets/img/img_rc20_3.jpg" class="w-full h-full object-cover opacity-90"
-                     alt="RC20 screenshot 3"
-                     onerror="this.src='https://placehold.co/320x180?text=RC20-3'">
-              </div>
-              <div class="screenshot-carousel-slide min-w-full h-full">
-                <img src="assets/img/img_rc20_4.jpg" class="w-full h-full object-cover opacity-90"
-                     alt="RC20 screenshot 4"
-                     onerror="this.src='https://placehold.co/320x180?text=RC20-4'">
-              </div>
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_rc20_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="RC20 screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=RC20-${i}'">
+                </div>
+              `).join('')}
             </div>
 
             <!-- arrows -->
@@ -187,10 +273,10 @@ function HomePage() {
             </button>
           </div>
         </div>
-      </article>
+      `)}
 
-      <!-- WCC3 CARD with CAROUSEL -->
-      <article class="app-card p-6 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-sm transition">
+      ${renderCard('wcc3', `
+        <!-- WCC3 CARD with CAROUSEL -->
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
@@ -210,31 +296,13 @@ function HomePage() {
           <!-- CAROUSEL AREA -->
           <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
             <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
-              <div class="screenshot-carousel-slide min-w-full h-full">
-                <img src="assets/img/img_wcc3_1.jpg" class="w-full h-full object-cover opacity-90"
-                     alt="WCC3 screenshot 1"
-                     onerror="this.src='https://placehold.co/320x180?text=WCC3-1'">
-              </div>
-              <div class="screensWCC3hot-carousel-slide min-w-full h-full">
-                <img src="assets/img/img_wcc3_2.jpg" class="w-full h-full object-cover opacity-90"
-                     alt="WCC3 screenshot 2"
-                     onerror="this.src='https://placehold.co/320x180?text=WCC3-2'">
-              </div>
-              <div class="screenshot-carousel-slide min-w-full h-full">
-                <img src="assets/img/img_wcc3_3.jpg" class="w-full h-full object-cover opacity-90"
-                     alt="WCC3 screenshot 3"
-                     onerror="this.src='https://placehold.co/320x180?text=WCC3-3'">
-              </div>
-              <div class="screenshot-carousel-slide min-w-full h-full">
-                <img src="assets/img/img_wcc3_4.jpg" class="w-full h-full object-cover opacity-90"
-                     alt="WCC3 screenshot 4"
-                     onerror="this.src='https://placehold.co/320x180?text=WCC3-4'">
-              </div>
-              <div class="screenshot-carousel-slide min-w-full h-full">
-                <img src="assets/img/img_wcc3_5.jpg" class="w-full h-full object-cover opacity-90"
-                     alt="WCC3 screenshot 5"
-                     onerror="this.src='https://placehold.co/320x180?text=WCC3-5'">
-              </div>
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_wcc3_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="WCC3 screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=WCC3-${i}'">
+                </div>
+              `).join('')}
             </div>
 
             <!-- arrows -->
@@ -252,7 +320,7 @@ function HomePage() {
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The ultimate WCC3 VIP Mod Menu. Features include Career Mode Unlock, Unlimited Energy, All Tournaments Unlocked..etc
+            The ultimate WCC3 VIP Mod Menu. Features include Career Mode Unlock, Unlimited Energy, All Tournaments Unlocked, etc.
           </p>
 
           <div class="app-card-footer">
@@ -261,13 +329,93 @@ function HomePage() {
             </button>
           </div>
         </div>
-      </article>
+      `)}
+
+      ${renderCard('wcc2', `
+        <!-- WCC2 CARD with CAROUSEL -->
+        <div class="app-card-content">
+          <div class="app-card-header flex gap-3 mb-4">
+            <div class="app-icon-container">
+              <img src="assets/icons/icon_wcc2.png" alt="WCC2 Mod" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=WCC2'" />
+            </div>
+            <div class="flex-1">
+              <div class="text-xl font-semibold">WCC2 Mod Menu</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">com.nextwave.wcc2</div>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">vX.X</span>
+                <span class="badge bg-yellow-100 px-2 py-1 rounded text-xs text-yellow-800">Premium</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAROUSEL AREA -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_wcc2_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="WCC2 screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=WCC2-${i}'">
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- arrows -->
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+
+            <!-- dots -->
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
+          </div>
+
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+            WCC2 VIP Mod Menu with unlocked squads, tournaments and more.
+          </p>
+
+          <div class="app-card-footer">
+            <button onclick="window.router.navigateTo('/wcc2')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+              View Details
+            </button>
+          </div>
+        </div>
+      `)}
 
     </section>
   </div>
   `;
 }
 
+// Toggle hide/show for home cards, stored in localStorage
+window.toggleHomeCard = function (id) {
+  const key = 'hidden_home_cards';
+  let arr;
+  try {
+    arr = JSON.parse(localStorage.getItem(key) || '[]');
+    if (!Array.isArray(arr)) arr = [];
+  } catch (e) {
+    arr = [];
+  }
+
+  const idx = arr.indexOf(id);
+  if (idx === -1) {
+    arr.push(id);       // hide
+  } else {
+    arr.splice(idx, 1); // show
+  }
+
+  localStorage.setItem(key, JSON.stringify(arr));
+
+  // Re-render home page so changes apply immediately
+  if (window.router && typeof window.router.handleRoute === 'function') {
+    window.router.handleRoute('/');
+  }
+};
 
 window.HomePage = HomePage;
-
