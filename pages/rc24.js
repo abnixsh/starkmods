@@ -69,30 +69,27 @@ function Rc24Page() {
         </ul>
       </div>
 
-      <!-- Buy Section -->
-      <div class="app-card p-6 rounded-2xl flex flex-col justify-between">
-        <div>
-          <h3 class="text-xl font-bold mb-4">Select Plan</h3>
-          <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-6">
-            Get the Most Realistic Upadte of RC24!
-          </p>
-        </div>
-        
-        <div class="space-y-3">
-          <button onclick="window.addToCart('rc24', '1month')" class="w-full py-3 px-4 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-xl font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-center justify-between">
-            <span>1 Month Access</span>
-            <span>₹300</span>
-          </button>
-
-          <button onclick="window.addToCart('rc24', 'lifetime')" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-between">
-            <span class="flex items-center gap-2"><span class="material-icons text-sm">diamond</span> Lifetime Access</span>
-            <span>₹1000</span>
-          </button>
-        </div>
+     <div class="app-card p-6 rounded-2xl flex flex-col justify-between bg-slate-900 text-white shadow-xl">
+            <div>
+                <h3 class="text-xl font-bold mb-2 text-white">Free Download</h3>
+                <p class="text-slate-400 text-sm mb-6">
+                    This mod is completely free. Click below to download directly.
+                </p>
+            </div>
+            
+            <div class="space-y-3">
+                <a href="https://dupload.net/o9cxh6xht397" target="_blank" class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                    <span class="material-icons">download</span> Download APK
+                </a>
+                <p class="text-center text-xs text-slate-500 mt-2">
+                    File Size: 700+ MB | Version: v7+
+                </p>
+            </div>
+          </div>
       </div>
     </div>
-  </div>
-  `;
+    `;
 }
 
+// Router ke liye
 window.Rc24Page = Rc24Page;
