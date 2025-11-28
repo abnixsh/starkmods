@@ -79,11 +79,8 @@ function Rc24Page() {
             
             <div class="space-y-3">
                 <a href="https://dupload.net/o9cxh6xht397" target="_blank" class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                    <span class="material-icons">download</span> Download APK
+                    <span class="material-icons">download</span> Download Patch
                 </a>
-                <p class="text-center text-xs text-slate-500 mt-2">
-                    File Size: 700+ MB | Version: v7+
-                </p>
             </div>
           </div>
       </div>
