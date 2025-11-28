@@ -65,52 +65,58 @@
   }
   window.updateCartBadge = updateCartBadge;
 
-// --- 2. THEME LOGIC (body.dark like your friend's CSS) ---
-// --- THEME LOGIC ---
-const THEME_KEY = 'stark_theme_dark';
+  // --- 1b. ADMIN ICON TOGGLE ---
+  // Shows the admin panel icon only when current user is admin
+  window.updateAdminIcon = function () {
+    const btn = document.getElementById('admin-panel-btn');
+    if (!btn) return;
 
-function applyTheme(isDark) {
-  const html = document.documentElement;
-  if (!html) return;
+    const isAdmin = !!(window.currentUser && window.isAdmin);
+    btn.classList.toggle('hidden', !isAdmin);
+  };
 
-  // Put .dark on <html> so Tailwind + CSS both work
-  html.classList.toggle('dark', isDark);
+  // --- 2. THEME LOGIC ---
+  const THEME_KEY = 'stark_theme_dark';
 
-  // (optional) if you still have body.dark somewhere, you can sync it:
-  // const body = document.body;
-  // if (body) body.classList.toggle('dark', isDark);
+  function applyTheme(isDark) {
+    const html = document.documentElement;
+    if (!html) return;
 
-  const iconDesktop = document.getElementById('theme-icon');
-  const iconMobile = document.querySelector('#theme-toggle-mobile .material-icons');
-  if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
-  if (iconMobile) iconMobile.textContent = isDark ? 'light_mode' : 'dark_mode';
-}
+    // Put .dark on <html> so Tailwind + CSS both work
+    html.classList.toggle('dark', isDark);
 
-function initializeTheme() {
-  const saved = localStorage.getItem(THEME_KEY);
-  let isDark;
-  if (saved === '1') isDark = true;
-  else if (saved === '0') isDark = false;
-  else isDark = false; // default light
+    const iconDesktop = document.getElementById('theme-icon');
+    const iconMobile = document.querySelector('#theme-toggle-mobile .material-icons');
+    if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
+    if (iconMobile) iconMobile.textContent = isDark ? 'light_mode' : 'dark_mode';
+  }
 
-  applyTheme(isDark);
-}
+  function initializeTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    let isDark;
+    if (saved === '1') isDark = true;
+    else if (saved === '0') isDark = false;
+    else isDark = false; // default light
 
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = !html.classList.contains('dark');
-  applyTheme(isDark);
-  localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
-}
+    applyTheme(isDark);
+  }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initializeTheme();
-  // ... keep your existing cart / menu code
-  document
-    .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
-    .forEach(btn => btn.addEventListener('click', toggleTheme));
-});
-  // --- 3. CAROUSEL LOGIC (unchanged) ---
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = !html.classList.contains('dark');
+    applyTheme(isDark);
+    localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
+  }
+
+  // (First) DOMContentLoaded: theme only
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeTheme();
+    document
+      .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
+      .forEach(btn => btn.addEventListener('click', toggleTheme));
+  });
+
+  // --- 3. CAROUSEL LOGIC ---
   function initializeCarousels() {
     document.querySelectorAll('.screenshot-carousel').forEach((carousel) => {
       if (carousel.dataset.carouselInit === '1') return;
@@ -197,21 +203,25 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- INIT ---
- document.addEventListener('DOMContentLoaded', () => {
-  initializeTheme();
-  updateCartBadge();
+  // --- INIT (second DOMContentLoaded) ---
+  document.addEventListener('DOMContentLoaded', () => {
+    // Theme again (harmless but can be removed if you want)
+    initializeTheme();
+    updateCartBadge();
 
-  document
-    .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
-    .forEach(btn => btn.addEventListener('click', toggleTheme));
+    document
+      .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
+      .forEach(btn => btn.addEventListener('click', toggleTheme));
 
-  const menuBtn = document.getElementById('mobile-menu-button');
-  const menu = document.getElementById('mobile-menu');
-  if (menuBtn && menu) {
-    menuBtn.addEventListener('click', () => menu.classList.toggle('hidden'));
-  }
-});
+    const menuBtn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+    if (menuBtn && menu) {
+      menuBtn.addEventListener('click', () => menu.classList.toggle('hidden'));
+    }
+
+    // Initialize admin icon once DOM is ready (will hide if not admin)
+    if (window.updateAdminIcon) window.updateAdminIcon();
+  });
 
   // Called by router after each page render
   window.initializeComponents = function () {
