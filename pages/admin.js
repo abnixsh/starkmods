@@ -17,10 +17,7 @@ function AdminPage() {
     return '';
   }
 
-  setTimeout(() => {
-    // Only withdrawals on main page to keep it light
-    if (window.loadWithdrawRequests) window.loadWithdrawRequests();
-  }, 100);
+  // No withdrawals loaded here anymore
 
   return `
     <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-10">
@@ -59,7 +56,7 @@ function AdminPage() {
               <span class="font-bold text-sm">Elite Wallets</span>
             </div>
             <div class="text-[11px] text-slate-500">
-              View and manually credit Elite wallets.
+              View and manually credit Elite wallets & withdrawals.
             </div>
           </button>
 
@@ -73,30 +70,6 @@ function AdminPage() {
               Approve Mod Creator subscriptions & mod requests.
             </div>
           </button>
-        </div>
-      </section>
-
-      <!-- WITHDRAWALS -->
-      <section id="admin-withdrawals-section">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-lg font-bold">Withdrawal Requests</h2>
-          <span class="text-[11px] text-slate-500">From Elite wallets</span>
-        </div>
-        <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <table class="w-full text-left text-sm">
-            <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-              <tr>
-                <th class="p-4">User</th>
-                <th class="p-4">Amount (USD)</th>
-                <th class="p-4">Payment Method</th>
-                <th class="p-4">Status</th>
-                <th class="p-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="withdraw-list">
-              <tr><td colspan="5" class="p-8 text-center">Loading withdraw requests...</td></tr>
-            </tbody>
-          </table>
         </div>
       </section>
     </div>
@@ -536,7 +509,7 @@ window.creditEliteWallet = async function (adminUser, order, orderDocId) {
   });
 };
 
-/* ---------- WITHDRAWAL REQUESTS ---------- */
+/* ---------- WITHDRAWAL REQUESTS (NOW USED ONLY IN ELITE WALLETS PAGE) ---------- */
 
 window.loadWithdrawRequests = function () {
   const list = document.getElementById('withdraw-list');
@@ -629,7 +602,7 @@ window.handleWithdrawStatus = async function (requestId, newStatus) {
   alert('Withdrawal updated.');
 };
 
-/* ---------- ELITE WALLETS PAGE + BUTTON TO SHOW WITHDRAWALS ---------- */
+/* ---------- ELITE WALLETS PAGE + WITHDRAWALS SECTION ---------- */
 
 function AdminEliteWalletsPage() {
   if (!window.isAdmin) {
@@ -639,14 +612,15 @@ function AdminEliteWalletsPage() {
 
   setTimeout(() => {
     window.loadEliteWallets();
+    window.loadWithdrawRequests();
   }, 100);
 
   return `
-    <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-6">
+    <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-10">
       <div class="flex items-center justify-between mb-2">
         <h1 class="text-2xl font-bold">Elite Wallets</h1>
         <div class="flex gap-2">
-          <button onclick="window.goToAdminWithdrawals()"
+          <button onclick="window.scrollToEliteWithdrawals()"
                   class="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded flex items-center gap-1">
             <span class="material-icons text-xs">payments</span> Show Withdrawal Requests
           </button>
@@ -657,22 +631,49 @@ function AdminEliteWalletsPage() {
         </div>
       </div>
 
-      <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-            <tr>
-              <th class="p-4">User</th>
-              <th class="p-4">Balance</th>
-              <th class="p-4">Total Earned</th>
-              <th class="p-4">Payment Method</th>
-              <th class="p-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="elite-list">
-            <tr><td colspan="5" class="p-8 text-center">Loading wallets...</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <!-- ELITE WALLETS TABLE -->
+      <section>
+        <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="p-4">User</th>
+                <th class="p-4">Balance</th>
+                <th class="p-4">Total Earned</th>
+                <th class="p-4">Payment Method</th>
+                <th class="p-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="elite-list">
+              <tr><td colspan="5" class="p-8 text-center">Loading wallets...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- WITHDRAWAL REQUESTS (only here now) -->
+      <section id="elite-withdrawals-section">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-bold">Withdrawal Requests</h2>
+          <span class="text-[11px] text-slate-500">From Elite wallets</span>
+        </div>
+        <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="p-4">User</th>
+                <th class="p-4">Amount (USD)</th>
+                <th class="p-4">Payment Method</th>
+                <th class="p-4">Status</th>
+                <th class="p-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="withdraw-list">
+              <tr><td colspan="5" class="p-8 text-center">Loading withdraw requests...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   `;
 }
@@ -759,21 +760,13 @@ window.manualCredit = function (userId, email) {
   });
 };
 
-/* ---------- NAV HELPER: GO TO WITHDRAWALS FROM ELITE WALLETS ---------- */
+/* ---------- SCROLL HELPER FOR WITHDRAWALS IN ELITE PAGE ---------- */
 
-window.goToAdminWithdrawals = function () {
-  if (!window.router) return;
-
-  // Navigate to main Admin page
-  window.router.navigateTo('/admin');
-
-  // After route renders, scroll to withdrawals section
-  setTimeout(() => {
-    const el = document.getElementById('admin-withdrawals-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, 200);
+window.scrollToEliteWithdrawals = function () {
+  const el = document.getElementById('elite-withdrawals-section');
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 };
 
 /* ---------- EXPORT PAGES ---------- */
