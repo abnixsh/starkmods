@@ -8,7 +8,7 @@ const CREATOR_PLANS = {
     priceINR: 100,
     maxRequests: 20,
     periodDays: 30,
-    description: '20 requests · 30 days'
+    description: '20 cerdits Custom Player'
   },
   P300: {
     code: 'P300',
@@ -16,7 +16,7 @@ const CREATOR_PLANS = {
     priceINR: 300,
     maxRequests: 70,
     periodDays: 30,
-    description: '70 requests · 30 days'
+    description: '70 cerdits + Max Mod Creator'
   },
   P1000: {
     code: 'P1000',
@@ -886,7 +886,7 @@ window.checkCreatorSubBeforeRequest = function () {
   const now = Date.now();
 
   if (!sub || !sub.status || sub.status === 'rejected') {
-    window.showCreatorPlans('You need an active Mod Creator subscription to submit requests.');
+    window.showCreatorPlans('You need an active Mod Creator subscription to submit .');
     return false;
   }
 
@@ -903,7 +903,7 @@ window.checkCreatorSubBeforeRequest = function () {
     return false;
   }
 
-  const max = sub.maxRequests || null;
+  const max = sub.max || null;
   const used = sub.usedRequests || 0;
   if (max && used >= max) {
     window.showCreatorPlans('You have used all requests for this plan.');
@@ -1006,7 +1006,7 @@ window.requestCreatorSub = function (planCode) {
     image: 'assets/icons/icon_site.jpg',
     subPlanCode: planCode,
     subPlanName: plan.name,
-    subMaxRequests: plan.maxRequests || null,
+    subMax: plan.max || null,
     subPeriodDays: plan.periodDays
   }];
 
@@ -1020,7 +1020,7 @@ window.incrementCreatorUsage = async function () {
     await db.collection('creatorSubs')
       .doc(window.currentUser.uid)
       .update({
-        usedRequests: firebase.firestore.FieldValue.increment(1),
+        used: firebase.firestore.FieldValue.increment(1),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
   } catch (e) {
@@ -1177,7 +1177,7 @@ window.submitCustomPlayer = async function (evt) {
   };
 
   try {
-    await db.collection('modRequests').add({
+    await db.collection('mod').add({
       ...requestData,
       status: 'pending',
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -1262,7 +1262,7 @@ window.submitCustomJersey = async function (evt) {
   };
 
   try {
-    await db.collection('modRequests').add({
+    await db.collection('mod').add({
       ...requestData,
       status: 'pending',
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -1357,7 +1357,7 @@ window.submitCustomTeam = async function () {
   };
 
   try {
-    await db.collection('modRequests').add({
+    await db.collection('mod').add({
       ...requestData,
       status: 'pending',
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -1393,7 +1393,7 @@ window.loadCreatorHistory = function () {
   const container = document.getElementById('creator-history');
   if (!container || !window.db || !window.currentUser) return;
 
-  db.collection('modRequests')
+  db.collection('mod')
     .where('userId', '==', window.currentUser.uid)
     .orderBy('timestamp', 'desc') // index: userId asc, timestamp desc
     .onSnapshot(snapshot => {
