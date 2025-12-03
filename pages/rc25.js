@@ -52,7 +52,7 @@ function Rc25Page() {
 
   const isAdmin = !!window.isAdmin;
 
-  const defaultLink = 'https://dupload.net/o9cxh6xht397';
+  const defaultLink = 'https://dupload.net/rovsuelnyeth';
   const cfg = window.rc25Config || {};
   const enabled = cfg.enabled !== false;          // default true if not set
   const downloadLink = cfg.link || defaultLink;
@@ -76,6 +76,15 @@ function Rc25Page() {
         Download Button Will Availabe at 10:30pm tonight!
       </p>
     `;
+
+  // NEW: Applying Process YouTube button (always enabled)
+  const applyingProcessLink = 'https://youtube.com/shorts/AyCpwTJWVKc?si=I_4D9MHJZez_t0vh'; // change to your real video link
+  const applyingButtonHtml = `
+    <a href="${applyingProcessLink}" target="_blank"
+       class="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+      <span class="material-icons">ondemand_video</span> Applying Process
+    </a>
+  `;
 
   const adminControlsHtml = isAdmin ? `
     <div class="mt-4 p-3 rounded-lg bg-slate-800/80 text-xs border border-slate-600 space-y-2">
@@ -192,6 +201,7 @@ function Rc25Page() {
             
             <div class="space-y-3">
               ${downloadButtonHtml}
+              ${applyingButtonHtml}
               ${adminControlsHtml}
             </div>
           </div>
@@ -211,7 +221,7 @@ window.toggleRc25Download = function () {
     return;
   }
 
-  const defaultLink = 'https://dupload.net/o9cxh6xht397';
+  const defaultLink = 'https://dupload.net/rovsuelnyeth';
   const cfg = window.rc25Config || {};
   const currentEnabled = cfg.enabled !== false;
   const newEnabled = !currentEnabled;
@@ -241,7 +251,7 @@ window.editRc25DownloadLink = function () {
     return;
   }
 
-  const defaultLink = 'https://dupload.net/o9cxh6xht397';
+  const defaultLink = 'https://dupload.net/rovsuelnyeth';
   const cfg = window.rc25Config || {};
   const currentLink = cfg.link || defaultLink;
 
@@ -264,6 +274,3 @@ window.editRc25DownloadLink = function () {
 
 // Router ke liye
 window.Rc25Page = Rc25Page;
-
-
-
