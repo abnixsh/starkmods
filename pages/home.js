@@ -117,8 +117,8 @@ function HomePage() {
               <div class="text-xl font-semibold">RC25 Fan-Made</div>
               <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.RealCricket3D</div>
               <div class="mt-2 flex items-center gap-2 flex-wrap">
-                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v7</span>
-                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Free</span>
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">New</span>
+                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">v7+</span>
               </div>
             </div>
           </div>
@@ -472,3 +472,4 @@ window.toggleHomeCard = function (id) {
 };
 
 window.HomePage = HomePage;
+
