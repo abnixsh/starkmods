@@ -61,7 +61,7 @@ function Rc25Page() {
     ? `
       <a href="${downloadLink}" target="_blank"
          class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
-        <span class="material-icons">download</span> Download UPDATE
+        <span class="material-icons">download</span> Download APK
       </a>
       <p class="text-center text-xs text-slate-500 mt-2">
         File Size: 700+ MB | Version: v7+
@@ -73,7 +73,7 @@ function Rc25Page() {
         <span class="material-icons">block</span> Download Temporarily Disabled
       </button>
       <p class="text-center text-xs text-red-500 mt-2">
-       Download Button Will Available at 9:30!
+        Admin has disabled downloads for this mod temporarily.
       </p>
     `;
 
@@ -122,20 +122,41 @@ function Rc25Page() {
       <div class="flex items-center gap-4 mb-8">
          <img src="assets/icons/icon_rc25.jpg" class="w-20 h-20 rounded-2xl shadow-lg" onerror="this.src='https://placehold.co/80?text=RC25'">
          <div>
-             <h1 class="text-3xl font-bold">RC25 V7+ Update</h1>
+             <h1 class="text-3xl font-bold">RC25 V7 Patch</h1>
              <div class="flex gap-2 mt-2">
                 <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">New Release</span>
-                <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">Mini Update</span>
-                <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">V7+</span>
+                <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">Free</span>
+                <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">V7</span>
              </div>
          </div>
       </div>
 
-      <!-- SCREENSHOTS -->
+      <!-- SCREENSHOTS (5-image carousel) -->
       <div class="app-card p-4 rounded-2xl mb-8 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
          <h3 class="font-bold text-lg mb-4 px-2">Gameplay Screenshots</h3>
-         <div class="screenshot-carousel rounded-xl overflow-hidden shadow-lg aspect-video relative bg-black">
-              <img src="assets/img/img_rc25_1.jpg" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400?text=RC25+Gameplay'" />
+         
+         <div class="screenshot-carousel rounded-xl overflow-hidden shadow-lg aspect-video relative bg-black group">
+           <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+             ${[1,2,3,4,5].map(i => `
+               <div class="screenshot-carousel-slide min-w-full h-full">
+                 <img src="assets/img/img_rc25_${i}.jpg"
+                      class="w-full h-full object-cover"
+                      loading="lazy"
+                      alt="RC25 screenshot ${i}"
+                      onerror="this.src='https://placehold.co/600x400?text=RC25-${i}'" />
+               </div>
+             `).join('')}
+           </div>
+
+           <button class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full cursor-pointer z-10">
+             <span class="material-icons">chevron_left</span>
+           </button>
+           <button class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full cursor-pointer z-10">
+             <span class="material-icons">chevron_right</span>
+           </button>
+
+           <!-- dots will be injected by JS -->
+           <div class="screenshot-carousel-indicators"></div>
          </div>
       </div>
 
@@ -149,11 +170,11 @@ function Rc25Page() {
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Updated Sounds</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Updated Stadiums</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All teams squads updated</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New 30+ Shots</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New Shots</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New Bowling Actions</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New Teams (The Hundred)</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All bugs fixed</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Improved Graphics</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Ai Enhanced</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Updated Tournaments</span></li>
             </ul>
           </div>
@@ -241,4 +262,3 @@ window.editRc25DownloadLink = function () {
 
 // Router ke liye
 window.Rc25Page = Rc25Page;
-
