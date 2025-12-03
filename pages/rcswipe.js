@@ -64,29 +64,38 @@ function RcSWIPEPage() {
         <ul class="space-y-3 text-slate-600 dark:text-slate-300">
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic ODI Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic IPL Jerseys</span></li>
-         <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic TEST Jerseys</span></li>
+          <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic TEST Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic T20 Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic PSL Jerseys</span></li>
         </ul>
       </div>
 
-     <div class="app-card p-6 rounded-2xl flex flex-col justify-between bg-slate-900 text-white shadow-xl">
-            <div>
-                <h3 class="text-xl font-bold mb-2 text-white">Free Download</h3>
-                <p class="text-slate-400 text-sm mb-6">
-                    This mod is completely free. Click below to download directly.
-                </p>
-            </div>
-            
-            <div class="space-y-3">
-                <a href="https://dupload.net/yrragjqs2mkp" target="_blank" class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                    <span class="material-icons">download</span> Download Patch
-                </a>
-            </div>
-          </div>
+      <!-- Download + Applying Process -->
+      <div class="app-card p-6 rounded-2xl flex flex-col justify-between bg-slate-900 text-white shadow-xl">
+        <div>
+          <h3 class="text-xl font-bold mb-2 text-white">Free Download</h3>
+          <p class="text-slate-400 text-sm mb-6">
+            This mod is completely free. Click below to download directly.
+          </p>
+        </div>
+        
+        <div class="space-y-3">
+          <!-- Download button -->
+          <a href="https://dupload.net/yrragjqs2mkp" target="_blank"
+             class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+            <span class="material-icons">download</span> Download Patch
+          </a>
+
+          <!-- Applying Process (YouTube themed) -->
+          <a href="https://youtu.be/--gF9XH7EnE" target="_blank"
+             class="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+            <span class="material-icons">ondemand_video</span> Applying Process
+          </a>
+        </div>
       </div>
     </div>
-    `;
+  </div>
+  `;
 }
 
 // Router ke liye
