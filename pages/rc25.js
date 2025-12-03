@@ -73,7 +73,7 @@ function Rc25Page() {
         <span class="material-icons">block</span> Download Temporarily Disabled
       </button>
       <p class="text-center text-xs text-red-500 mt-2">
-        Download Button Will Availabe aat 9:30pm
+        Download Button Will Availabe at 10pm tonight!
       </p>
     `;
 
@@ -171,10 +171,11 @@ function Rc25Page() {
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Updated Sounds</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Updated Stadiums</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All teams squads updated</span></li>
-               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New Shots</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New 30+ Shots</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New Bowling Actions</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>New Teams (The Hundred)</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All bugs fixed</span></li>
+               <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Improved Graphics</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Ai Enhanced</span></li>
                <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Updated Tournaments</span></li>
             </ul>
@@ -263,4 +264,5 @@ window.editRc25DownloadLink = function () {
 
 // Router ke liye
 window.Rc25Page = Rc25Page;
+
 
