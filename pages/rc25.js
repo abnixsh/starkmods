@@ -61,7 +61,7 @@ function Rc25Page() {
     ? `
       <a href="${downloadLink}" target="_blank"
          class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
-        <span class="material-icons">download</span> Download APK
+        <span class="material-icons">download</span> Download UPDATE
       </a>
       <p class="text-center text-xs text-slate-500 mt-2">
         File Size: 700+ MB | Version: v7+
@@ -73,7 +73,7 @@ function Rc25Page() {
         <span class="material-icons">block</span> Download Temporarily Disabled
       </button>
       <p class="text-center text-xs text-red-500 mt-2">
-        Admin has disabled downloads for this mod temporarily.
+        Download Button Will Availabe aat 9:30pm
       </p>
     `;
 
@@ -122,11 +122,12 @@ function Rc25Page() {
       <div class="flex items-center gap-4 mb-8">
          <img src="assets/icons/icon_rc25.jpg" class="w-20 h-20 rounded-2xl shadow-lg" onerror="this.src='https://placehold.co/80?text=RC25'">
          <div>
-             <h1 class="text-3xl font-bold">RC25 V7 Patch</h1>
+             <h1 class="text-3xl font-bold">RC25 V7+ Update</h1>
              <div class="flex gap-2 mt-2">
                 <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">New Release</span>
-                <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">Free</span>
-                <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">V7</span>
+                <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">Mini Update</span>
+                <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">V7+</span>
+                <span class="px-2 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">Free</span>
              </div>
          </div>
       </div>
@@ -262,3 +263,4 @@ window.editRc25DownloadLink = function () {
 
 // Router ke liye
 window.Rc25Page = Rc25Page;
+
