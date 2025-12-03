@@ -73,7 +73,7 @@ function Rc25Page() {
         <span class="material-icons">block</span> Download Temporarily Disabled
       </button>
       <p class="text-center text-xs text-red-500 mt-2">
-        Download Button Will Availabe at 10pm tonight!
+        Download Button Will Availabe at 10:30pm tonight!
       </p>
     `;
 
@@ -264,5 +264,6 @@ window.editRc25DownloadLink = function () {
 
 // Router ke liye
 window.Rc25Page = Rc25Page;
+
 
 
