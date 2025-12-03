@@ -31,16 +31,16 @@ function RcSWIPEPage() {
       <div class="screenshot-carousel rounded-xl overflow-hidden shadow-lg aspect-video relative group">
         <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
           <div class="screenshot-carousel-slide min-w-full h-full">
-            <img src="assets/img/img_rcSWIPE_1.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 1" />
+            <img src="assets/img/img_rcswipe_1.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 1" />
           </div>
           <div class="screenshot-carousel-slide min-w-full h-full">
-            <img src="assets/img/img_rcSWIPE_2.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 2" />
+            <img src="assets/img/img_rcswipe_2.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 2" />
           </div>
           <div class="screenshot-carousel-slide min-w-full h-full">
-            <img src="assets/img/img_rcSWIPE_3.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 3" />
+            <img src="assets/img/img_rcswipe_3.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 3" />
           </div>
           <div class="screenshot-carousel-slide min-w-full h-full">
-            <img src="assets/img/img_rcSWIPE_4.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 4" />
+            <img src="assets/img/img_rcswipe_4.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 4" />
           </div>
         </div>
 
