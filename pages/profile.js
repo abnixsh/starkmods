@@ -2,9 +2,12 @@
 
 // ---------- CONFIG ----------
 window.downloadLinks = {
-  rc20: 'https://your-download-link.com/rc20.apk',
-  wcc3: 'https://your-download-link.com/wcc3.apk',
-  rc25: 'https://your-download-link.com/rc25.apk'
+  rc20:   'https://your-download-link.com/rc20.apk',
+  rc24:   'https://your-download-link.com/rc24.apk',
+  rcswipe:'https://your-download-link.com/rcswipe.apk',
+  wcc3:   'https://your-download-link.com/wcc3.apk',
+  wcc2:   'https://your-download-link.com/wcc2.apk',
+  rc25:   'https://your-download-link.com/rc25.apk'
 };
 
 const SUPPORT_TELEGRAM_URL = 'https://t.me/imsergiomoreio'; // CHANGE
@@ -331,7 +334,7 @@ window.loadCreatorSubForProfile = function () {
     });
 };
 
-/* ---------- Orders ---------- */
+/* ---------- Orders (with download + key) ---------- */
 
 window.loadUserOrders = function () {
   const list = document.getElementById('order-list');
@@ -353,16 +356,47 @@ window.loadUserOrders = function () {
       snapshot.forEach(doc => {
         const o = doc.data();
 
+        // Status badge
         let statusBadge =
           o.status === 'approved'
-            ? `<span class="text-green-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">check_circle</span> Approved</span>`
+            ? `<span class="text-green-600 font-bold flex items-center justify-end gap-1"><span class="material-icons text-sm">check_circle</span> Approved</span>`
             : o.status === 'rejected'
-            ? `<span class="text-red-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">cancel</span> Rejected</span>`
-            : `<span class="text-yellow-600 font-bold flex items-center gap-1"><span class="material-icons text-sm">schedule</span> Pending</span>`;
+            ? `<span class="text-red-600 font-bold flex items-center justify-end gap-1"><span class="material-icons text-sm">cancel</span> Rejected</span>`
+            : `<span class="text-yellow-600 font-bold flex items-center justify-end gap-1"><span class="material-icons text-sm">schedule</span> Pending</span>`;
 
         const isSub = o.gameId && String(o.gameId).startsWith('sub_');
         const title = isSub ? (o.item?.gameName || 'Subscription') : (o.item?.gameName || 'Unknown Item');
         const planLabel = o.item?.planName || (isSub ? 'Subscription Plan' : '-');
+
+        // ACTION BUTTONS (download + key) for approved normal orders
+        let actionsHtml = '';
+        if (!isSub && o.status === 'approved') {
+          const gameId = o.gameId || '';          // e.g. 'rc20'
+          const baseLink = window.downloadLinks && window.downloadLinks[gameId];
+
+          if (baseLink) {
+            actionsHtml += `
+              <button onclick="window.downloadMod('${gameId}')"
+                      class="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1">
+                <span class="material-icons text-xs">download</span> Download
+              </button>`;
+          }
+
+          if (o.key) {
+            const safeKey = String(o.key).replace(/'/g, "\\'");
+            actionsHtml += `
+              <button onclick="window.showKey('${safeKey}')"
+                      class="px-3 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold flex items-center gap-1">
+                <span class="material-icons text-xs">vpn_key</span> Show Key
+              </button>`;
+          }
+
+          if (!actionsHtml) {
+            actionsHtml = `<span class="text-[10px] text-slate-400 mt-1 block">No download link/key configured for this order.</span>`;
+          } else {
+            actionsHtml = `<div class="mt-2 flex flex-wrap justify-end gap-2">${actionsHtml}</div>`;
+          }
+        }
 
         html += `
           <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex justify-between items-start gap-4">
@@ -372,11 +406,12 @@ window.loadUserOrders = function () {
                 Plan: ${planLabel} | ₹${o.amount}
               </div>
               <div class="text-[10px] text-slate-400 font-mono mt-1">
-                Order: ${o.orderId || '-'} · UTR: ${o.transId}
+                Order: ${o.orderId || '-'} · UTR: ${o.transId || '-'}
               </div>
             </div>
             <div class="text-right">
               ${statusBadge}
+              ${actionsHtml}
             </div>
           </div>`;
       });
