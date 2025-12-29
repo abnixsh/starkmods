@@ -8,14 +8,18 @@ const CREATOR_PLANS_ADMIN = {
 
 function CreatorAdminPage() {
   if (!window.isAdmin) {
-    window.router.navigateTo('/');
+    if(window.router) window.router.navigateTo('/');
     return '';
   }
 
+  // Load data immediately
   setTimeout(() => {
-    window.loadCreatorSubs('pending'); // Load pending by default
+    // Default to 'pending' tab logic setup
+    if(!window.currentSubFilter) window.switchSubTab('pending');
+    else window.loadCreatorSubs(window.currentSubFilter);
+    
     window.loadModRequests(); 
-  }, 200);
+  }, 100);
 
   return `
     <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-10">
@@ -24,7 +28,7 @@ function CreatorAdminPage() {
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Mod Creator Admin</h1>
-           <p class="text-sm text-slate-500">Manage subscriptions and custom requests</p>
+           <p class="text-sm text-slate-500">Manage subscriptions & custom requests</p>
         </div>
         <div class="flex gap-2">
             <button onclick="window.router.navigateTo('/admin')" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 px-4 py-2 rounded-lg text-sm font-bold">
@@ -33,34 +37,34 @@ function CreatorAdminPage() {
         </div>
       </div>
 
-      <!-- SECTION 1: SUBSCRIPTIONS -->
+      <!-- SECTION 1: SUBSCRIPTIONS (V2 Layout) -->
       <section class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
         
-        <!-- Tabs -->
+        <!-- TABS -->
         <div class="flex border-b border-slate-200 dark:border-slate-700">
           <button onclick="window.switchSubTab('pending')" id="tab-pending" 
-                  class="flex-1 py-4 text-sm font-bold text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-slate-700/50">
-             🔔 Pending Approvals
+                  class="flex-1 py-4 text-sm font-bold border-b-2 transition">
+             🔔 Pending
           </button>
           <button onclick="window.switchSubTab('active')" id="tab-active" 
-                  class="flex-1 py-4 text-sm font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
-             ✅ Active Users
+                  class="flex-1 py-4 text-sm font-bold border-b-2 transition">
+             ✅ Active
           </button>
-          <button onclick="window.switchSubTab('all')" id="tab-all" 
-                  class="flex-1 py-4 text-sm font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
-             📂 History / All
+          <button onclick="window.switchSubTab('history')" id="tab-history" 
+                  class="flex-1 py-4 text-sm font-bold border-b-2 transition">
+             📂 History / Rejected
           </button>
         </div>
 
-        <!-- Table -->
+        <!-- TABLE -->
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs uppercase text-slate-500">
               <tr>
                 <th class="p-4">User</th>
-                <th class="p-4">Plan Details</th>
+                <th class="p-4">Plan</th>
                 <th class="p-4 w-1/4">Usage Quota</th>
-                <th class="p-4">Expiry</th>
+                <th class="p-4">Expiry / Status</th>
                 <th class="p-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -99,69 +103,65 @@ function CreatorAdminPage() {
   `;
 }
 
-/* ---------- SUBSCRIPTION LOGIC ---------- */
+/* ---------- SUBSCRIPTION TABS LOGIC ---------- */
 
 window.currentSubFilter = 'pending';
 
 window.switchSubTab = function(tab) {
     window.currentSubFilter = tab;
+    window.loadCreatorSubs(tab);
     
-    // Update visual tabs
-    ['pending', 'active', 'all'].forEach(t => {
+    // Update visual styles
+    ['pending', 'active', 'history'].forEach(t => {
         const el = document.getElementById('tab-'+t);
+        if(!el) return;
         if(t === tab) {
             el.className = "flex-1 py-4 text-sm font-bold text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-slate-700/50 transition";
         } else {
-            el.className = "flex-1 py-4 text-sm font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition";
+            el.className = "flex-1 py-4 text-sm font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-transparent transition";
         }
     });
-
-    window.loadCreatorSubs(tab);
-}
+};
 
 window.loadCreatorSubs = function (filter) {
   const list = document.getElementById('creator-subs-list');
   if (!list || !window.db) return;
 
-  let query = db.collection('creatorSubs').orderBy('requestedAt', 'desc');
-
-  // Basic client-side filtering (Firestore limitation on complex OR queries)
-  // We fetch recently updated ones
-  
-  query.onSnapshot(snapshot => {
+  // Real-time listener
+  db.collection('creatorSubs').orderBy('requestedAt', 'desc').onSnapshot(snapshot => {
     if (snapshot.empty) {
-      list.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-400">No subscriptions found.</td></tr>`;
+      list.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-400">No data found.</td></tr>`;
       return;
     }
 
     let html = '';
-    const now = Date.now();
     let count = 0;
+    const now = Date.now();
 
     snapshot.forEach(doc => {
       const s = doc.data();
       const uid = s.userId || doc.id;
       
-      // --- FILTER LOGIC ---
-      const expiresAt = s.expiresAt && s.expiresAt.toDate ? s.expiresAt.toDate() : null;
-      const isExpired = expiresAt ? expiresAt.getTime() < now : false;
-      const isPending = s.status === 'pending';
-      const isActive = s.status === 'active' && !isExpired;
-
-      if (filter === 'pending' && !isPending) return;
-      if (filter === 'active' && !isActive) return;
-      // 'all' shows everything
-      
-      count++;
-      
-      // Plan Info
       const planCfg = CREATOR_PLANS_ADMIN[s.planCode] || null;
       const planName = planCfg ? planCfg.name : (s.planName || s.planCode || 'Custom');
+
+      const expiresAt = s.expiresAt && s.expiresAt.toDate ? s.expiresAt.toDate() : null;
+      const isExpired = expiresAt ? expiresAt.getTime() < now : false;
       
-      // Usage Bar Logic
+      // Determine logical category
+      let category = 'history';
+      if (s.status === 'pending') category = 'pending';
+      else if (s.status === 'active' && !isExpired) category = 'active';
+
+      // Filter Logic
+      if (filter !== category) return;
+      
+      count++;
+
+      // Usage Bar
       const used = s.usedRequests || 0;
-      const max = s.maxRequests; // null means infinity
-      let usagePercent = 0;
+      const max = s.maxRequests; 
+      let usagePercent = 5;
       let usageColor = 'bg-blue-600';
       let usageText = `${used} / ∞`;
       
@@ -172,37 +172,29 @@ window.loadCreatorSubs = function (filter) {
         else if(usagePercent > 50) usageColor = 'bg-yellow-500';
       }
 
-      // Expiry Text
-      let dateText = '-';
-      let dateClass = 'text-slate-500';
-      if(isPending) {
-        dateText = "Waiting for approval";
-        dateClass = "text-amber-600 font-bold";
-      } else if (expiresAt) {
-         const daysLeft = Math.ceil((expiresAt.getTime() - now) / (1000 * 60 * 60 * 24));
-         if(daysLeft < 0) {
-             dateText = `Expired ${Math.abs(daysLeft)} days ago`;
-             dateClass = "text-red-500 font-bold";
-         } else {
-             dateText = `Expires in ${daysLeft} days`;
-             dateClass = "text-green-600 font-bold";
-         }
+      // Status/Date Text
+      let dateText = '';
+      if(category === 'pending') {
+          dateText = `<span class="text-amber-600 font-bold">Waiting Approval</span>`;
+      } else if (category === 'active') {
+          const daysLeft = Math.ceil((expiresAt.getTime() - now) / (1000 * 60 * 60 * 24));
+          dateText = `<span class="text-green-600 font-bold">Expires in ${daysLeft} days</span>`;
+      } else {
+          // History/Rejected
+          if(s.status === 'rejected') dateText = `<span class="text-red-600 font-bold">Rejected</span>`;
+          else if(s.status === 'cancelled') dateText = `<span class="text-slate-500 font-bold">Cancelled</span>`;
+          else if(isExpired) dateText = `<span class="text-slate-400">Expired</span>`;
+          else dateText = s.status;
       }
 
-      // Action Buttons
+      // Actions
       let actions = '';
-      if(isPending) {
+      if(category === 'pending') {
           actions = `
-            <button onclick="window.approveCreatorSub('${uid}', '${s.planCode}')" 
-                class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded text-xs font-bold transition">
-                Approve
-            </button>
-            <button onclick="window.rejectCreatorSub('${uid}')" 
-                class="bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded text-xs font-bold transition">
-                Reject
-            </button>
+            <button onclick="window.approveCreatorSub('${uid}', '${s.planCode}')" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1 rounded text-xs font-bold transition">Approve</button>
+            <button onclick="window.rejectCreatorSub('${uid}')" class="bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded text-xs font-bold transition">Reject</button>
           `;
-      } else if (isActive) {
+      } else if (category === 'active') {
           actions = `
              <button onclick="window.manageUserSub('${uid}', '${s.maxRequests || 0}', '${expiresAt ? expiresAt.getTime() : 0}')" 
                 class="bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1 rounded text-xs font-bold transition flex items-center gap-1 ml-auto">
@@ -210,19 +202,22 @@ window.loadCreatorSubs = function (filter) {
             </button>
           `;
       } else {
-          actions = `<span class="text-xs text-slate-400">Archived</span>`;
+          // HISTORY TAB: Show DELETE button
+          actions = `
+            <button onclick="window.deleteCreatorSub('${uid}')" class="bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1 rounded text-xs font-bold transition flex items-center gap-1 ml-auto border border-red-100">
+               <span class="material-icons text-xs">delete</span> Delete
+            </button>
+          `;
       }
 
       html += `
         <tr class="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
           <td class="p-4 align-top">
             <div class="font-bold text-slate-900 dark:text-white">${s.email}</div>
-            <div class="text-[10px] text-slate-400 font-mono">${uid}</div>
+            <div class="text-[10px] text-slate-400 font-mono">UID: ${uid}</div>
           </td>
           <td class="p-4 align-top">
-            <span class="inline-block px-2 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-600 border border-blue-100">
-                ${planName}
-            </span>
+            <span class="inline-block px-2 py-0.5 rounded text-xs font-bold bg-blue-50 text-blue-600 border border-blue-100">${planName}</span>
             ${s.priceINR ? `<div class="text-xs text-slate-500 mt-1">Paid: ₹${s.priceINR}</div>` : ''}
           </td>
           <td class="p-4 align-top">
@@ -234,9 +229,7 @@ window.loadCreatorSubs = function (filter) {
                 <div class="h-full ${usageColor}" style="width: ${max ? usagePercent : 5}%;"></div>
             </div>
           </td>
-          <td class="p-4 align-top text-xs ${dateClass}">
-            ${dateText}
-          </td>
+          <td class="p-4 align-top text-xs">${dateText}</td>
           <td class="p-4 align-top text-right">
              <div class="flex justify-end gap-2">${actions}</div>
           </td>
@@ -244,24 +237,21 @@ window.loadCreatorSubs = function (filter) {
     });
 
     if(count === 0) {
-        list.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-400">No ${filter} subscriptions found.</td></tr>`;
+        list.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-slate-400">No ${filter} items found.</td></tr>`;
     } else {
         list.innerHTML = html;
     }
   });
 };
 
-/* ---------- APPROVAL & EDIT LOGIC ---------- */
+/* ---------- ACTIONS ---------- */
 
 window.approveCreatorSub = async function (userId, planCode) {
   const plan = CREATOR_PLANS_ADMIN[planCode] || { name: 'Custom', maxRequests: 20, periodDays: 30 };
-  
   if (!confirm(`Confirm Approval?\n\nPlan: ${plan.name}\nDuration: ${plan.periodDays} Days`)) return;
 
   const expiresAt = new Date(Date.now() + plan.periodDays * 24 * 60 * 60 * 1000);
-
   try {
-    // 1. Activate Sub
     await db.collection('creatorSubs').doc(userId).set({
       status: 'active',
       maxRequests: plan.maxRequests || null,
@@ -269,47 +259,11 @@ window.approveCreatorSub = async function (userId, planCode) {
       expiresAt,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
-
-    // 2. Mark the Order as Approved too (Auto-sync)
+    
+    // Auto-approve the order entry too
     await window.markLatestSubOrderApproved(userId);
-
-    alert('✅ Subscription Activated!');
-  } catch (err) {
-    alert("Error: " + err.message);
-  }
-};
-
-// NEW: Manage Active User (Bonus / Extend)
-window.manageUserSub = async function(userId, currentMax, currentExpiryTime) {
-    const action = prompt(
-        "MANAGE USER\n\n" +
-        "1. Add Bonus Requests (+10)\n" +
-        "2. Extend Validity (+7 Days)\n" +
-        "3. Cancel Subscription\n\n" +
-        "Enter number (1, 2, or 3):"
-    );
-
-    if(action === '1') {
-        const amount = parseInt(prompt("How many extra requests?", "10"));
-        if(!amount) return;
-        // Logic: We increase maxRequests
-        const newMax = parseInt(currentMax) + amount;
-        await db.collection('creatorSubs').doc(userId).update({ maxRequests: newMax });
-        alert(`Quota increased to ${newMax}`);
-    } 
-    else if (action === '2') {
-        const days = parseInt(prompt("How many days to extend?", "7"));
-        if(!days) return;
-        const oldDate = new Date(parseInt(currentExpiryTime));
-        const newDate = new Date(oldDate.getTime() + (days * 24 * 60 * 60 * 1000));
-        await db.collection('creatorSubs').doc(userId).update({ expiresAt: newDate });
-        alert(`Extended until ${newDate.toLocaleDateString()}`);
-    }
-    else if (action === '3') {
-        if(confirm("Are you sure you want to CANCEL this user's plan immediately?")) {
-            await db.collection('creatorSubs').doc(userId).update({ status: 'cancelled' });
-        }
-    }
+    alert('✅ Activated!');
+  } catch (err) { alert("Error: " + err.message); }
 };
 
 window.rejectCreatorSub = function (userId) {
@@ -320,19 +274,47 @@ window.rejectCreatorSub = function (userId) {
   }, { merge: true });
 };
 
-// ... Keep markLatestSubOrderApproved logic from previous code ...
+// NEW: Delete button for history
+window.deleteCreatorSub = function (userId) {
+    if(!confirm("⚠️ PERMANENTLY DELETE this subscription record?\n\nThis will remove it from history completely.")) return;
+    
+    db.collection('creatorSubs').doc(userId).delete()
+    .then(() => alert("Deleted."))
+    .catch(e => alert(e.message));
+};
+
+window.manageUserSub = async function(userId, currentMax, currentExpiryTime) {
+    const action = prompt("MANAGE USER\n\n1. Add Bonus Requests (+10)\n2. Extend Validity (+7 Days)\n3. Cancel Plan\n\nEnter number:");
+    if(action === '1') {
+        const amount = parseInt(prompt("How many extra requests?", "10"));
+        if(!amount) return;
+        const newMax = parseInt(currentMax) + amount;
+        await db.collection('creatorSubs').doc(userId).update({ maxRequests: newMax });
+        alert(`Quota increased.`);
+    } 
+    else if (action === '2') {
+        const days = parseInt(prompt("Days to extend?", "7"));
+        if(!days) return;
+        const oldDate = new Date(parseInt(currentExpiryTime));
+        const newDate = new Date(oldDate.getTime() + (days * 24 * 60 * 60 * 1000));
+        await db.collection('creatorSubs').doc(userId).update({ expiresAt: newDate });
+        alert(`Extended.`);
+    }
+    else if (action === '3') {
+        if(confirm("Cancel plan?")) {
+            await db.collection('creatorSubs').doc(userId).update({ status: 'cancelled' });
+        }
+    }
+};
+
 window.markLatestSubOrderApproved = async function (userId) {
   try {
-    const snap = await db.collection('orders')
-      .where('userId', '==', userId)
-      .orderBy('timestamp', 'desc')
-      .limit(10)
-      .get();
+    const snap = await db.collection('orders').where('userId', '==', userId).orderBy('timestamp', 'desc').limit(10).get();
     let updated = false;
     snap.forEach(doc => {
       if (updated) return;
       const o = doc.data();
-      if (o.gameId && o.gameId.startsWith('sub_') && o.status === 'pending') {
+      if (o.gameId && String(o.gameId).startsWith('sub_') && o.status === 'pending') {
         doc.ref.update({ status: 'approved' });
         updated = true;
       }
@@ -340,8 +322,8 @@ window.markLatestSubOrderApproved = async function (userId) {
   } catch (e) { console.error(e); }
 };
 
-/* ---------- MOD REQUESTS SECTION (Unchanged but cleaned up) ---------- */
-// ... (Your existing mod request logic is fine, just ensure it uses the table ID 'modreq-users-list') ...
+/* ---------- MOD REQUESTS SECTION ---------- */
+// Same as before, but ensure ID matches html
 
 window.loadModRequests = function () {
   const list = document.getElementById('modreq-users-list');
@@ -392,8 +374,12 @@ window.loadModRequests = function () {
   });
 };
 
-// ... Ensure viewUserModRequests and CreatorAdminUserRequestsPage are kept ...
-// (The previous code you sent for 'CreatorAdminUserRequestsPage' is perfect, keep it)
+window.viewUserModRequests = function (userId) {
+  window.adminSelectedUserId = userId;
+  if (window.router) window.router.navigateTo('/creator-admin-user');
+};
 
 window.CreatorAdminPage = CreatorAdminPage;
-// ... export other functions ...
+// Note: CreatorAdminUserRequestsPage is in a separate block or same file? 
+// If it was in the same file previously, add it below. Assuming you kept it.
+// If not, ask me to paste that too.
