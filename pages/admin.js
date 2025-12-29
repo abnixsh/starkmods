@@ -8,6 +8,24 @@ const ADMIN_GAME_LINKS = {
   // Add others...
 };
 
+/* ---------- UPDATED ADMIN STATUS LOGIC (For pages/admin.js) ---------- */
+
+// Optional: Pre-fill links to save time
+const STANDARD_LINKS = {
+  'rc24': 'https://drive.google.com/your-rc24-link',
+  'rc20': 'https://drive.google.com/your-rc20-link',
+  // add others...
+};
+
+/* ---------- UPDATED ADMIN STATUS LOGIC (For pages/admin.js) ---------- */
+
+// Optional: Pre-fill links to save time
+const STANDARD_LINKS = {
+  'rc24': 'https://drive.google.com/your-rc24-link',
+  'rc20': 'https://drive.google.com/your-rc20-link',
+  // add others...
+};
+
 window.updateStatus = async function (docId, status) {
   if (!confirm(`Mark order as ${status}?`)) return;
 
@@ -19,23 +37,35 @@ window.updateStatus = async function (docId, status) {
 
     let updateData = { status };
 
-    // --- NEW: IF APPROVING, ASK FOR DOWNLOAD LINK ---
+    // --- NEW LOGIC: Ask for Download Link when Approving ---
     if (status === 'approved') {
-      // Try to guess the link based on gameId
-      const suggestedLink = (order.gameId && ADMIN_GAME_LINKS[order.gameId]) 
-                            ? ADMIN_GAME_LINKS[order.gameId] 
-                            : '';
+      const suggested = (order.gameId && STANDARD_LINKS[order.gameId]) || '';
+      const link = prompt("Enter Download Link for this user:", suggested);
       
-      const downloadUrl = prompt("Enter Download URL for this user:", suggestedLink);
-      
-      if (downloadUrl) {
-        updateData.downloadUrl = downloadUrl; // Save to DB
+      if (link) {
+        updateData.downloadUrl = link; // Saves to DB securely
       } else {
-        if(!confirm("You didn't enter a download link. The user won't be able to download. Continue anyway?")) {
-          return; // Cancel
-        }
+        if(!confirm("No link entered. User won't be able to download. Continue?")) return;
       }
     }
+    // -------------------------------------------------------
+
+    await orderRef.update(updateData);
+
+    // Credit Elite Wallet (Your existing logic)
+    if (status === 'approved' && window.isElite && window.currentUser) {
+      await window.creditEliteWallet(window.currentUser, order, docId);
+    }
+
+    alert('Order updated.');
+  } catch (e) {
+    console.error(e);
+    alert(e.message);
+  }
+};
+    // -------------------------------------------------------
+
+
     // ------------------------------------------------
 
     await orderRef.update(updateData);
