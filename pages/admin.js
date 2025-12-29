@@ -9,7 +9,6 @@ const STANDARD_LINKS = {
   'rc24': 'https://drive.google.com/your-rc24-link',
   'rc20': 'https://drive.google.com/your-rc20-link',
   'wcc3': 'https://drive.google.com/your-wcc3-link',
-  // add others here...
 };
 
 // State variables
@@ -23,8 +22,9 @@ window.currentUserOrdersUnsub = null;
    1. MAIN DASHBOARD (AdminPage)
 ------------------------------------------------------------ */
 function AdminPage() {
+  // Security Check
   if (!window.isAdmin) {
-    window.router.navigateTo('/');
+    if(window.router) window.router.navigateTo('/');
     return '';
   }
 
@@ -93,13 +93,13 @@ function AdminPage() {
 
 function AdminOrdersPage() {
   if (!window.isAdmin) { window.router.navigateTo('/'); return ''; }
-  setTimeout(() => window.loadOrdersSummary(false), 100); // false = normal orders
+  setTimeout(() => window.loadOrdersSummary(false), 100); 
   return renderOrderListTemplate("Orders (Normal)");
 }
 
 function AdminSubOrdersPage() {
   if (!window.isAdmin) { window.router.navigateTo('/'); return ''; }
-  setTimeout(() => window.loadOrdersSummary(true), 100); // true = sub orders
+  setTimeout(() => window.loadOrdersSummary(true), 100);
   return renderOrderListTemplate("Subscription Orders");
 }
 
@@ -135,7 +135,6 @@ function renderOrderListTemplate(title) {
   `;
 }
 
-// Logic to load user summary
 window.loadOrdersSummary = function (subOnly) {
   const list = document.getElementById('orders-users-list');
   if (!list || !window.db) return;
@@ -448,7 +447,7 @@ window.creditEliteWallet = async function (adminUser, order, orderDocId) {
 };
 
 /* ------------------------------------------------------------
-   6. EXPORTS
+   6. EXPORTS - THIS IS CRITICAL
 ------------------------------------------------------------ */
 window.AdminPage = AdminPage;
 window.AdminOrdersPage = AdminOrdersPage;
