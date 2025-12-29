@@ -1,58 +1,14 @@
-// pages/home.js
-
-// Globals for home card visibility
-window.homeHiddenCards = window.homeHiddenCards || [];
-window.homeConfigLoaded = window.homeConfigLoaded || false;
-window._homeConfigFetchStarted = window._homeConfigFetchStarted || false;
-
-// Load hidden card ids from Firestore once
-window.loadHomeHiddenCardsOnce = function () {
-  if (window.homeConfigLoaded || window._homeConfigFetchStarted) return;
-  if (!window.db) {
-    // If db not ready yet, try again a bit later
-    setTimeout(window.loadHomeHiddenCardsOnce, 200);
-    return;
-  }
-
-  window._homeConfigFetchStarted = true;
-
-  db.collection('siteConfig').doc('homeCards')
-    .get()
-    .then(doc => {
-      if (doc.exists) {
-        const data = doc.data() || {};
-        const arr = Array.isArray(data.hidden) ? data.hidden : [];
-        window.homeHiddenCards = arr;
-      } else {
-        window.homeHiddenCards = [];
-      }
-      window.homeConfigLoaded = true;
-
-      // Re-render home so visibility applies
-      if (window.router && typeof window.router.handleRoute === 'function') {
-        window.router.handleRoute('/');
-      }
-    })
-    .catch(err => {
-      console.error('loadHomeHiddenCardsOnce error:', err);
-      window.homeHiddenCards = [];
-      window.homeConfigLoaded = true;
-    });
-};
-
 function HomePage() {
-  // Ensure config is loaded
-  if (!window.homeConfigLoaded) {
-    window.loadHomeHiddenCardsOnce();
-    return `
-      <div class="max-w-6xl mx-auto py-20 text-center animate-fade-in">
-        <div class="text-sm text-slate-500 dark:text-slate-400">Loading home...</div>
-      </div>
-    `;
-  }
-
   const isAdmin = !!window.isAdmin;
-  const hiddenCards = Array.isArray(window.homeHiddenCards) ? window.homeHiddenCards : [];
+
+  // --- Hidden cards per device (localStorage) ---
+  let hiddenCards = [];
+  try {
+    hiddenCards = JSON.parse(localStorage.getItem('hidden_home_cards') || '[]');
+    if (!Array.isArray(hiddenCards)) hiddenCards = [];
+  } catch (e) {
+    hiddenCards = [];
+  }
 
   const isHidden = (id) => hiddenCards.includes(id);
 
@@ -62,7 +18,7 @@ function HomePage() {
     const label = hidden ? 'Show' : 'Hide';
     const icon  = hidden ? 'visibility' : 'visibility_off';
     const hiddenNote = hidden
-      ? `<div class="mb-1 text-[10px] text-red-500 font-semibold uppercase">Hidden (for all users)</div>`
+      ? `<div class="mb-1 text-[10px] text-red-500 font-semibold uppercase">Hidden (this device)</div>`
       : '';
 
     return `
@@ -78,7 +34,7 @@ function HomePage() {
   };
 
   const renderCard = (id, innerHtml) => {
-    // If card is hidden and user is not admin, don't render it at all
+    // Non-admin ke liye hidden card bilkul render mat karo
     if (!isAdmin && isHidden(id)) return '';
     const extraClasses = isHidden(id) ? 'opacity-50' : '';
 
@@ -117,8 +73,8 @@ function HomePage() {
               <div class="text-xl font-semibold">RC25 Fan-Made</div>
               <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.RealCricket3D</div>
               <div class="mt-2 flex items-center gap-2 flex-wrap">
-                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">New</span>
-                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">v7+</span>
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v7</span>
+                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Free</span>
               </div>
             </div>
           </div>
@@ -264,7 +220,7 @@ function HomePage() {
       `)}
 
       ${renderCard('rc20', `
-        <!-- RC20 CARD with CAROUSEL -->
+        <!-- RC20 CARD -->
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
@@ -281,10 +237,9 @@ function HomePage() {
             </div>
           </div>
 
-          <!-- CAROUSEL AREA -->
           <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
             <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
-              ${[1,2,3,4,5].map(i => `
+              ${[1,2,3,4].map(i => `
                 <div class="screenshot-carousel-slide min-w-full h-full">
                   <img src="assets/img/img_rc20_${i}.jpg" class="w-full h-full object-cover opacity-90"
                        alt="RC20 screenshot ${i}"
@@ -292,8 +247,6 @@ function HomePage() {
                 </div>
               `).join('')}
             </div>
-
-            <!-- arrows -->
             <button type="button"
                     class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
               <span class="material-icons text-sm">chevron_left</span>
@@ -302,13 +255,11 @@ function HomePage() {
                     class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
               <span class="material-icons text-sm">chevron_right</span>
             </button>
-
-            <!-- dots -->
             <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The ultimate RC20 VIP Mod Menu. Features include Timing Hack, Unlimited Coins/tickets, Mps&Mcs, All Tournaments Unlocked.
+            The ultimate RC20 VIP Mod Menu. Features include Timing Hack, Unlimited Coins/tickets, etc.
           </p>
 
           <div class="app-card-footer">
@@ -320,7 +271,7 @@ function HomePage() {
       `)}
 
       ${renderCard('wcc3', `
-        <!-- WCC3 CARD with CAROUSEL -->
+        <!-- WCC3 CARD -->
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
@@ -337,7 +288,6 @@ function HomePage() {
             </div>
           </div>
 
-          <!-- CAROUSEL AREA -->
           <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
             <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
               ${[1,2,3,4,5].map(i => `
@@ -348,8 +298,6 @@ function HomePage() {
                 </div>
               `).join('')}
             </div>
-
-            <!-- arrows -->
             <button type="button"
                     class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
               <span class="material-icons text-sm">chevron_left</span>
@@ -358,13 +306,11 @@ function HomePage() {
                     class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
               <span class="material-icons text-sm">chevron_right</span>
             </button>
-
-            <!-- dots -->
             <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
           </div>
 
           <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The ultimate WCC3 VIP Mod Menu. Features include Career Mode Unlock, Unlimited Energy, All Tournaments Unlocked, etc.
+            The ultimate WCC3 VIP Mod Menu with Career Mode unlock, Unlimited Energy and more.
           </p>
 
           <div class="app-card-footer">
@@ -376,7 +322,7 @@ function HomePage() {
       `)}
 
       ${renderCard('wcc2', `
-        <!-- WCC2 CARD with CAROUSEL -->
+        <!-- WCC2 CARD -->
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
@@ -393,7 +339,6 @@ function HomePage() {
             </div>
           </div>
 
-          <!-- CAROUSEL AREA -->
           <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
             <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
               ${[1,2,3,4,5].map(i => `
@@ -404,8 +349,6 @@ function HomePage() {
                 </div>
               `).join('')}
             </div>
-
-            <!-- arrows -->
             <button type="button"
                     class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
               <span class="material-icons text-sm">chevron_left</span>
@@ -414,8 +357,6 @@ function HomePage() {
                     class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
               <span class="material-icons text-sm">chevron_right</span>
             </button>
-
-            <!-- dots -->
             <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
           </div>
 
@@ -436,40 +377,26 @@ function HomePage() {
   `;
 }
 
-// Toggle hide/show for home cards, stored globally in Firestore (for everyone)
+// Admin hide/show – stored in localStorage only
 window.toggleHomeCard = function (id) {
-  if (!window.isAdmin) {
-    alert('Only admin can hide/show cards.');
-    return;
-  }
-  if (!window.db) {
-    alert('Database not ready.');
-    return;
-  }
-
-  const keyArr = Array.isArray(window.homeHiddenCards) ? window.homeHiddenCards.slice() : [];
-  const idx = keyArr.indexOf(id);
-  if (idx === -1) {
-    keyArr.push(id);       // hide
-  } else {
-    keyArr.splice(idx, 1); // show
+  let arr;
+  try {
+    arr = JSON.parse(localStorage.getItem('hidden_home_cards') || '[]');
+    if (!Array.isArray(arr)) arr = [];
+  } catch (e) {
+    arr = [];
   }
 
-  // Save in Firestore so all users see same visibility
-  db.collection('siteConfig').doc('homeCards')
-    .set({ hidden: keyArr }, { merge: true })
-    .then(() => {
-      window.homeHiddenCards = keyArr;
-      // Re-render home so changes apply
-      if (window.router && typeof window.router.handleRoute === 'function') {
-        window.router.handleRoute('/');
-      }
-    })
-    .catch(err => {
-      console.error('toggleHomeCard error:', err);
-      alert('Failed to update visibility: ' + err.message);
-    });
+  const idx = arr.indexOf(id);
+  if (idx === -1) arr.push(id);
+  else arr.splice(idx, 1);
+
+  localStorage.setItem('hidden_home_cards', JSON.stringify(arr));
+
+  // Re-render home
+  if (window.router && typeof window.router.handleRoute === 'function') {
+    window.router.handleRoute('/');
+  }
 };
 
 window.HomePage = HomePage;
-
