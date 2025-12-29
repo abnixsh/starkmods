@@ -16,6 +16,10 @@ window.adminSelectedOrderUserEmail = null;
 window.ordersUnsub = null;
 window.currentUserOrdersUnsub = null;
 
+/* =========================================
+   1. DASHBOARD
+   ========================================= */
+
 function AdminPage() {
   if (!window.isAdmin) {
     if(window.router) window.router.navigateTo('/');
@@ -48,6 +52,10 @@ function AdminPage() {
     </div>
   `;
 }
+
+/* =========================================
+   2. ORDER LISTS
+   ========================================= */
 
 function AdminOrdersPage() {
   if (!window.isAdmin) { window.router.navigateTo('/'); return ''; }
@@ -125,6 +133,10 @@ window.viewUserOrders = function (userId) {
   if (window.router) window.router.navigateTo('/admin-user-orders');
 };
 
+/* =========================================
+   3. ORDER DETAILS & ACTIONS
+   ========================================= */
+
 function AdminUserOrdersPage() {
   if (!window.isAdmin) { window.router.navigateTo('/'); return ''; }
   if (!window.adminSelectedOrderUserId) { window.router.navigateTo('/admin-orders'); return ''; }
@@ -168,7 +180,7 @@ window.loadAdminUserOrders = function () {
         } else {
             actions = `<button onclick="window.setKey('${id}')" class="bg-slate-200 text-xs px-2 py-1 rounded mr-1">Edit Key</button>`;
             
-            // NEW: Delete button if rejected
+            // Delete button if rejected
             if(o.status === 'rejected') {
                 actions += `<button onclick="window.deleteOrder('${id}')" class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded border border-red-200">Delete</button>`;
             }
@@ -192,11 +204,23 @@ window.updateStatus = async function (docId, status) {
   try {
     const orderRef = db.collection('orders').doc(docId);
     let updateData = { status };
+    
+    // Ask for link if approving
     if (status === 'approved') {
-      const link = prompt("Enter Download Link:");
+      const snap = await orderRef.get();
+      const order = snap.data();
+      const suggested = (order.gameId && STANDARD_LINKS[order.gameId]) || '';
+      const link = prompt("Enter Download Link:", suggested);
       if (link) updateData.downloadUrl = link;
     }
+    
     await orderRef.update(updateData);
+
+    // Credit Elite Logic
+    if (status === 'approved' && window.isElite && window.currentUser) {
+      const snap = await orderRef.get();
+      await window.creditEliteWallet(window.currentUser, snap.data(), docId);
+    }
     alert('Updated.');
   } catch (e) { alert(e.message); }
 };
@@ -211,9 +235,119 @@ window.setKey = function (docId) {
   if (key) db.collection('orders').doc(docId).update({ key });
 };
 
-// ... (Keep AdminEliteWalletsPage and exports as is) ...
+/* =========================================
+   4. ELITE WALLETS (THE MISSING PART)
+   ========================================= */
+
+function AdminEliteWalletsPage() {
+  if (!window.isAdmin) { window.router.navigateTo('/'); return ''; }
+  setTimeout(() => { window.loadEliteWallets(); window.loadWithdrawRequests(); }, 100);
+
+  return `
+    <div class="max-w-6xl mx-auto animate-fade-in pb-20 space-y-10">
+      <div class="flex items-center justify-between mb-2">
+        <h1 class="text-2xl font-bold">Elite Wallets</h1>
+        <button onclick="window.router.navigateTo('/admin')" class="text-xs bg-slate-200 px-3 py-1 rounded font-bold">Back</button>
+      </div>
+
+      <!-- WALLETS -->
+      <section>
+        <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <tr><th class="p-4">User</th><th class="p-4">Balance</th><th class="p-4">Earned</th><th class="p-4">Action</th></tr>
+            </thead>
+            <tbody id="elite-list"><tr><td colspan="4" class="p-8 text-center">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- WITHDRAWALS -->
+      <section>
+        <h2 class="text-lg font-bold mb-3">Withdrawal Requests</h2>
+        <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <tr><th class="p-4">User</th><th class="p-4">Amount</th><th class="p-4">Method</th><th class="p-4">Status</th><th class="p-4">Action</th></tr>
+            </thead>
+            <tbody id="withdraw-list"><tr><td colspan="5" class="p-8 text-center">Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  `;
+}
+
+window.loadEliteWallets = function () {
+  const list = document.getElementById('elite-list');
+  if (!list || !window.db) return;
+  db.collection('wallets').orderBy('email').onSnapshot(snapshot => {
+      let html = '';
+      snapshot.forEach(doc => {
+        const w = doc.data();
+        html += `<tr class="border-b border-slate-100 dark:border-slate-700"><td class="p-4 font-bold">${w.email}</td><td class="p-4 text-blue-600 font-bold">$${(w.balanceUSD||0).toFixed(2)}</td><td class="p-4">$${(w.totalEarnedUSD||0).toFixed(2)}</td><td class="p-4"><button onclick="window.manualCredit('${w.userId}','${w.email}')" class="bg-emerald-600 text-white px-3 py-1 rounded text-xs">Credit</button></td></tr>`;
+      });
+      list.innerHTML = html || `<tr><td colspan="4" class="p-8 text-center text-slate-400">No wallets.</td></tr>`;
+  });
+};
+
+window.manualCredit = function (userId, email) {
+  const amount = parseFloat(prompt(`Enter USD to credit to ${email}:`));
+  if (!amount) return;
+  const walletRef = db.collection('wallets').doc(userId);
+  db.runTransaction(async (tx) => {
+    const snap = await tx.get(walletRef);
+    const data = snap.exists ? snap.data() : {};
+    tx.set(walletRef, {
+      userId, email,
+      balanceUSD: (data.balanceUSD || 0) + amount,
+      totalEarnedUSD: (data.totalEarnedUSD || 0) + amount,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  }).then(() => alert('Credited.')).catch(e => alert(e.message));
+};
+
+window.loadWithdrawRequests = function () {
+  const list = document.getElementById('withdraw-list');
+  if (!list) return;
+  db.collection('withdrawRequests').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+    let html = '';
+    snapshot.forEach(doc => {
+      const w = doc.data();
+      const id = doc.id;
+      html += `<tr class="border-b border-slate-100 dark:border-slate-700"><td class="p-4 font-bold">${w.email}</td><td class="p-4 font-bold text-blue-600">$${w.amountUSD}</td><td class="p-4 text-xs">${w.paymentMethod}</td><td class="p-4"><span class="badge text-xs uppercase font-bold bg-slate-100 px-2 py-1 rounded">${w.status}</span></td><td class="p-4 flex gap-2">${w.status === 'pending' ? `<button onclick="window.handleWithdrawStatus('${id}','paid')" class="bg-green-600 text-white p-2 rounded"><span class="material-icons text-sm">check</span></button>` : ''}</td></tr>`;
+    });
+    list.innerHTML = html || `<tr><td colspan="5" class="p-8 text-center text-slate-400">No requests.</td></tr>`;
+  });
+};
+
+window.handleWithdrawStatus = async function (id, status) {
+  if(!confirm(`Mark as ${status}?`)) return;
+  await db.collection('withdrawRequests').doc(id).update({ status });
+  alert('Updated.');
+};
+
+window.creditEliteWallet = async function (adminUser, order, orderDocId) {
+  const usd = (order.amount / INR_PER_USD) * COMMISSION_RATE;
+  const commissionUSD = Math.round(usd * 100) / 100;
+  const walletRef = db.collection('wallets').doc(adminUser.uid);
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(walletRef);
+    const data = snap.exists ? snap.data() : {};
+    tx.set(walletRef, {
+      userId: adminUser.uid, email: adminUser.email,
+      balanceUSD: (data.balanceUSD || 0) + commissionUSD,
+      totalEarnedUSD: (data.totalEarnedUSD || 0) + commissionUSD,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  });
+};
+
+/* =========================================
+   5. EXPORTS
+   ========================================= */
 window.AdminPage = AdminPage;
 window.AdminOrdersPage = AdminOrdersPage;
 window.AdminSubOrdersPage = AdminSubOrdersPage;
 window.AdminUserOrdersPage = AdminUserOrdersPage;
-// window.AdminEliteWalletsPage = AdminEliteWalletsPage; (Make sure to include Elite logic if you used it)
+window.AdminEliteWalletsPage = AdminEliteWalletsPage;
