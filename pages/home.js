@@ -153,14 +153,14 @@ function HomePage() {
         <div class="app-card-content">
           <div class="app-card-header flex gap-3 mb-4">
             <div class="app-icon-container">
-              <img src="assets/icons/icon_rc24.png" alt="RC24 Realistic V1" class="h-16 w-16 rounded-lg"
+              <img src="assets/icons/icon_rc24.png" alt="RC Realistic V2" class="h-16 w-16 rounded-lg"
                    onerror="this.src='https://placehold.co/64?text=RC24'" />
             </div>
             <div class="flex-1">
-              <div class="text-xl font-semibold">RC24 Realistic V1</div>
+              <div class="text-xl font-semibold">RC Realistic V2</div>
               <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.RealCricket</div>
               <div class="mt-2 flex items-center gap-2 flex-wrap">
-                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v3.3</span>
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v4.5</span>
                 <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">Patch</span>
                 <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Free</span>
               </div>
@@ -452,3 +452,4 @@ window.toggleHomeCard = function (id) {
 };
 
 window.HomePage = HomePage;
+
