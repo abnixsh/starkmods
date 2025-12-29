@@ -1,6 +1,6 @@
 // pages/home.js
 
-// Global state for hidden cards (from Firestore)
+// Global state for hidden cards (loaded from Firestore)
 window.homeHiddenCards = window.homeHiddenCards || [];
 window.homeConfigLoaded = window.homeConfigLoaded || false;
 window._homeConfigFetchStarted = window._homeConfigFetchStarted || false;
@@ -9,7 +9,7 @@ window._homeConfigFetchStarted = window._homeConfigFetchStarted || false;
 window.loadHomeHiddenCardsOnce = function () {
   if (window.homeConfigLoaded || window._homeConfigFetchStarted) return;
   if (!window.db) {
-    // DB not ready yet, try a bit later
+    // DB not ready yet, try again a bit later
     setTimeout(window.loadHomeHiddenCardsOnce, 200);
     return;
   }
@@ -24,8 +24,10 @@ window.loadHomeHiddenCardsOnce = function () {
       window.homeHiddenCards = arr;
       window.homeConfigLoaded = true;
 
-      // Re-render home so new visibility applies
-      if (window.router && typeof window.router.handleRoute === 'function') {
+      // Only re-render if we are currently on home route
+      if (window.router &&
+          typeof window.router.handleRoute === 'function' &&
+          location.pathname.replace(/\/$/, '') === '/') {
         window.router.handleRoute('/');
       }
     })
@@ -37,7 +39,7 @@ window.loadHomeHiddenCardsOnce = function () {
 };
 
 function HomePage() {
-  // Firestore se config load karne ke liye try karo (non-blocking)
+  // Try loading hidden cards (non-blocking)
   window.loadHomeHiddenCardsOnce();
 
   const isAdmin = !!window.isAdmin;
@@ -67,7 +69,7 @@ function HomePage() {
   };
 
   const renderCard = (id, innerHtml) => {
-    // Non-admin ke liye hidden card bilkul render nahi hoga
+    // Non-admin: if card is hidden, do not render at all
     if (!isAdmin && isHidden(id)) return '';
     const extraClasses = isHidden(id) ? 'opacity-50' : '';
 
@@ -146,9 +148,273 @@ function HomePage() {
         </div>
       `)}
 
-      <!-- RC24, RCSWIPE, RC20, WCC3, WCC2 cards – same as pehle wale version → yahan short kiya hai
-           Tum apna latest cards markup jo pehle use kar rahe the wahi yahan renderCard('rc24', ...),
-           renderCard('rcswipe', ...), etc me paste kar do. -->
+      ${renderCard('rc24', `
+        <!-- RC24 CARD -->
+        <div class="app-card-content">
+          <div class="app-card-header flex gap-3 mb-4">
+            <div class="app-icon-container">
+              <img src="assets/icons/icon_rc24.png" alt="RC24 Realistic V1" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=RC24'" />
+            </div>
+            <div class="flex-1">
+              <div class="text-xl font-semibold">RC24 Realistic V1</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.RealCricket</div>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v3.3</span>
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">Patch</span>
+                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Free</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAROUSEL -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative h-40">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_rc24_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="RC24 screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=RC24-${i}'">
+                </div>
+              `).join('')}
+            </div>
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
+          </div>
+
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+            The most realistic patch of RC24 till date!
+          </p>
+
+          <div class="app-card-footer">
+            <button onclick="window.router.navigateTo('/rc24')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+              Download Now
+            </button>
+          </div>
+        </div>
+      `)}
+
+      ${renderCard('rcswipe', `
+        <!-- RCSWIPE CARD -->
+        <div class="app-card-content">
+          <div class="app-card-header flex gap-3 mb-4">
+            <div class="app-icon-container">
+              <img src="assets/icons/icon_rcswipe.png" alt="RCSWIPE Realistic V1" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=SWP'" />
+            </div>
+            <div class="flex-1">
+              <div class="text-xl font-semibold">RCSWIPE Realistic V1</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.RealCricketSwipe</div>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v1.9</span>
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">Patch</span>
+                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Free</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAROUSEL -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative h-40">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_rcswipe_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="RCSWIPE screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=SWIPE-${i}'">
+                </div>
+              `).join('')}
+            </div>
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
+          </div>
+
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+            The most realistic patch of RCSWIPE till date!
+          </p>
+
+          <div class="app-card-footer">
+            <button onclick="window.router.navigateTo('/rcswipe')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+              Download Now
+            </button>
+          </div>
+        </div>
+      `)}
+
+      ${renderCard('rc20', `
+        <!-- RC20 CARD -->
+        <div class="app-card-content">
+          <div class="app-card-header flex gap-3 mb-4">
+            <div class="app-icon-container">
+              <img src="assets/icons/icon_rc20.jpg" alt="RC20 Mod" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=RC20'" />
+            </div>
+            <div class="flex-1">
+              <div class="text-xl font-semibold">RC20 Mod Menu</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.ReaCricket3D</div>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v6.1</span>
+                <span class="badge bg-yellow-100 px-2 py-1 rounded text-xs text-yellow-800">Premium</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAROUSEL AREA -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              ${[1,2,3,4].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_rc20_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="RC20 screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=RC20-${i}'">
+                </div>
+              `).join('')}
+            </div>
+
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
+          </div>
+
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+            The ultimate RC20 VIP Mod Menu. Features include Timing Hack, Unlimited Coins/tickets, Mps&Mcs, All Tournaments Unlocked.
+          </p>
+
+          <div class="app-card-footer">
+            <button onclick="window.router.navigateTo('/rc20')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+              View Details
+            </button>
+          </div>
+        </div>
+      `)}
+
+      ${renderCard('wcc3', `
+        <!-- WCC3 CARD with CAROUSEL -->
+        <div class="app-card-content">
+          <div class="app-card-header flex gap-3 mb-4">
+            <div class="app-icon-container">
+              <img src="assets/icons/icon_wcc3.png" alt="WCC3 Mod" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=WCC3'" />
+            </div>
+            <div class="flex-1">
+              <div class="text-xl font-semibold">WCC3 Mod Menu</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">com.stark.wcc3</div>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v3.2.3</span>
+                <span class="badge bg-yellow-100 px-2 py-1 rounded text-xs text-yellow-800">Premium</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAROUSEL AREA -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_wcc3_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="WCC3 screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=WCC3-${i}'">
+                </div>
+              `).join('')}
+            </div>
+
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
+          </div>
+
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+            The ultimate WCC3 VIP Mod Menu. Features include Career Mode Unlock, Unlimited Energy, All Tournaments Unlocked..etc
+          </p>
+
+          <div class="app-card-footer">
+            <button onclick="window.router.navigateTo('/wcc3')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+              View Details
+            </button>
+          </div>
+        </div>
+      `)}
+
+      ${renderCard('wcc2', `
+        <!-- WCC2 CARD with CAROUSEL -->
+        <div class="app-card-content">
+          <div class="app-card-header flex gap-3 mb-4">
+            <div class="app-icon-container">
+              <img src="assets/icons/icon_wcc2.png" alt="WCC2 Mod" class="h-16 w-16 rounded-lg"
+                   onerror="this.src='https://placehold.co/64?text=WCC2'" />
+            </div>
+            <div class="flex-1">
+              <div class="text-xl font-semibold">WCC2 Mod Menu</div>
+              <div class="text-sm text-slate-500 dark:text-slate-400">com.nextwave.wcc2</div>
+              <div class="mt-2 flex items-center gap-2 flex-wrap">
+                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">vX.X</span>
+                <span class="badge bg-yellow-100 px-2 py-1 rounded text-xs text-yellow-800">Premium</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CAROUSEL AREA -->
+          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative">
+            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
+              ${[1,2,3,4,5].map(i => `
+                <div class="screenshot-carousel-slide min-w-full h-full">
+                  <img src="assets/img/img_wcc2_${i}.jpg" class="w-full h-full object-cover opacity-90"
+                       alt="WCC2 screenshot ${i}"
+                       onerror="this.src='https://placehold.co/320x180?text=WCC2-${i}'">
+                </div>
+              `).join('')}
+            </div>
+
+            <button type="button"
+                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_left</span>
+            </button>
+            <button type="button"
+                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
+              <span class="material-icons text-sm">chevron_right</span>
+            </button>
+
+            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
+          </div>
+
+          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
+            WCC2 VIP Mod Menu with unlocked squads, tournaments and more.
+          </p>
+
+          <div class="app-card-footer">
+            <button onclick="window.router.navigateTo('/wcc2')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
+              View Details
+            </button>
+          </div>
+        </div>
+      `)}
 
     </section>
   </div>
