@@ -15,9 +15,9 @@ function Rc24Page() {
            class="w-20 h-20 rounded-2xl shadow-lg"
            onerror="this.src='https://placehold.co/80?text=RC24'">
       <div>
-        <h1 class="text-3xl font-bold">RC24 Realistic V1</h1>
+        <h1 class="text-3xl font-bold">Real Cricket Realistic V2 V1</h1>
         <div class="flex gap-2 mt-2">
-          <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">v3.3</span>
+          <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">v4.5</span>
           <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">Free</span>
           <span class="px-2 py-0.5 bg-blue-100 dark:bg-red-900 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">Anti-ban</span>
         </div>
