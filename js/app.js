@@ -10,15 +10,15 @@
       icon: 'assets/icons/icon_rc20.jpg',
       plans: {
         '1month': { name: '1 Month', price: 250 },
-        'lifetime': { name: 'Lifetime', price: 1000 }
+        'lifetime': { name: 'Lifetime', price: 1500 }
       }
     },
     wcc3: {
       name: 'WCC3 Mod',
       icon: 'assets/icons/icon_wcc3.png',
       plans: {
-        '1month': { name: '1 Month', price: 250 },
-        'lifetime': { name: 'Lifetime', price: 700 }
+        '1month': { name: '1 Month', price: 350 },
+        'lifetime': { name: 'Lifetime', price: 2000 }
       }
     },
     rc25: {
@@ -37,7 +37,9 @@
     const plan = product.plans[planType];
     if (!plan) return;
 
-    // Free version: just redirect
+    // Abhi design single‑item cart ka hai.
+    // Naya item add karte hi purana replace hota hai.
+    // Multi‑item cart banane ke liye cart.js / checkout.js bhi change karne honge.
     if (plan.price === 0) {
       window.open('https://www.mediafire.com/', '_blank');
       return;
@@ -66,13 +68,17 @@
   window.updateCartBadge = updateCartBadge;
 
   // --- 1b. ADMIN ICON TOGGLE ---
-  // Shows the admin panel icon only when current user is admin
   window.updateAdminIcon = function () {
     const btn = document.getElementById('admin-panel-btn');
-    if (!btn) return;
-
+    const mobileLink = document.getElementById('mobile-admin-link');
     const isAdmin = !!(window.currentUser && window.isAdmin);
-    btn.classList.toggle('hidden', !isAdmin);
+
+    if (btn) {
+      btn.classList.toggle('hidden', !isAdmin);
+    }
+    if (mobileLink) {
+      mobileLink.style.display = isAdmin ? 'block' : 'none';
+    }
   };
 
   // --- 2. THEME LOGIC ---
@@ -82,7 +88,6 @@
     const html = document.documentElement;
     if (!html) return;
 
-    // Put .dark on <html> so Tailwind + CSS both work
     html.classList.toggle('dark', isDark);
 
     const iconDesktop = document.getElementById('theme-icon');
@@ -101,20 +106,22 @@
     applyTheme(isDark);
   }
 
+  function closeMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    if (menu && !menu.classList.contains('hidden')) {
+      menu.classList.add('hidden');
+    }
+  }
+  window.closeMobileMenu = closeMobileMenu;
+
   function toggleTheme() {
     const html = document.documentElement;
     const isDark = !html.classList.contains('dark');
     applyTheme(isDark);
     localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
+    // Dark mode change hote hi mobile menu band karo
+    closeMobileMenu();
   }
-
-  // (First) DOMContentLoaded: theme only
-  document.addEventListener('DOMContentLoaded', () => {
-    initializeTheme();
-    document
-      .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
-      .forEach(btn => btn.addEventListener('click', toggleTheme));
-  });
 
   // --- 3. CAROUSEL LOGIC ---
   function initializeCarousels() {
@@ -203,24 +210,32 @@
     });
   }
 
-  // --- INIT (second DOMContentLoaded) ---
+  // --- 4. INIT ON DOM LOAD ---
   document.addEventListener('DOMContentLoaded', () => {
-    // Theme again (harmless but can be removed if you want)
     initializeTheme();
     updateCartBadge();
+    if (window.updateAdminIcon) window.updateAdminIcon();
 
+    // Theme toggles
     document
       .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
       .forEach(btn => btn.addEventListener('click', toggleTheme));
 
+    // Mobile menu button
     const menuBtn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');
     if (menuBtn && menu) {
-      menuBtn.addEventListener('click', () => menu.classList.toggle('hidden'));
+      menuBtn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
+      });
     }
 
-    // Initialize admin icon once DOM is ready (will hide if not admin)
-    if (window.updateAdminIcon) window.updateAdminIcon();
+    // Scroll par mobile menu auto close (sirf chote screens par)
+    window.addEventListener('scroll', () => {
+      if (window.innerWidth < 768) {
+        closeMobileMenu();
+      }
+    });
   });
 
   // Called by router after each page render
