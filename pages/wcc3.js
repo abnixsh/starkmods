@@ -85,12 +85,12 @@ function Wcc3Page() {
             <div class="space-y-3">
                 <button onclick="window.addToCart('wcc3', '1month')" class="w-full py-3 px-4 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-xl font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-center justify-between">
                     <span>1 Month Access</span>
-                    <span>₹250</span>
+                    <span>₹350</span>
                 </button>
 
                 <button onclick="window.addToCart('wcc3', 'lifetime')" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-between">
                     <span class="flex items-center gap-2"><span class="material-icons text-sm">diamond</span> Lifetime Access</span>
-                    <span>₹700</span>
+                    <span>₹800</span>
                 </button>
             </div>
           </div>
