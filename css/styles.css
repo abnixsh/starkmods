@@ -1,803 +1,204 @@
-/* css/styles.css - Main Stylesheet */
+/* css/styles.css - iOS Liquid Glass + Itachi Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
 :root {
---accent: #2563eb;
---accent-hover: #1d4ed8;
---bg-light: #ffffff;
---bg-light-secondary: #f8fafc;
---text-light: #1e293b;
---text-light-secondary: #64748b;
---border-light: #e2e8f0;
---bg-dark: #222;
---bg-dark-secondary: #111;
---text-dark: #f8fafc;
---text-dark-secondary: #cbd5e1;
---border-dark: #333;
+  /* --- iOS LIGHT MODE (Clean Liquid Glass) --- */
+  --accent: #2563eb;           /* Apple Blue */
+  --accent-hover: #1d4ed8;
+  --bg-color: #f2f2f7;         /* iOS System Gray 6 */
+  --text-primary: #000000;
+  --text-secondary: #3c3c4399; /* iOS label color */
+  
+  /* Liquid Glass Cards */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  --blur-strength: 20px;
 }
 
-html {
-scroll-behavior: smooth;
+.dark {
+  /* --- ITACHI UCHIHA MODE (Dark & Red) --- */
+  --accent: #dc2626;           /* Sharingan Red */
+  --accent-hover: #991b1b;     /* Dried Blood Red */
+  
+  /* Itachi Background: Deepest Black/Grey */
+  --bg-color: #050505;         
+  
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  
+  /* Akatsuki Glass Cards */
+  --glass-bg: rgba(20, 20, 20, 0.7);
+  --glass-border: rgba(220, 38, 38, 0.15); /* Subtle Red Border */
+  --glass-shadow: 0 8px 32px 0 rgba(220, 38, 38, 0.15); /* Red Glow */
+  --blur-strength: 25px;
 }
 
-/* Theme Management */
+/* --- GLOBAL RESETS & FONTS --- */
+* {
+  box-sizing: border-box;
+}
 
 body {
-background-color: var(--bg-light) !important;
-color: var(--text-light) !important;
-transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(var(--accent), 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(var(--accent), 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  transition: all 0.4s ease;
+  margin: 0;
+  overflow-x: hidden;
 }
 
-.dark body {
-background-color: var(--bg-dark) !important;
-color: var(--text-dark) !important;
+/* --- ITACHI CROW ANIMATION BACKGROUND (Dark Mode Only) --- */
+.dark body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: url('https://cdn.pixabay.com/photo/2017/02/16/11/13/bird-2071185_1280.jpg'); /* Silhouette of birds/crows */
+  background-size: cover;
+  opacity: 0.05; /* Very subtle texture */
+  pointer-events: none;
+  z-index: -1;
+  filter: grayscale(100%);
 }
 
-/* Page Transition */
-
-.page-transition {
-opacity: 0;
-transform: translateY(20px);
-transition: all 0.3s ease;
-}
-
-.page-transition.loaded {
-opacity: 1;
-transform: translateY(0);
-}
-
-/* Header */
-
+/* --- HEADER (Liquid Glass) --- */
 header {
-background-color: var(--bg-light) !important;
-border-color: var(--border-light) !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--blur-strength)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(180%);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  transition: all 0.3s ease;
 }
 
-.dark body header {
-background-color: var(--bg-dark) !important;
-border-color: var(--border-dark) !important;
+.dark header {
+  border-bottom: 1px solid rgba(220, 38, 38, 0.3); /* Red border in Itachi mode */
 }
 
-/* Navigation */
-
-.nav-link {
-color: var(--text-light) !important;
-font-weight: 500;
-padding: 0.5rem 1rem;
-border-radius: 0.5rem;
-transition: all 0.2s ease;
+/* --- CARDS (The iOS Liquid Effect) --- */
+.app-card, .glass-card, .info-box, .bg-white, .dark .bg-slate-800 {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--blur-strength));
+  -webkit-backdrop-filter: blur(var(--blur-strength));
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow);
+  border-radius: 20px; /* iOS rounded corners */
 }
 
-.dark body .nav-link {
-color: var(--text-dark) !important;
-}
-
-.nav-link:hover,
-.nav-link.active {
-background-color: var(--bg-light-secondary) !important;
-text-decoration: none;
-}
-
-.dark body .nav-link:hover,
-.dark body .nav-link.active {
-background-color: var(--bg-dark-secondary) !important;
-}
-
-/* Theme Toggle Button Styling */
-
-#theme-toggle,
-#theme-toggle-mobile {
-color: var(--text-light) !important;
-background: transparent !important;
-border: 1px solid var(--border-light) !important;
-padding: 0.5rem 1rem;
-border-radius: 0.5rem;
-transition: all 0.2s ease;
-}
-
-.dark body #theme-toggle,
-.dark body #theme-toggle-mobile {
-color: var(--text-dark) !important;
-border-color: var(--border-dark) !important;
-}
-
-#theme-toggle:hover,
-#theme-toggle-mobile:hover {
-background-color: var(--bg-light-secondary) !important;
-border-color: var(--accent) !important;
-color: var(--text-light) !important;
-}
-
-.dark body #theme-toggle:hover,
-.dark body #theme-toggle-mobile:hover {
-background-color: var(--bg-dark-secondary) !important;
-border-color: var(--accent) !important;
-color: var(--text-dark) !important;
-}
-
-#theme-toggle #theme-icon,
-#theme-toggle #theme-text,
-#theme-toggle-mobile #theme-icon-mobile,
-#theme-toggle-mobile #theme-text-mobile {
-color: inherit !important;
-}
-
-/* Mobile Menu Button Hover Fix */
-
-#mobile-menu-button {
-color: var(--text-light) !important;
-background: transparent !important;
-border: none !important;
-transition: all 0.2s ease;
-}
-
-.dark body #mobile-menu-button {
-color: var(--text-dark) !important;
-}
-
-#mobile-menu-button:hover {
-background-color: #f1f5f9 !important;
-color: #1e293b !important;
-}
-
-.dark body #mobile-menu-button:hover {
-background-color: #374151 !important;
-color: #f9fafb !important;
-}
-
-#mobile-menu-button .material-icons {
-color: inherit !important;
-}
-
-/* Mobile specific theme toggle fix */
-
-@media (max-width: 768px) {
-#theme-toggle-mobile:hover {
-background-color: #f1f5f9 !important;
-color: #1e293b !important;
-}
-.dark body #theme-toggle-mobile:hover {
-background-color: #374151 !important;
-color: #f9fafb !important;
-}
-}
-
-/* Mobile Links */
-
-.mobile-link {
-padding: 0.75rem 1rem;
-font-weight: 500;
-border-radius: 0.5rem;
-transition: all 0.2s ease;
-}
-
-.mobile-link:hover,
-.mobile-link.active {
-background-color: var(--bg-light-secondary);
-}
-
-.dark body .mobile-link:hover,
-.dark body .mobile-link.active {
-background-color: var(--bg-dark-secondary);
-}
-
-/* App Cards */
-
-.app-card {
-background-color: var(--bg-light);
-border-color: var(--border-light);
-transition: transform 0.2s ease, box-shadow 0.2s ease;
-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.dark body .app-card {
-background-color: var(--bg-dark-secondary);
-border-color: var(--border-dark);
-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
+/* Hover Effect - Itachi Mode Glow */
 .app-card:hover {
-transform: translateY(-2px);
-box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+.dark .app-card:hover {
+  box-shadow: 0 0 25px rgba(220, 38, 38, 0.4); /* Intense Sharingan Glow */
+  border-color: var(--accent) !important;
 }
 
-.dark body .app-card:hover {
-box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+/* --- BUTTONS --- */
+.btn, button.bg-blue-600 {
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover)) !important;
+  border-radius: 12px;
+  border: none;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-/* Card Layout */
-
-.app-card-content {
-display: flex;
-flex-direction: column;
+.btn:hover, button.bg-blue-600:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(var(--accent), 0.4);
 }
 
-.app-card-header {
-display: flex;
-align-items: start;
-gap: 1rem;
-margin-bottom: 1rem;
+/* Itachi Mode specific button text */
+.dark .btn {
+  font-weight: 800; /* Bolder text for anime feel */
+  letter-spacing: 0.5px;
 }
 
-.app-card-screenshots {
-margin-bottom: 1rem;
-position: relative;
-background-color: var(--bg-light-secondary);
-border-radius: 0.75rem;
-border: 1px solid var(--border-light);
-overflow: hidden;
+/* --- TYPOGRAPHY --- */
+h1, h2, h3 {
+  font-weight: 800 !important;
+  letter-spacing: -0.02em; /* Tight iOS style tracking */
 }
 
-.dark body .app-card-screenshots {
-background-color: var(--bg-dark);
-border-color: var(--border-dark);
+.text-slate-500, .dark .text-slate-400 {
+  color: var(--text-secondary) !important;
 }
 
-.app-card-footer {
-display: flex;
-justify-content: center;
-margin-top: auto;
+.text-slate-900, .dark .text-white {
+  color: var(--text-primary) !important;
 }
 
-/* Screenshot Carousel */
-
-.screenshot-carousel {
-position: relative;
-width: 100%;
-aspect-ratio: 16/9;
-overflow: hidden;
-border-radius: 0.5rem;
+/* --- INPUT FIELDS (Glassmorphism) --- */
+input, select, textarea {
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-primary) !important;
+  border-radius: 12px;
 }
 
-.screenshot-carousel-track {
-display: flex;
-width: 100%;
-height: 100%;
-transition: transform 0.4s ease;
+.dark input, .dark select, .dark textarea {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border-color: #333 !important;
 }
 
-.screenshot-carousel-slide {
-min-width: 100%;
-flex-shrink: 0;
+.dark input:focus {
+  border-color: var(--accent) !important; /* Red border on focus */
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.2);
 }
 
-.screenshot-carousel img {
-width: 100%;
-height: 100%;
-object-fit: cover;
-display: block;
-}
-
-/* Carousel Navigation */
-
-.screenshot-carousel-nav {
-position: absolute;
-top: 50%;
-transform: translateY(-50%);
-background: rgba(0, 0, 0, 0.6);
-color: white;
-border: none;
-width: 32px;
-height: 32px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-cursor: pointer;
-transition: all 0.2s ease;
-z-index: 10;
-}
-
-.screenshot-carousel-nav:hover {
-background: rgba(0, 0, 0, 0.8);
-transform: translateY(-50%) scale(1.1);
-}
-
-.screenshot-carousel-nav.prev {
-left: 8px;
-}
-
-.screenshot-carousel-nav.next {
-right: 8px;
-}
-
-/* Carousel Indicators */
-
-.screenshot-carousel-indicators {
-position: absolute;
-bottom: 8px;
-left: 50%;
-transform: translateX(-50%);
-display: flex;
-gap: 6px;
-z-index: 10;
-}
-
-.screenshot-carousel-indicator {
-width: 8px;
-height: 8px;
-border-radius: 50%;
-background: rgba(255, 255, 255, 0.5);
-cursor: pointer;
-transition: all 0.2s ease;
-}
-
-.screenshot-carousel-indicator.active {
-background: rgba(255, 255, 255, 0.9);
-transform: scale(1.2);
-}
-
-/* Badges */
-
+/* --- BADGES --- */
 .badge {
-display: inline-block;
-padding: 0.25rem 0.75rem;
-border-radius: 9999px;
-background-color: var(--bg-light-secondary);
-color: var(--text-light) !important;
-font-size: 0.75rem;
-font-weight: 600;
-border: 1px solid var(--border-light);
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+  letter-spacing: 0.5px;
 }
 
-.dark body .badge {
-background-color: var(--bg-dark);
-color: var(--text-dark) !important;
-border-color: var(--border-dark);
+/* --- NAVIGATION LINKS --- */
+.nav-link {
+  border-radius: 50px; /* Pill shape */
+}
+.nav-link:hover {
+  background: rgba(255,255,255,0.2) !important;
+}
+.dark .nav-link:hover {
+  background: rgba(220, 38, 38, 0.15) !important; /* Red tint hover */
+  color: #fff !important;
 }
 
-
-/* ---- iOS liquid glass effect ---- */
-
-.glass-header {
-  backdrop-filter: blur(18px) saturate(1.25);
-  -webkit-backdrop-filter: blur(18px) saturate(1.25);
-  background-color: rgba(255, 255, 255, 0.75);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.4);
-  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.12);
-}
-
-body.dark .glass-header {
-  background-color: rgba(15, 23, 42, 0.85);
-  border-bottom-color: rgba(51, 65, 85, 0.9);
-  box-shadow: 0 12px 45px rgba(0, 0, 0, 0.6);
-}
-
-/* Generic glass card (for status bars, wallets, etc.) */
-
-.glass-card {
-  backdrop-filter: blur(20px) saturate(1.3);
-  -webkit-backdrop-filter: blur(20px) saturate(1.3);
-  background-color: rgba(255, 255, 255, 0.82);
-  border-radius: 1rem;
-  border: 1px solid rgba(148, 163, 184, 0.45);
-  box-shadow: 0 12px 45px rgba(15, 23, 42, 0.18);
-}
-
-body.dark .glass-card {
-  background-color: rgba(15, 23, 42, 0.82);
-  border-color: rgba(51, 65, 85, 0.85);
-  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.8);
-}
-
-/* Buttons */
-
-.btn {
-background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-color: white;
-padding: 0.75rem 1.5rem;
-border-radius: 0.75rem;
-font-weight: 600;
-display: inline-flex;
-align-items: center;
-gap: 0.5rem;
-text-decoration: none;
-border: none;
-cursor: pointer;
-transition: all 0.2s ease;
-box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
-}
-
-.btn:hover {
-transform: translateY(-1px);
-box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
-
-.btn-secondary {
-background: transparent;
-border: 2px solid var(--accent);
-color: var(--accent);
-box-shadow: none;
-}
-
-.btn-secondary:hover {
-background: var(--accent);
-color: white;
-}
-
-/* Hero Section */
-
-.hero-section {
-text-align: center;
-margin-bottom: 1rem;
-padding: 1rem 0;
-}
-
-.hero-title {
-font-size: 2.5rem;
-font-weight: 700;
-color: var(--text-light);
-margin-bottom: 1rem;
-line-height: 1.2;
-}
-
-.dark body .hero-title {
-color: var(--text-dark);
-}
-
-.hero-description {
-font-size: 1.125rem;
-color: var(--text-light-secondary);
-max-width: 600px;
-margin: 0 auto;
-line-height: 1.6;
-}
-
-.dark body .hero-description {
-color: var(--text-dark-secondary);
-}
-
-/* Footer */
-
-footer {
-background-color: var(--bg-light) !important;
-border-color: var(--border-light) !important;
-}
-
-.dark body footer {
-background-color: var(--bg-dark) !important;
-border-color: var(--border-dark) !important;
-}
-
-/* Loading Indicator */
-
-#loading-indicator {
-background: linear-gradient(90deg, var(--accent), var(--accent-hover));
-}
-
-#loading-indicator.show {
-opacity: 1;
-}
-
-/* Dropdown Menu */
-
-.dropdown-container {
-position: relative;
-}
-
-#more-menu {
-background-color: var(--bg-light);
-border: 1px solid var(--border-light);
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.dark body #more-menu {
-background-color: var(--bg-dark-secondary);
-border-color: var(--border-dark);
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-#more-menu a {
-color: var(--text-light);
-transition: all 0.2s ease;
-}
-
-.dark body #more-menu a {
-color: var(--text-dark);
-}
-
-#more-menu a:hover {
-background-color: var(--bg-light-secondary) !important;
-}
-
-.dark body #more-menu a:hover {
-background-color: var(--bg-dark) !important;
-}
-
-/* Mobile Menu */
-
+/* --- MOBILE MENU --- */
 #mobile-menu {
-background-color: var(--bg-light) !important;
-border-color: var(--border-light) !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(25px);
+  border-top: 1px solid var(--glass-border);
 }
 
-.dark body #mobile-menu {
-background-color: var(--bg-dark) !important;
-border-color: var(--border-dark) !important;
+/* --- SCROLLBAR (Itachi Red) --- */
+::-webkit-scrollbar {
+  width: 8px;
 }
-
-/* Content Containers */
-
-.content-card {
-background-color: var(--bg-light);
-border: 1px solid var(--border-light);
-border-radius: 1rem;
-padding: 2rem;
-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-margin-bottom: 2rem;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
-
-.dark body .content-card {
-background-color: var(--bg-dark-secondary);
-border-color: var(--border-dark);
-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
 }
-
-/* Form Input Styling */
-
-.form-input,
-input[type="text"],
-input[type="email"],
-select,
-textarea {
-width: 100%;
-padding: 0.75rem;
-border: 1px solid var(--border-light);
-border-radius: 0.5rem;
-background-color: var(--bg-light) !important;
-color: var(--text-light) !important;
-transition: all 0.2s ease;
+.dark ::-webkit-scrollbar-thumb {
+  background: #555;
 }
-
-.dark body .form-input,
-.dark body input[type="text"],
-.dark body input[type="email"],
-.dark body select,
-.dark body textarea {
-background-color: var(--bg-dark) !important;
-border-color: var(--border-dark);
-color: var(--text-dark) !important;
-}
-
-.form-input:focus,
-input:focus,
-select:focus,
-textarea:focus {
-outline: none;
-border-color: var(--accent);
-box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-/* Quick Links */
-
-.quick-link,
-a.quick-link {
-background-color: var(--bg-light) !important;
-border: 1px solid var(--border-light) !important;
-color: var(--text-light) !important;
-transition: all 0.2s ease;
-text-decoration: none;
-}
-
-.dark body .quick-link,
-.dark body a.quick-link {
-background-color: var(--bg-dark-secondary) !important;
-border-color: var(--border-dark) !important;
-color: var(--text-dark) !important;
-}
-
-.quick-link:hover,
-a.quick-link:hover {
-background-color: var(--bg-light-secondary) !important;
-border-color: var(--accent) !important;
-transform: translateY(-2px);
-box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1) !important;
-text-decoration: none;
-}
-
-.dark body .quick-link:hover,
-.dark body a.quick-link:hover {
-background-color: var(--bg-dark) !important;
-border-color: var(--accent) !important;
-box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
-}
-
-/* Contact Page Green Box */
-
-.contact-info-box {
-background-color: #f0fdf4 !important;
-border: 1px solid #bbf7d0 !important;
-color: #166534 !important;
-}
-
-.dark body .contact-info-box {
-background-color: rgba(34, 197, 94, 0.1) !important;
-border-color: rgba(34, 197, 94, 0.3) !important;
-color: #4ade80 !important;
-}
-
-.contact-info-box .material-icons {
-color: #16a34a !important;
-}
-
-.dark body .contact-info-box .material-icons {
-color: #22c55e !important;
-}
-
-.contact-info-box h3 {
-color: #166534 !important;
-}
-
-.dark body .contact-info-box h3 {
-color: #4ade80 !important;
-}
-
-.contact-info-box p {
-color: #166534 !important;
-}
-
-.dark body .contact-info-box p {
-color: #4ade80 !important;
-}
-
-/* FAQ Styling */
-
-.faq-item {
-border: 1px solid var(--border-light);
-border-radius: 0.75rem;
-overflow: hidden;
-margin-bottom: 1rem;
-}
-
-.dark body .faq-item {
-border-color: var(--border-dark);
-}
-
-.faq-question {
-width: 100%;
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 1rem;
-background: transparent;
-border: none;
-color: var(--text-light) !important;
-cursor: pointer;
-transition: all 0.2s ease;
-text-align: left;
-font-weight: 500;
-}
-
-.dark body .faq-question {
-color: var(--text-dark) !important;
-}
-
-.faq-question:hover {
-background-color: var(--bg-light-secondary) !important;
-}
-
-.dark body .faq-question:hover {
-background-color: var(--bg-dark) !important;
-}
-
-.faq-question .material-icons {
-transition: transform 0.3s ease;
-margin-left: auto;
-flex-shrink: 0;
-color: var(--text-light-secondary);
-}
-
-.dark body .faq-question .material-icons {
-color: var(--text-dark-secondary);
-}
-
-.faq-item.active .faq-question .material-icons {
-transform: rotate(180deg);
-}
-
-.faq-answer {
-padding: 0 1rem 1rem 1rem;
-color: var(--text-light-secondary) !important;
-line-height: 1.6;
-transition: all 0.3s ease;
-}
-
-.dark body .faq-answer {
-color: var(--text-dark-secondary) !important;
-}
-
-.faq-answer.hidden {
-display: none;
-}
-
-/* Blue & green backgrounds (badges/info) */
-
-.bg-blue-50 {
-background-color: #eff6ff !important;
-border-color: #dbeafe !important;
-}
-
-.dark body .bg-blue-50 {
-background-color: rgba(59, 130, 246, 0.1) !important;
-border-color: rgba(59, 130, 246, 0.2) !important;
-}
-
-.bg-green-100 {
-background-color: #dcfce7 !important;
-color: #166534 !important;
-}
-
-.dark body .bg-green-100 {
-background-color: rgba(34, 197, 94, 0.2) !important;
-color: #4ade80 !important;
-}
-
-/* Text Colors */
-
-.text-secondary {
-color: var(--text-light-secondary);
-}
-
-.dark body .text-secondary {
-color: var(--text-dark-secondary);
-}
-
-/* Info boxes styling */
-
-.info-box {
-background-color: var(--bg-light-secondary);
-border: 1px solid var(--border-light);
-padding: 1rem;
-border-radius: 0.5rem;
-}
-
-.dark body .info-box {
-background-color: var(--bg-dark);
-border-color: var(--border-dark);
-}
-
-/* Card hover effects fix */
-
-.app-card {
-background-color: var(--bg-light) !important;
-border-color: var(--border-light) !important;
-transition: transform 0.2s ease, box-shadow 0.2s ease;
-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-}
-
-.dark body .app-card {
-background-color: var(--bg-dark-secondary) !important;
-border-color: var(--border-dark) !important;
-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
-}
-
-.app-card:hover {
-transform: translateY(-2px);
-box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
-}
-
-.dark body .app-card:hover {
-box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Responsive Design */
-
-@media (max-width: 768px) {
-.hero-title {
-font-size: 2rem;
-}
-.hero-description {
-font-size: 1rem;
-padding: 0 1rem;
-}
-.app-card-header {
-flex-direction: row !important;
-text-align: left !important;
-align-items: center;
-}
-.app-card-header .app-icon-container {
-flex-shrink: 0;
-}
-.app-card-header .flex-1 {
-min-width: 0;
-}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent); /* Red on hover */
 }
