@@ -62,7 +62,8 @@ function Rc20Page() {
       <div class="app-card p-6 rounded-2xl">
         <h3 class="text-xl font-bold mb-4">Mod Features</h3>
         <ul class="space-y-3 text-slate-600 dark:text-slate-300">
-          <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Perfect Timing</span></li>
+          <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Always Six Vip</span></li>
+          <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Show Ball Variation</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Always No ball</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Always Wide ball</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited Runs</span></li>
@@ -70,7 +71,7 @@ function Rc20Page() {
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited Coins & Tickets</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlock All Tournaments</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Unlimited MPs/MCs</span></li>
-          <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>All Stadiums Unlock</span></li>
+          <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Everything Unlock</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>No Ads</span></li>
         </ul>
       </div>
@@ -87,12 +88,12 @@ function Rc20Page() {
         <div class="space-y-3">
           <button onclick="window.addToCart('rc20', '1month')" class="w-full py-3 px-4 border border-blue-600 text-blue-600 dark:text-blue-400 rounded-xl font-bold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition flex items-center justify-between">
             <span>1 Month Access</span>
-            <span>₹250</span>
+            <span>₹350</span>
           </button>
 
           <button onclick="window.addToCart('rc20', 'lifetime')" class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-between">
             <span class="flex items-center gap-2"><span class="material-icons text-sm">diamond</span> Lifetime Access</span>
-            <span>₹1000</span>
+            <span>₹800</span>
           </button>
         </div>
       </div>
