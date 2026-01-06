@@ -1,131 +1,95 @@
-/* css/styles.css - iOS Liquid Glass + Itachi Uchiha Theme */
+/* css/styles.css - Clean iOS Theme */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* --- iOS LIGHT MODE (Clean Liquid Glass) --- */
-  --accent: #2563eb;           /* Apple Blue */
-  --accent-hover: #1d4ed8;
-  --bg-color: #f2f2f7;         /* iOS System Gray 6 */
-  --text-primary: #000000;
-  --text-secondary: #3c3c4399; /* iOS label color */
+  /* iOS Color Palette (Light) */
+  --accent: #007AFF;           /* Apple Blue */
+  --accent-hover: #0062cc;
   
-  /* Liquid Glass Cards */
-  --glass-bg: rgba(255, 255, 255, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-  --blur-strength: 20px;
+  --bg-body: #F2F2F7;          /* iOS System Gray 6 */
+  --bg-card: #FFFFFF;
+  --bg-secondary: #E5E5EA;     /* iOS System Gray 5 */
+  
+  --text-primary: #000000;
+  --text-secondary: #8E8E93;   /* iOS System Gray */
+  
+  --border-color: rgba(60, 60, 67, 0.12); /* iOS Separator */
+  
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --radius-card: 18px;
+  --radius-btn: 12px;
 }
 
 .dark {
-  /* --- ITACHI UCHIHA MODE (Dark & Red) --- */
-  --accent: #dc2626;           /* Sharingan Red */
-  --accent-hover: #991b1b;     /* Dried Blood Red */
+  /* iOS Color Palette (Dark) */
+  --accent: #0A84FF;           /* Apple Dark Mode Blue */
+  --accent-hover: #007AFF;
   
-  /* Itachi Background: Deepest Black */
-  --bg-color: #050505;         
+  --bg-body: #000000;
+  --bg-card: #1C1C1E;          /* iOS Dark System Gray 6 */
+  --bg-secondary: #2C2C2E;     /* iOS Dark System Gray 5 */
   
-  --text-primary: #ffffff;
-  --text-secondary: #a3a3a3;
+  --text-primary: #FFFFFF;
+  --text-secondary: #98989D;
   
-  /* Akatsuki Glass Cards */
-  --glass-bg: rgba(20, 20, 20, 0.7);
-  --glass-border: rgba(220, 38, 38, 0.2); /* Subtle Red Border */
-  --glass-shadow: 0 8px 32px 0 rgba(220, 38, 38, 0.15); /* Red Glow */
-  --blur-strength: 25px;
+  --border-color: rgba(84, 84, 88, 0.35);
+  
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* --- GLOBAL RESETS & FONTS --- */
-* {
-  box-sizing: border-box;
-}
+/* --- GLOBAL SETTINGS --- */
+* { box-sizing: border-box; }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-color) !important;
-  /* Subtle mesh gradient background */
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(var(--accent), 0.15) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(var(--accent), 0.15) 0px, transparent 50%);
-  background-attachment: fixed;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-body) !important;
   color: var(--text-primary) !important;
-  transition: all 0.4s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
   margin: 0;
-  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased; /* iOS crisp text */
 }
 
-/* --- ITACHI CROW TEXTURE (Dark Mode Only) --- */
-.dark body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  /* Optional: Add a subtle crow pattern or noise texture here if you have one */
-  background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
-  opacity: 0.1;
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* --- HEADER (Liquid Glass) --- */
-header {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(var(--blur-strength)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(180%);
-  border-bottom: 1px solid var(--glass-border) !important;
+/* --- HEADER (Glassmorphism) --- */
+header, .glass-header {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-color) !important;
   position: sticky;
   top: 0;
   z-index: 50;
-  transition: all 0.3s ease;
-  box-shadow: var(--glass-shadow);
 }
 
-.dark header {
-  border-bottom: 1px solid rgba(220, 38, 38, 0.3) !important;
+.dark header, .dark .glass-header {
+  background-color: rgba(28, 28, 30, 0.8) !important;
 }
 
-/* --- CARDS & CONTAINERS (Glassmorphism) --- */
-.app-card, .glass-card, .info-box, .bg-white, .dark .bg-slate-800, .content-card {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(var(--blur-strength));
-  -webkit-backdrop-filter: blur(var(--blur-strength));
-  border: 1px solid var(--glass-border) !important;
-  box-shadow: var(--glass-shadow) !important;
-  border-radius: 24px; /* iOS rounded corners */
+/* --- CARDS --- */
+.app-card, .info-box, .bg-white, .content-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden; /* Ensures images respect rounded corners */
 }
 
-/* Hover Effects */
+.dark .app-card, .dark .info-box, .dark .bg-slate-800 {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+
 .app-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15) !important;
-}
-.dark .app-card:hover {
-  box-shadow: 0 0 25px rgba(220, 38, 38, 0.4) !important; /* Sharingan Glow */
-  border-color: var(--accent) !important;
-}
-
-/* --- BUTTONS --- */
-.btn, button.bg-blue-600, .bg-blue-600 {
-  background: linear-gradient(135deg, var(--accent), var(--accent-hover)) !important;
-  border-radius: 14px;
-  border: none;
-  color: white !important;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
-  font-weight: 600;
-}
-
-.btn:hover, button.bg-blue-600:hover, .bg-blue-600:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 20px rgba(var(--accent), 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
 }
 
 /* --- TYPOGRAPHY --- */
-h1, h2, h3 {
-  font-weight: 800 !important;
+h1, h2, h3, .font-bold {
+  font-weight: 600 !important; /* Apple tends to use SemiBold */
   letter-spacing: -0.02em;
 }
 
@@ -133,79 +97,111 @@ h1, h2, h3 {
   color: var(--text-secondary) !important;
 }
 
-.text-slate-900, .dark .text-white {
-  color: var(--text-primary) !important;
+/* --- BUTTONS --- */
+.btn, button.bg-blue-600 {
+  background-color: var(--accent) !important;
+  color: #fff !important;
+  border-radius: var(--radius-btn);
+  font-weight: 600;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* --- INPUTS & FORMS --- */
+.btn:hover, button.bg-blue-600:hover {
+  background-color: var(--accent-hover) !important;
+  transform: scale(1.02);
+}
+
+/* --- INPUTS --- */
 input, select, textarea, .form-input {
-  background: rgba(255, 255, 255, 0.5) !important;
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border) !important;
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid transparent;
   color: var(--text-primary) !important;
-  border-radius: 12px;
-  padding: 0.75rem;
-}
-
-.dark input, .dark select, .dark textarea, .dark .form-input {
-  background: rgba(0, 0, 0, 0.5) !important;
-  border-color: #333 !important;
+  border-radius: 10px;
+  padding: 10px 14px;
 }
 
 input:focus, select:focus, textarea:focus {
+  background-color: var(--bg-card) !important;
+  border-color: var(--accent);
   outline: none;
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 0 3px rgba(var(--accent), 0.2) !important;
 }
 
-/* --- NAVIGATION LINKS --- */
+/* --- NAVIGATION --- */
 .nav-link {
-  border-radius: 50px;
-  transition: all 0.2s;
+  color: var(--text-primary) !important;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: background-color 0.2s;
 }
+
 .nav-link:hover {
-  background: rgba(255,255,255,0.3) !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
 }
 .dark .nav-link:hover {
-  background: rgba(220, 38, 38, 0.2) !important;
-  color: #fff !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 /* --- BADGES --- */
 .badge {
-  border-radius: 8px;
-  backdrop-filter: blur(4px);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.65rem;
   letter-spacing: 0.5px;
-  border: 1px solid rgba(255,255,255,0.2);
 }
 
 /* --- MOBILE MENU --- */
 #mobile-menu {
-  background: var(--glass-bg) !important;
-  backdrop-filter: blur(25px);
-  border-top: 1px solid var(--glass-border);
+  background-color: var(--bg-card) !important;
+  border-top: 1px solid var(--border-color);
+}
+
+/* --- HERO SECTION --- */
+.hero-section {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* --- CAROUSEL (iOS Page Control Style) --- */
+.screenshot-carousel {
+  border-radius: var(--radius-card);
+}
+.screenshot-carousel-nav {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.screenshot-carousel-indicator {
+  background: rgba(255,255,255,0.4);
+}
+.screenshot-carousel-indicator.active {
+  background: #fff;
 }
 
 /* --- SCROLLBAR --- */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background-color: #C1C1C1;
   border-radius: 4px;
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: #333;
+  background-color: #48484A;
 }
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
-}
-
-/* --- UTILS --- */
-.hidden { display: none !important; }
