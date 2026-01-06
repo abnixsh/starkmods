@@ -8,25 +8,22 @@ export async function onRequestPost(context) {
     const {
       userId, email, userName,
       mode, teamName, teamShortName, replaceTeamName,
-      players, // Array of player objects
+      players,
       jerseyBase64, jerseyMime,
       logoBase64, logoMime
     } = body;
 
-    if (!userId || !email || !teamName || !Array.isArray(players)) {
+    if (!userId || !teamName || !Array.isArray(players)) {
       return jsonResponse({ error: 'Missing team fields.' }, 400);
     }
 
-    const BOT_TOKEN = env.TG_BOT_TOKEN;
-    const CHAT_ID   = env.TG_CHAT_ID;
-
-    if (!BOT_TOKEN || !CHAT_ID) {
-      return jsonResponse({ error: 'Bot config missing.' }, 500);
-    }
+    // 1. BOT CONFIG (Hardcoded)
+    const BOT_TOKEN = env.TG_BOT_TOKEN || '8155057782:AAGyehmgDEQL1XYsEoiisiputUqj0kIbios';
+    const CHAT_ID   = env.TG_CHAT_ID   || '6879169726';
 
     const modeText = mode === 'replace' ? `Replace: ${replaceTeamName}` : 'New Custom Team';
 
-    // Format Player List for Telegram
+    // Format Player List
     const playersSummary = players.map((p, i) => {
         let skills = '';
         if(['batsman','keeper','all-rounder'].includes(p.playerType)) {
@@ -35,11 +32,8 @@ export async function onRequestPost(context) {
         if(['bowler','all-rounder'].includes(p.playerType)) {
             skills += `   [BWL] ${p.bowlerType||'-'} | Act:${p.bowlingAction||'-'} Skl:${p.bowlingSkill||'-'}`;
         }
-
-        return `${i + 1}. <b>${p.name}</b> (${p.playerType})
-   Jer: ${p.jerseyNumber} | ${p.battingHand} Bat | ${p.bowlingHand} Bowl
-${skills}`;
-      }).join('\n\n');
+        return `${i + 1}. <b>${p.name}</b> (${p.playerType})\n   Jer: ${p.jerseyNumber} | ${p.battingHand} Bat | ${p.bowlingHand} Bowl\n${skills}`;
+      }).join('\n');
 
     const message = `
 👥 <b>NEW CUSTOM TEAM REQUEST</b>
@@ -52,30 +46,21 @@ ${skills}`;
 📌 <b>Mode:</b> ${modeText}
 -----------------------------
 📋 <b>SQUAD LIST (${players.length}):</b>
-
 ${playersSummary}
 -----------------------------
 <i>Jersey & Logo attached below.</i>
 `;
 
-    // 1. Send Text
-    const txtResp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    // 2. Send Text
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'HTML' })
     });
     
-    if (!txtResp.ok) throw new Error('sendMessage failed');
-
-    // 2. Send Jersey
-    if (jerseyBase64) {
-      await sendImageToTelegram(BOT_TOKEN, CHAT_ID, jerseyBase64, jerseyMime, 'jersey.png');
-    }
-
-    // 3. Send Logo
-    if (logoBase64) {
-      await sendImageToTelegram(BOT_TOKEN, CHAT_ID, logoBase64, logoMime, 'logo.png');
-    }
+    // 3. Send Jersey & Logo
+    if (jerseyBase64) await sendImage(BOT_TOKEN, CHAT_ID, jerseyBase64, jerseyMime, 'jersey.png');
+    if (logoBase64) await sendImage(BOT_TOKEN, CHAT_ID, logoBase64, logoMime, 'logo.png');
 
     return jsonResponse({ success: true }, 200);
   } catch (err) {
@@ -84,20 +69,14 @@ ${playersSummary}
   }
 }
 
-async function sendImageToTelegram(token, chatId, base64, mime, filename) {
+async function sendImage(token, chatId, base64, mime, filename) {
   try {
     const buffer = base64ToUint8Array(base64);
     const form = new FormData();
     form.append('chat_id', chatId);
     form.append('document', new Blob([buffer], { type: mime || 'image/png' }), filename);
-
-    await fetch(`https://api.telegram.org/bot${token}/sendDocument`, {
-      method: 'POST',
-      body: form
-    });
-  } catch (e) {
-    console.warn(`Failed to send ${filename}:`, e);
-  }
+    await fetch(`https://api.telegram.org/bot${token}/sendDocument`, { method: 'POST', body: form });
+  } catch (e) { console.warn(`Failed to send ${filename}:`, e); }
 }
 
 function jsonResponse(obj, status = 200) {
