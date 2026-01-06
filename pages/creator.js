@@ -27,15 +27,37 @@ const TEAMS_DATA = {
 };
 
 const CREATOR_PLANS = {
-  P100: { code: 'P100', name: 'Starter', priceINR: 100, maxRequests: 20 },
-  P300: { code: 'P300', name: 'Pro', priceINR: 300, maxRequests: 70 },
-  P1000: { code: 'P1000', name: 'Elite', priceINR: 1000, maxRequests: null }
+  P100: {
+    code: 'P100',
+    name: 'Starter',
+    priceINR: 100,
+    maxRequests: 20,
+    periodDays: 30,
+    description: '20 credits · Custom Player only'
+  },
+  P300: {
+    code: 'P300',
+    name: 'Pro',
+    priceINR: 300,
+    maxRequests: 70,
+    periodDays: 30,
+    description: '70 credits · All Mod Creator features'
+  },
+  P1000: {
+    code: 'P1000',
+    name: 'Elite',
+    priceINR: 1000,
+    maxRequests: null, // unlimited
+    periodDays: 60,
+    description: 'Unlimited requests · 60 days'
+  }
 };
 
-const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; 
+const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; // Update this if needed
 
 // --- 2. GLOBAL STATE ---
 window.creatorSub = null;
+window.creatorPlansReason = null;
 window.currentPlayerGame = 'rc25';
 window.currentJerseyGame = 'rc25';
 window.historyUnsubscribe = null;
@@ -47,7 +69,9 @@ function resetTeamBuilder() {
     teamName: '',
     teamShortName: '',
     replaceTeamName: '',
-    players: [] // Array to hold squad
+    jerseyFile: null,
+    logoFile: null,
+    players: [] 
   };
 }
 
@@ -86,11 +110,12 @@ function CreatorPage() {
         </button>
       </div>
 
-      <div id="creator-sub-status" class="glass mb-8 text-sm p-4 min-h-[80px] flex items-center justify-center text-slate-400">
+      <div id="creator-sub-status" class="glass mb-8 text-sm p-4 min-h-[80px] flex items-center justify-center text-slate-400 rounded-xl border border-slate-200 dark:border-slate-700">
         <div class="animate-pulse">Loading subscription...</div>
       </div>
 
       <div class="grid sm:grid-cols-3 gap-5">
+        
         <button class="group p-6 rounded-2xl border border-blue-500 bg-blue-50 dark:bg-blue-900/10 text-left hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all shadow-sm hover:shadow-md hover:-translate-y-1"
                 onclick="window.router && window.router.navigateTo('/creator-player')">
           <div class="flex items-center gap-4">
@@ -102,27 +127,42 @@ function CreatorPage() {
           </div>
         </button>
 
-        <button class="group p-6 rounded-2xl border border-green-500 bg-green-50 dark:bg-green-900/10 text-left transition-all shadow-sm hover:shadow-md hover:-translate-y-1"
+        <button id="btn-feature-jersey" 
+                class="group p-6 rounded-2xl border border-green-500 bg-green-50 dark:bg-green-900/10 text-left transition-all shadow-sm hover:shadow-md hover:-translate-y-1 relative overflow-hidden"
                 onclick="window.goToCreatorJersey()">
           <div class="flex items-center gap-4">
-             <div class="p-3 bg-green-200 dark:bg-green-800 rounded-full text-green-700 dark:text-green-100"><span class="material-icons text-2xl">checkroom</span></div>
+             <div class="p-3 bg-green-200 dark:bg-green-800 rounded-full text-green-700 dark:text-green-100 icon-container"><span class="material-icons text-2xl">checkroom</span></div>
             <div class="flex-1">
               <div class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-300">Custom Jersey</div>
               <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Upload textures for any team.</div>
             </div>
           </div>
+          <div class="feature-lock-overlay hidden absolute inset-0 bg-slate-100/80 dark:bg-slate-900/80 flex items-center justify-center backdrop-blur-sm z-10">
+             <div class="flex items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-1.5 rounded-lg shadow-sm">
+                <span class="material-icons text-sm text-slate-500">lock</span>
+                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Subscribe to Unlock</span>
+             </div>
+          </div>
         </button>
 
-        <button class="group p-6 rounded-2xl border border-purple-500 bg-purple-50 dark:bg-purple-900/10 text-left transition-all shadow-sm hover:shadow-md hover:-translate-y-1"
+        <button id="btn-feature-team" 
+                class="group p-6 rounded-2xl border border-purple-500 bg-purple-50 dark:bg-purple-900/10 text-left transition-all shadow-sm hover:shadow-md hover:-translate-y-1 relative overflow-hidden"
                 onclick="window.goToCreatorTeam()">
           <div class="flex items-center gap-4">
-            <div class="p-3 bg-purple-200 dark:bg-purple-800 rounded-full text-purple-700 dark:text-purple-100"><span class="material-icons text-2xl">groups</span></div>
+            <div class="p-3 bg-purple-200 dark:bg-purple-800 rounded-full text-purple-700 dark:text-purple-100 icon-container"><span class="material-icons text-2xl">groups</span></div>
             <div class="flex-1">
               <div class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-300">Custom Team</div>
               <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Build full squad (Pro/Elite).</div>
             </div>
           </div>
+          <div class="feature-lock-overlay hidden absolute inset-0 bg-slate-100/80 dark:bg-slate-900/80 flex items-center justify-center backdrop-blur-sm z-10">
+             <div class="flex items-center gap-2 bg-slate-200 dark:bg-slate-700 px-3 py-1.5 rounded-lg shadow-sm">
+                <span class="material-icons text-sm text-purple-500">lock</span>
+                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Pro / Elite Only</span>
+             </div>
+          </div>
         </button>
+
       </div>
     </div>
   `;
@@ -228,7 +268,7 @@ function CreatorPlayerPage() {
               </div>
 
               <div id="cp-bowl-skills" class="hidden grid sm:grid-cols-2 gap-4">
-                  <div><label class="block font-bold mb-1 text-xs">Bowl Style</label><select id="cp-bowl-type" class="form-input text-xs"><option value="fast-med">Fast-Medium</option><option value="faster">Fast</option><option value="med-pacer">Medium</option><option value="off-spinner">Off Spin</option><option value="leg-spinner">Leg Spin</option></select></div>
+                  <div><label class="block font-bold mb-1 text-xs">Bowl Style</label><select id="cp-bowl-type" class="form-input text-xs"><option value="fast-med">Fast-Medium</option><option value="faster">Fast</option><option value="med-pacer">Medium Pacer</option><option value="off-spinner">Off Spin</option><option value="leg-spinner">Leg Spin</option></select></div>
                   <div><label class="block font-bold mb-1 text-xs">Action</label><select id="cp-bowl-action" class="form-input text-xs"><option value="standard">Standard</option><option value="sling">Slingy</option><option value="high-arm">High Arm</option><option value="weird">Unorthodox</option></select></div>
                   <div class="sm:col-span-2">
                      <div class="flex justify-between mb-1"><label class="block font-bold text-xs">Bowling Skill / Accuracy</label><span class="text-xs text-slate-400">Low &mdash; Deadly</span></div>
@@ -634,43 +674,172 @@ window.submitCustomTeam = async function() {
 };
 
 /* =========================================
-   10. SUBSCRIPTION CHECKS
+   10. SUBSCRIPTION CHECKS & LOCKING LOGIC
    ========================================= */
 
-window.checkCreatorSubBeforeRequest = function() {
-    if(!window.creatorSub || window.creatorSub.status !== 'active') { 
-        alert("Active subscription required!"); 
-        if(window.router) window.router.navigateTo('/creator-plans'); 
-        return false; 
+window.loadCreatorSubscription = function () {
+  if (!window.currentUser || !window.db) return;
+  const statusEl = document.getElementById('creator-sub-status');
+  
+  db.collection('creatorSubs').doc(window.currentUser.uid)
+    .onSnapshot(snap => {
+      const sub = snap.exists ? snap.data() : null;
+      window.creatorSub = sub;
+      
+      if(statusEl) statusEl.innerHTML = renderSubStatusHtml(sub);
+      updateLockVisuals(sub);
+    }, err => {
+      console.error(err);
+      if(statusEl) statusEl.innerHTML = `<span class="text-red-500 text-xs">Error loading subscription.</span>`;
+    });
+};
+
+function updateLockVisuals(sub) {
+    const jerseyBtn = document.getElementById('btn-feature-jersey');
+    const teamBtn = document.getElementById('btn-feature-team');
+    if(!jerseyBtn || !teamBtn) return;
+
+    const now = Date.now();
+    let isActive = false;
+    let planCode = null;
+
+    if (sub && sub.status === 'active' && sub.expiresAt) {
+        const exp = sub.expiresAt.toDate ? sub.expiresAt.toDate().getTime() : 0;
+        if (exp > now) {
+            isActive = true;
+            planCode = sub.planCode;
+        }
     }
-    if(window.creatorSub.maxRequests && window.creatorSub.usedRequests >= window.creatorSub.maxRequests) { 
-        alert("Limit reached! Upgrade plan."); 
-        return false; 
+
+    // 1. Jersey Lock (Locked if no active sub)
+    const jerseyLock = jerseyBtn.querySelector('.feature-lock-overlay');
+    if (isActive) {
+        jerseyLock.classList.add('hidden');
+        jerseyBtn.classList.remove('opacity-50', 'grayscale');
+    } else {
+        jerseyLock.classList.remove('hidden');
+        jerseyBtn.classList.add('opacity-50', 'grayscale');
+    }
+
+    // 2. Team Lock (Locked if not Pro/Elite)
+    const teamLock = teamBtn.querySelector('.feature-lock-overlay');
+    const isProOrElite = isActive && (planCode === 'P300' || planCode === 'P1000');
+    
+    if (isProOrElite) {
+        teamLock.classList.add('hidden');
+        teamBtn.classList.remove('opacity-50', 'grayscale');
+    } else {
+        teamLock.classList.remove('hidden');
+        teamBtn.classList.add('opacity-50', 'grayscale');
+    }
+}
+
+function renderSubStatusHtml(sub) {
+  const now = Date.now();
+  if (!sub || !sub.status || sub.status === 'rejected') {
+    return `
+      <div class="flex justify-between items-center">
+        <div>
+            <div class="font-bold text-slate-800 dark:text-slate-100">No active plan</div>
+            <p class="text-xs text-slate-500">Subscribe to unlock features.</p>
+        </div>
+        <button onclick="window.router.navigateTo('/creator-plans')" class="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow hover:bg-blue-700 transition">View Plans</button>
+      </div>`;
+  }
+
+  const plan = CREATOR_PLANS[sub.planCode] || {};
+  const expiresAt = sub.expiresAt && sub.expiresAt.toDate ? sub.expiresAt.toDate() : null;
+  
+  if (!expiresAt || expiresAt.getTime() < now || sub.status !== 'active') {
+    return `
+      <div class="flex justify-between items-center">
+        <div><div class="font-bold text-red-500">Plan Expired</div><p class="text-xs text-slate-500">Please renew to continue.</p></div>
+        <button onclick="window.router.navigateTo('/creator-plans')" class="bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow">Renew</button>
+      </div>`;
+  }
+
+  return `
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          ${plan.name || sub.planCode} Plan <span class="material-icons text-amber-400 text-sm">verified</span>
+        </div>
+        <div class="text-xs text-slate-500">
+           Requests: <span class="font-bold">${sub.usedRequests}/${sub.maxRequests || '∞'}</span> · Expires: ${expiresAt.toLocaleDateString()}
+        </div>
+      </div>
+      <div class="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">Active</div>
+    </div>`;
+}
+
+window.checkCreatorSubBeforeRequest = function() {
+    if(!window.creatorSub || window.creatorSub.status !== 'active') {
+        if(confirm("Subscription Required!\n\nYou need an active plan to use this feature. View plans?")) {
+            window.router.navigateTo('/creator-plans');
+        }
+        return false;
+    }
+    // Expiry check
+    const now = Date.now();
+    const exp = window.creatorSub.expiresAt ? window.creatorSub.expiresAt.toDate().getTime() : 0;
+    if(exp < now) {
+        alert("Your plan has expired. Please renew.");
+        window.router.navigateTo('/creator-plans');
+        return false;
+    }
+    // Limit check
+    if(window.creatorSub.maxRequests && window.creatorSub.usedRequests >= window.creatorSub.maxRequests) {
+        alert("Plan limit reached! Upgrade or renew.");
+        return false;
     }
     return true;
 };
 
+// FIX: Upgrade Logic Navigation
 window.checkCreatorSubForTeam = function() {
     if(!window.checkCreatorSubBeforeRequest()) return false;
-    if(window.creatorSub.planCode === 'P100') { 
-        alert("Team Creator is locked for Starter Plan. Upgrade to Pro/Elite."); 
-        return false; 
+    
+    const sub = window.creatorSub;
+    if(sub.planCode === 'P100') {
+        const upgrade = confirm(
+            "🔒 Locked Feature\n\n" +
+            "Custom Team is only for Pro & Elite members.\n" +
+            "Upgrade to Pro for ₹200 now?"
+        );
+        
+        if(upgrade) {
+            // Create upgrade item
+            const plan = CREATOR_PLANS.P300;
+            window.cart = [{
+                gameId: 'sub_UP_P300',
+                gameName: 'Mod Creator Pro Upgrade',
+                planName: 'Upgrade Starter → Pro',
+                price: 200,
+                image: 'assets/icons/icon_site.jpg',
+                subPlanCode: 'P300',
+                subPlanName: 'Pro',
+                subMaxRequests: plan.maxRequests,
+                subPeriodDays: plan.periodDays
+            }];
+            
+            if(window.updateCartBadge) window.updateCartBadge();
+            
+            // Force navigation to Checkout
+            setTimeout(() => {
+                if(window.router) window.router.navigateTo('/checkout');
+                else window.location.href = '/checkout';
+            }, 100);
+        }
+        return false;
     }
     return true;
-};
-
-window.loadCreatorSubscription = function() {
-    if(!window.currentUser) return;
-    db.collection('creatorSubs').doc(window.currentUser.uid).onSnapshot(snap => {
-        window.creatorSub = snap.data();
-        const el = document.getElementById('creator-sub-status');
-        if(el && window.creatorSub) el.innerHTML = `<span class="text-green-600 font-bold">Plan: ${window.creatorSub.planCode}</span> · Used: ${window.creatorSub.usedRequests}/${window.creatorSub.maxRequests||'∞'}`;
-    });
 };
 
 window.incrementCreatorUsage = async function() {
     if(!window.currentUser) return;
-    db.collection('creatorSubs').doc(window.currentUser.uid).update({ usedRequests: firebase.firestore.FieldValue.increment(1) });
+    db.collection('creatorSubs').doc(window.currentUser.uid).update({
+        usedRequests: firebase.firestore.FieldValue.increment(1)
+    });
 };
 
 // --- NAVIGATION EXPORTS ---
@@ -678,9 +847,73 @@ window.goToCreatorJersey = function() { if(window.checkCreatorSubBeforeRequest()
 window.goToCreatorTeam = function() { if(window.checkCreatorSubForTeam()) window.router.navigateTo('/creator-team'); };
 window.setPlayerGame = function(id) { window.currentPlayerGame = id; window.router.handleRoute('/creator-player'); };
 
+/* =========================================
+   11. PLANS PAGE
+   ========================================= */
+
+function CreatorPlansPage() {
+  if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/'), 50); return ''; }
+
+  const renderCard = (code) => {
+      const p = CREATOR_PLANS[code];
+      return `
+        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-md transition relative overflow-hidden">
+           ${code === 'P300' ? '<div class="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">POPULAR</div>' : ''}
+           <div class="mb-4">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">${p.name}</h3>
+              <div class="text-3xl font-black text-blue-600 mt-2">₹${p.priceINR}</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">${p.periodDays} Days Validity</div>
+           </div>
+           <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-2 mb-6">
+              <li class="flex items-center gap-2"><span class="material-icons text-sm text-green-500">check</span> ${p.maxRequests ? p.maxRequests + ' Requests' : 'Unlimited Requests'}</li>
+              <li class="flex items-center gap-2"><span class="material-icons text-sm text-green-500">check</span> Custom Player</li>
+              <li class="flex items-center gap-2"><span class="material-icons text-sm ${code === 'P100' ? 'text-slate-300' : 'text-green-500'}">check</span> Custom Jersey ${code === 'P100' ? '(Locked)' : ''}</li>
+              <li class="flex items-center gap-2"><span class="material-icons text-sm ${code === 'P100' ? 'text-slate-300' : 'text-green-500'}">check</span> Custom Team ${code === 'P100' ? '(Locked)' : ''}</li>
+           </ul>
+           <button onclick="window.buyCreatorPlan('${code}')" class="w-full bg-slate-900 dark:bg-slate-700 hover:bg-blue-600 text-white py-3 rounded-xl font-bold text-sm transition">
+              Choose ${p.name}
+           </button>
+        </div>
+      `;
+  };
+
+  return `
+    <div class="max-w-5xl mx-auto animate-fade-in pb-20">
+      <div class="text-center mb-10">
+        <h1 class="text-3xl font-bold mb-3 text-slate-900 dark:text-white">Choose a Plan</h1>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">Unlock the full power of Mod Creator.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        ${renderCard('P100')}
+        ${renderCard('P300')}
+        ${renderCard('P1000')}
+      </div>
+    </div>
+  `;
+}
+
+window.buyCreatorPlan = function(code) {
+    const plan = CREATOR_PLANS[code];
+    window.cart = [{
+        gameId: `sub_${code}`,
+        gameName: 'Mod Creator Subscription',
+        planName: `${plan.name} Plan (${plan.periodDays} Days)`,
+        price: plan.priceINR,
+        image: 'assets/icons/icon_site.jpg',
+        subPlanCode: code,
+        subPlanName: plan.name,
+        subMaxRequests: plan.maxRequests,
+        subPeriodDays: plan.periodDays
+    }];
+    
+    if(window.updateCartBadge) window.updateCartBadge();
+    window.router.navigateTo('/checkout');
+};
+
 // --- FINAL EXPORTS ---
 window.CreatorPage = CreatorPage;
 window.CreatorPlayerPage = CreatorPlayerPage;
 window.CreatorJerseyPage = CreatorJerseyPage;
 window.CreatorTeamPage = CreatorTeamPage;
 window.CreatorHistoryPage = CreatorHistoryPage;
+window.CreatorPlansPage = CreatorPlansPage;
