@@ -28,14 +28,14 @@ const CREATOR_PLANS = {
   }
 };
 
-const JERSEY_TESTER_LINK = 'https://your-jersey-tester-link.com'; // CHANGE THIS
+const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; // Update this link if needed
 
 // Globals
 window.creatorSub = null;
 window.creatorPlansReason = null;
 window.currentPlayerGame = 'rc25';
 window.currentJerseyGame = 'rc25';
-window.historyUnsubscribe = null; // To stop listening when leaving page
+window.historyUnsubscribe = null;
 
 // Team builder state
 window.teamBuilder = null;
@@ -51,7 +51,7 @@ function resetTeamBuilder() {
   };
 }
 
-/* ------------------------- MAIN PAGE ------------------------- */
+/* ------------------------- 1. MAIN MENU PAGE ------------------------- */
 
 function CreatorPage() {
   if (!window.currentUser) {
@@ -62,7 +62,7 @@ function CreatorPage() {
         </div>
         <h1 class="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Login Required</h1>
         <p class="text-slate-500 mb-6 text-sm">Login with Google to use the Mod Creator tools.</p>
-        <button onclick="window.googleLogin()" class="btn bg-white border border-slate-200 text-slate-700 shadow-lg">
+        <button onclick="window.googleLogin()" class="bg-white border border-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold shadow-lg">
           Login with Google
         </button>
       </div>`;
@@ -88,7 +88,7 @@ function CreatorPage() {
       </div>
 
       <div class="grid sm:grid-cols-3 gap-5">
-        <button class="creator-feature-player group p-6 rounded-2xl border border-blue-500 bg-blue-50 dark:bg-blue-900/10 text-left hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all shadow-sm hover:shadow-md hover:-translate-y-1"
+        <button class="group p-6 rounded-2xl border border-blue-500 bg-blue-50 dark:bg-blue-900/10 text-left hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all shadow-sm hover:shadow-md hover:-translate-y-1"
                 onclick="window.router && window.router.navigateTo('/creator-player')">
           <div class="flex items-center gap-4">
             <div class="p-3 bg-blue-200 dark:bg-blue-800 rounded-full text-blue-700 dark:text-blue-100"><span class="material-icons text-2xl">person</span></div>
@@ -99,7 +99,7 @@ function CreatorPage() {
           </div>
         </button>
 
-        <button class="creator-feature-jersey group p-6 rounded-2xl border border-green-500 bg-green-50 dark:bg-green-900/10 text-left transition-all shadow-sm hover:shadow-md hover:-translate-y-1"
+        <button class="group p-6 rounded-2xl border border-green-500 bg-green-50 dark:bg-green-900/10 text-left transition-all shadow-sm hover:shadow-md hover:-translate-y-1"
                 onclick="window.goToCreatorJersey()">
           <div class="flex items-center gap-4">
              <div class="p-3 bg-green-200 dark:bg-green-800 rounded-full text-green-700 dark:text-green-100"><span class="material-icons text-2xl">checkroom</span></div>
@@ -107,11 +107,10 @@ function CreatorPage() {
               <div class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-green-700 dark:group-hover:text-green-300">Custom Jersey</div>
               <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Upload textures for any team.</div>
             </div>
-            <span class="material-icons text-lg text-slate-400 feature-lock-jersey hidden">lock</span>
           </div>
         </button>
 
-        <button class="creator-feature-team group p-6 rounded-2xl border border-purple-500 bg-purple-50 dark:bg-purple-900/10 text-left transition-all shadow-sm hover:shadow-md hover:-translate-y-1"
+        <button class="group p-6 rounded-2xl border border-purple-500 bg-purple-50 dark:bg-purple-900/10 text-left transition-all shadow-sm hover:shadow-md hover:-translate-y-1"
                 onclick="window.goToCreatorTeam()">
           <div class="flex items-center gap-4">
             <div class="p-3 bg-purple-200 dark:bg-purple-800 rounded-full text-purple-700 dark:text-purple-100"><span class="material-icons text-2xl">groups</span></div>
@@ -119,7 +118,6 @@ function CreatorPage() {
               <div class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-300">Custom Team</div>
               <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Build full squad (Pro/Elite).</div>
             </div>
-            <span class="material-icons text-lg text-slate-400 feature-lock-team hidden">lock</span>
           </div>
         </button>
       </div>
@@ -127,7 +125,7 @@ function CreatorPage() {
   `;
 }
 
-/* ------------------------- CUSTOM PLAYER PAGE ------------------------- */
+/* ------------------------- 2. CUSTOM PLAYER PAGE ------------------------- */
 
 function CreatorPlayerPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
@@ -165,14 +163,8 @@ function renderCustomPlayerForm() {
       <form onsubmit="window.submitCustomPlayer(event)" class="space-y-5 text-sm">
         
         <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-                <label class="block font-bold mb-1.5">Team Name</label>
-                <input id="cp-team" type="text" class="form-input" placeholder="e.g. India, CSK">
-            </div>
-            <div>
-                <label class="block font-bold mb-1.5">Player Name</label>
-                <input id="cp-name" type="text" class="form-input" placeholder="Enter name">
-            </div>
+            <div><label class="block font-bold mb-1.5">Team Name</label><input id="cp-team" type="text" class="form-input" placeholder="e.g. India, CSK"></div>
+            <div><label class="block font-bold mb-1.5">Player Name</label><input id="cp-name" type="text" class="form-input" placeholder="Enter name"></div>
         </div>
 
         <div class="grid sm:grid-cols-3 gap-5">
@@ -186,20 +178,8 @@ function renderCustomPlayerForm() {
                   <option value="all-rounder">All Rounder</option>
                 </select>
             </div>
-            <div>
-                <label class="block font-bold mb-1.5">Batting Hand</label>
-                <select id="cp-bat-hand" class="form-input">
-                  <option value="right">Right Hand</option>
-                  <option value="left">Left Hand</option>
-                </select>
-            </div>
-             <div>
-                <label class="block font-bold mb-1.5">Bowling Hand</label>
-                <select id="cp-bowl-hand" class="form-input">
-                  <option value="right">Right Hand</option>
-                  <option value="left">Left Hand</option>
-                </select>
-            </div>
+            <div><label class="block font-bold mb-1.5">Batting Hand</label><select id="cp-bat-hand" class="form-input"><option value="right">Right Hand</option><option value="left">Left Hand</option></select></div>
+            <div><label class="block font-bold mb-1.5">Bowling Hand</label><select id="cp-bowl-hand" class="form-input"><option value="right">Right Hand</option><option value="left">Left Hand</option></select></div>
         </div>
 
         <div class="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
@@ -208,12 +188,7 @@ function renderCustomPlayerForm() {
             <div id="cp-bat-skills" class="hidden grid sm:grid-cols-2 gap-4 mb-4">
                  <div>
                     <label class="block font-bold mb-1 text-xs">Batsman Style</label>
-                    <select id="cp-bat-type" class="form-input text-xs">
-                      <option value="balanced">Balanced</option>
-                      <option value="radical">Radical</option>
-                      <option value="brute">Brute</option>
-                      <option value="defensive">Defensive</option>
-                    </select>
+                    <select id="cp-bat-type" class="form-input text-xs"><option value="balanced">Balanced</option><option value="radical">Radical</option><option value="brute">Brute</option><option value="defensive">Defensive</option></select>
                 </div>
                 <div><label class="block font-bold mb-1 text-xs">Timing (0-100)</label><input id="cp-timing" type="number" min="0" max="100" class="form-input text-xs" placeholder="85"></div>
                 <div><label class="block font-bold mb-1 text-xs">Aggression (0-100)</label><input id="cp-aggression" type="number" min="0" max="100" class="form-input text-xs" placeholder="70"></div>
@@ -223,37 +198,19 @@ function renderCustomPlayerForm() {
             <div id="cp-bowl-skills" class="hidden grid sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block font-bold mb-1 text-xs">Bowler Style</label>
-                    <select id="cp-bowl-type" class="form-input text-xs">
-                      <option value="fast-med">Fast-Medium</option>
-                      <option value="faster">Fast</option>
-                      <option value="med-pacer">Medium Pacer</option>
-                      <option value="off-spinner">Off Spinner</option>
-                      <option value="leg-spinner">Leg Spinner</option>
-                    </select>
+                    <select id="cp-bowl-type" class="form-input text-xs"><option value="fast-med">Fast-Medium</option><option value="faster">Fast</option><option value="med-pacer">Medium Pacer</option><option value="off-spinner">Off Spinner</option><option value="leg-spinner">Leg Spinner</option></select>
                 </div>
                 <div>
                     <label class="block font-bold mb-1 text-xs">Bowling Action</label>
-                    <select id="cp-bowl-action" class="form-input text-xs">
-                       <option value="standard">Standard</option>
-                       <option value="sling">Slingy</option>
-                       <option value="high-arm">High Arm</option>
-                       <option value="weird">Unorthodox</option>
-                    </select>
+                    <select id="cp-bowl-action" class="form-input text-xs"><option value="standard">Standard</option><option value="sling">Slingy</option><option value="high-arm">High Arm</option><option value="weird">Unorthodox</option></select>
                 </div>
                  <div><label class="block font-bold mb-1 text-xs">Bowling Skill (0-100)</label><input id="cp-bowl-skill" type="number" min="0" max="100" class="form-input text-xs" placeholder="80"></div>
             </div>
         </div>
 
         <div class="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block font-bold mb-1.5">Jersey Number</label>
-            <input id="cp-jersey" type="number" class="form-input" placeholder="e.g. 18">
-          </div>
-          ${hasFace ? `
-          <div>
-            <label class="block font-bold mb-1.5">Face (RC25 only)</label>
-            <select id="cp-face" class="form-input" onchange="window.updateFacePreview()">${faceOptions}</select>
-          </div>` : ''}
+          <div><label class="block font-bold mb-1.5">Jersey Number</label><input id="cp-jersey" type="number" class="form-input" placeholder="e.g. 18"></div>
+          ${hasFace ? `<div><label class="block font-bold mb-1.5">Face (RC25)</label><select id="cp-face" class="form-input" onchange="window.updateFacePreview()">${faceOptions}</select></div>` : ''}
         </div>
 
         ${hasFace ? `
@@ -267,14 +224,12 @@ function renderCustomPlayerForm() {
           </div>
         </div>` : ''}
 
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold shadow-lg transition transform active:scale-95">
-          Submit Request
-        </button>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold shadow-lg transition transform active:scale-95">Submit Request</button>
       </form>
     </div>`;
 }
 
-/* ------------------------- CUSTOM TEAM PAGE ------------------------- */
+/* ------------------------- 3. CUSTOM TEAM PAGE ------------------------- */
 
 function CreatorTeamPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
@@ -355,13 +310,11 @@ function CreatorTeamPage() {
         </div>
       </div>
 
-      <button onclick="window.submitCustomTeam()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-bold shadow-xl text-lg">
-        Submit Team Request
-      </button>
+      <button onclick="window.submitCustomTeam()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-bold shadow-xl text-lg">Submit Team Request</button>
     </div>`;
 }
 
-/* ------------------------- JERSEY PAGE ------------------------- */
+/* ------------------------- 4. JERSEY PAGE ------------------------- */
 
 function CreatorJerseyPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
@@ -392,14 +345,11 @@ function CreatorJerseyPage() {
     </div>`;
 }
 
-/* ------------------------- HISTORY PAGE ------------------------- */
+/* ------------------------- 5. HISTORY PAGE ------------------------- */
 
 function CreatorHistoryPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/'), 50); return ''; }
-  
-  // Clean up listener if exists
   if (window.historyUnsubscribe) { window.historyUnsubscribe(); window.historyUnsubscribe = null; }
-  
   setTimeout(() => { if (window.loadCreatorHistory) window.loadCreatorHistory(); }, 100);
 
   return `
@@ -414,7 +364,29 @@ function CreatorHistoryPage() {
     </div>`;
 }
 
-/* ------------------------- LOGIC & HELPERS ------------------------- */
+/* ------------------------- 6. NAVIGATION & BUTTON HANDLERS ------------------------- */
+
+// Navigation Helpers (Fixed: Buttons will now work)
+window.goToCreatorJersey = function() {
+    if(!window.currentUser) { alert('Login required.'); window.googleLogin(); return; }
+    if(window.checkCreatorSubBeforeRequest && window.checkCreatorSubBeforeRequest()) {
+        window.router.navigateTo('/creator-jersey');
+    }
+};
+
+window.goToCreatorTeam = function() {
+    if(!window.currentUser) { alert('Login required.'); window.googleLogin(); return; }
+    if(window.checkCreatorSubForTeam && window.checkCreatorSubForTeam()) {
+        window.router.navigateTo('/creator-team');
+    }
+};
+
+window.setPlayerGame = function (gameId) {
+  window.currentPlayerGame = gameId || 'rc25';
+  if (window.router) window.router.handleRoute('/creator-player');
+};
+
+/* ------------------------- 7. LOGIC & HELPERS ------------------------- */
 
 // Show/Hide Fields based on Player Type
 window.toggleSkillFields = function(prefix) {
@@ -439,7 +411,6 @@ window.toggleSkillFields = function(prefix) {
 window.addTeamPlayer = function (e) {
   e.preventDefault();
   if (!window.teamBuilder) resetTeamBuilder();
-
   if (window.teamBuilder.players.length >= 15) { alert('Squad full (Max 15).'); return; }
 
   const p = {
@@ -510,7 +481,7 @@ window.setTeamMode = function(mode) {
     if(el) mode === 'replace' ? el.classList.remove('hidden') : el.classList.add('hidden');
 };
 
-/* ------------------------- SUBMISSION LOGIC ------------------------- */
+/* ------------------------- 8. SUBMISSION LOGIC ------------------------- */
 
 async function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
@@ -568,18 +539,14 @@ window.submitCustomPlayer = async function (evt) {
           }
       }
 
-      // 1. Save to Firestore
       await db.collection('modRequests').add({
           ...data,
           status: 'pending',
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
 
-      // 2. Increment Usage
       await window.incrementCreatorUsage();
 
-      // 3. Notify Telegram (Cloudflare)
-      // Note: We remove base64 from Firestore object usually, but send it to API
       await fetch('/api/custom-player', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -595,6 +562,36 @@ window.submitCustomPlayer = async function (evt) {
   }
 };
 
+window.submitCustomJersey = async function (evt) {
+  evt.preventDefault();
+  if (!window.checkCreatorSubBeforeRequest()) return;
+
+  const team = document.getElementById('cj-team').value.trim();
+  const fileInput = document.getElementById('cj-file');
+  if(!team || !fileInput.files[0]) { alert('Fill all fields.'); return; }
+
+  try {
+      const file = fileInput.files[0];
+      const base64 = await readFileAsBase64(file);
+      const data = {
+        type: 'jersey',
+        gameId: window.currentJerseyGame,
+        userId: window.currentUser.uid,
+        email: window.currentUser.email,
+        userName: window.currentUser.displayName,
+        teamName: team,
+        createdAt: new Date().toISOString()
+      };
+
+      await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+      await window.incrementCreatorUsage();
+      await fetch('/api/custom-jersey', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...data, jerseyBase64: base64}) });
+
+      alert("✅ Jersey Request Sent!");
+      window.router.navigateTo('/creator-history');
+  } catch(e) { alert(e.message); }
+};
+
 window.submitCustomTeam = async function() {
     if(!window.checkCreatorSubForTeam()) return;
     const players = window.teamBuilder.players;
@@ -603,7 +600,6 @@ window.submitCustomTeam = async function() {
     try {
         const jFile = document.getElementById('ct-jersey-file').files[0];
         const lFile = document.getElementById('ct-logo-file').files[0];
-        
         if(!jFile || !lFile) throw new Error("Please upload Jersey and Logo.");
 
         const jerseyBase64 = await readFileAsBase64(jFile);
@@ -625,7 +621,6 @@ window.submitCustomTeam = async function() {
         await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
         await window.incrementCreatorUsage();
         
-        // Send to API with images
         await fetch('/api/custom-team', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -634,24 +629,20 @@ window.submitCustomTeam = async function() {
 
         alert("✅ Team Request Sent!");
         window.router.navigateTo('/creator-history');
-
     } catch(e) {
         alert("Error: " + e.message);
     }
 };
 
-/* ------------------------- OPTIMIZED HISTORY LOADER ------------------------- */
+/* ------------------------- 9. HISTORY & SUBSCRIPTION LOGIC ------------------------- */
 
+// HISTORY FIX: Removed .limit() to prevent "Index" errors
 window.loadCreatorHistory = function () {
   const container = document.getElementById('creator-history');
   if (!container || !window.db || !window.currentUser) return;
-
-  // OPTIMIZATION: Limit to 20 to prevent "Error loading history" on large datasets
-  // Using onSnapshot is fine for user's own data if limited.
   
   window.historyUnsubscribe = db.collection('modRequests')
     .where('userId', '==', window.currentUser.uid)
-    .limit(20) // Performance Fix
     .onSnapshot(snapshot => {
       if (snapshot.empty) {
         container.innerHTML = `<div class="text-slate-400 text-xs text-center py-6">No history found.</div>`;
@@ -661,7 +652,7 @@ window.loadCreatorHistory = function () {
       const docs = [];
       snapshot.forEach(doc => docs.push(doc.data()));
       
-      // Robust Client-side Sort (Fixes crash if timestamp is null during write)
+      // Client-side sort safely handles missing timestamps
       docs.sort((a, b) => {
         const ta = a.timestamp ? (a.timestamp.toMillis ? a.timestamp.toMillis() : Date.now()) : Date.now();
         const tb = b.timestamp ? (b.timestamp.toMillis ? b.timestamp.toMillis() : Date.now()) : Date.now();
@@ -696,45 +687,8 @@ window.loadCreatorHistory = function () {
       container.innerHTML = html;
     }, err => {
       console.error('History Error:', err);
-      // Fallback UI so user doesn't just see a broken page
-      container.innerHTML = `<div class="text-red-500 text-xs text-center p-4 border border-red-100 rounded bg-red-50">
-        Unable to load recent history.<br>Try refreshing.
-      </div>`;
+      container.innerHTML = `<div class="text-red-500 text-xs text-center p-4 border border-red-100 rounded bg-red-50">Unable to load history (Network/DB). Try refreshing.</div>`;
     });
-};
-
-/* ------------------------- EXPORTS ------------------------- */
-window.CreatorPage = CreatorPage;
-window.CreatorPlayerPage = CreatorPlayerPage;
-window.CreatorJerseyPage = CreatorJerseyPage;
-window.CreatorTeamPage = CreatorTeamPage;
-window.CreatorHistoryPage = CreatorHistoryPage;
-
-// Re-use logic from previous file for Sub Checks (omitted for brevity but assumed present)
-// Ensure window.checkCreatorSubBeforeRequest, window.incrementCreatorUsage, etc. are defined 
-// (or copy them from previous version if you deleted them).
-// I will add the essential ones here just in case:
-
-window.checkCreatorSubBeforeRequest = function() {
-    if(!window.creatorSub || window.creatorSub.status !== 'active') {
-        alert("Active subscription required!");
-        if(window.router) window.router.navigateTo('/creator-plans');
-        return false;
-    }
-    if(window.creatorSub.maxRequests && window.creatorSub.usedRequests >= window.creatorSub.maxRequests) {
-        alert("Plan limit reached!");
-        return false;
-    }
-    return true;
-};
-
-window.checkCreatorSubForTeam = function() {
-    if(!window.checkCreatorSubBeforeRequest()) return false;
-    if(window.creatorSub.planCode === 'P100') {
-        alert("Upgrade to Pro or Elite to create teams.");
-        return false;
-    }
-    return true;
 };
 
 window.loadCreatorSubscription = function() {
@@ -744,8 +698,40 @@ window.loadCreatorSubscription = function() {
         const el = document.getElementById('creator-sub-status');
         if(el && window.creatorSub) {
             el.innerHTML = `<span class="text-green-600 font-bold">Plan: ${window.creatorSub.planCode}</span> · Used: ${window.creatorSub.usedRequests}/${window.creatorSub.maxRequests||'∞'}`;
+            
+            // Unlock features visually
+            const teamLock = document.querySelector('.feature-lock-team');
+            const jerseyLock = document.querySelector('.feature-lock-jersey');
+            if(window.creatorSub.status === 'active') {
+                if(jerseyLock) jerseyLock.classList.add('hidden');
+                if(teamLock && (window.creatorSub.planCode === 'P300' || window.creatorSub.planCode === 'P1000')) {
+                    teamLock.classList.add('hidden');
+                }
+            }
         }
     });
+};
+
+window.checkCreatorSubBeforeRequest = function() {
+    if(!window.creatorSub || window.creatorSub.status !== 'active') {
+        alert("Active subscription required! Please subscribe to a plan.");
+        if(window.router) window.router.navigateTo('/creator-plans');
+        return false;
+    }
+    if(window.creatorSub.maxRequests && window.creatorSub.usedRequests >= window.creatorSub.maxRequests) {
+        alert("Plan limit reached! Upgrade your plan.");
+        return false;
+    }
+    return true;
+};
+
+window.checkCreatorSubForTeam = function() {
+    if(!window.checkCreatorSubBeforeRequest()) return false;
+    if(window.creatorSub.planCode === 'P100') {
+        alert("Team Creator is locked for Starter Plan. Please upgrade to Pro or Elite.");
+        return false;
+    }
+    return true;
 };
 
 window.incrementCreatorUsage = async function() {
@@ -754,3 +740,10 @@ window.incrementCreatorUsage = async function() {
         usedRequests: firebase.firestore.FieldValue.increment(1)
     });
 };
+
+/* ------------------------- EXPORTS ------------------------- */
+window.CreatorPage = CreatorPage;
+window.CreatorPlayerPage = CreatorPlayerPage;
+window.CreatorJerseyPage = CreatorJerseyPage;
+window.CreatorTeamPage = CreatorTeamPage;
+window.CreatorHistoryPage = CreatorHistoryPage;
