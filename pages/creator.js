@@ -739,3 +739,18 @@ window.checkCreatorSubForTeam = function() {
 
 window.loadCreatorSubscription = function() {
     if(!window.currentUser) return;
+    db.collection('creatorSubs').doc(window.currentUser.uid).onSnapshot(snap => {
+        window.creatorSub = snap.data();
+        const el = document.getElementById('creator-sub-status');
+        if(el && window.creatorSub) {
+            el.innerHTML = `<span class="text-green-600 font-bold">Plan: ${window.creatorSub.planCode}</span> · Used: ${window.creatorSub.usedRequests}/${window.creatorSub.maxRequests||'∞'}`;
+        }
+    });
+};
+
+window.incrementCreatorUsage = async function() {
+    if(!window.currentUser) return;
+    db.collection('creatorSubs').doc(window.currentUser.uid).update({
+        usedRequests: firebase.firestore.FieldValue.increment(1)
+    });
+};
