@@ -4,30 +4,28 @@ export async function onRequestPost(context) {
   try {
     const { request, env } = context;
     const body = await request.json().catch(() => ({}));
-    
+
     // 1. Validate Inputs
     if (!body.userId || !body.email || !body.playerName) {
       return jsonResponse({ error: 'Missing required fields' }, 400);
     }
 
-    // 2. Check Bot Config
-    const BOT_TOKEN = env.TG_BOT_TOKEN;
-    const CHAT_ID = env.TG_CHAT_ID;
-
-    if (!BOT_TOKEN || !CHAT_ID) {
-      console.error("Missing TG_BOT_TOKEN or TG_CHAT_ID in Cloudflare Env Variables");
-      return jsonResponse({ error: 'Server misconfigured (Missing Bot Token)' }, 500);
-    }
+    // 2. BOT CONFIG (Hardcoded as requested)
+    // We try 'env' first, but fall back to your hardcoded string if env is missing.
+    const BOT_TOKEN = env.TG_BOT_TOKEN || '8155057782:AAGyehmgDEQL1XYsEoiisiputUqj0kIbios';
+    const CHAT_ID   = env.TG_CHAT_ID   || '6879169726';
 
     // 3. Format Message
     const gameName = (body.gameId || 'RC25').toUpperCase();
     
     let skillDetails = '';
+    // Batting Skills
     if (['batsman', 'keeper', 'all-rounder'].includes(body.playerType)) {
       skillDetails += `
 🏏 <b>Batting:</b> ${body.batsmanType || '-'}
    • Timing: ${body.timing || '-'} | Aggro: ${body.aggression || '-'} | Tech: ${body.technique || '-'}`;
     }
+    // Bowling Skills
     if (['bowler', 'all-rounder'].includes(body.playerType)) {
       skillDetails += `
 ⚾ <b>Bowling:</b> ${body.bowlerType || '-'} (${body.bowlingAction || '-'})
@@ -46,6 +44,7 @@ export async function onRequestPost(context) {
 ⭐ <b>Player:</b> ${body.playerName}
 🎽 <b>Jersey:</b> #${body.jerseyNumber}
 -----------------------------
+🎭 <b>Type:</b> ${body.playerType}
 🖐 <b>Hand:</b> ${body.battingHand} Bat / ${body.bowlingHand} Bowl
 ${skillDetails}
 -----------------------------
@@ -66,7 +65,7 @@ ${skillDetails}
     if (!textResp.ok) {
       const err = await textResp.json();
       console.error("Telegram Text Error:", err);
-      throw new Error(`Telegram Error: ${err.description}`);
+      // Don't crash here, try sending image even if text fails (rare)
     }
 
     // 5. Send Face Image (if exists)
@@ -77,12 +76,10 @@ ${skillDetails}
         formData.append('chat_id', CHAT_ID);
         formData.append('document', imageBlob, 'custom_face.png');
 
-        const imgResp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
+        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
           method: 'POST',
           body: formData
         });
-        
-        if (!imgResp.ok) console.warn("Telegram Image Error:", await imgResp.text());
       } catch (imgErr) {
         console.error('Image processing failed:', imgErr);
       }
