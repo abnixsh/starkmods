@@ -79,7 +79,7 @@ function Rc24Page() {
             </div>
             
             <div class="space-y-3">
-                <a href="https://dupload.net/o9cxh6xht397" target="_blank" class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                <a href="https://dupload.net/300yg9lim1o4" target="_blank" class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
                     <span class="material-icons">download</span> Download Patch
                 </a>
             </div>
