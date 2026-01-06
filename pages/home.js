@@ -201,59 +201,6 @@ function HomePage() {
         </div>
       `)}
 
-      ${renderCard('rcswipe', `
-        <!-- RCSWIPE CARD -->
-        <div class="app-card-content">
-          <div class="app-card-header flex gap-3 mb-4">
-            <div class="app-icon-container">
-              <img src="assets/icons/icon_rcswipe.png" alt="RCSWIPE Realistic V1" class="h-16 w-16 rounded-lg"
-                   onerror="this.src='https://placehold.co/64?text=SWP'" />
-            </div>
-            <div class="flex-1">
-              <div class="text-xl font-semibold">RCSWIPE Realistic V1</div>
-              <div class="text-sm text-slate-500 dark:text-slate-400">com.nautilus.RealCricketSwipe</div>
-              <div class="mt-2 flex items-center gap-2 flex-wrap">
-                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">v1.9</span>
-                <span class="badge bg-slate-100 px-2 py-1 rounded text-xs">Patch</span>
-                <span class="badge bg-green-100 px-2 py-1 rounded text-xs text-green-800">Free</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- CAROUSEL -->
-          <div class="app-card-screenshots mb-4 rounded-lg overflow-hidden bg-black screenshot-carousel relative h-40">
-            <div class="screenshot-carousel-track h-full flex transition-transform duration-300">
-              ${[1,2,3,4,5].map(i => `
-                <div class="screenshot-carousel-slide min-w-full h-full">
-                  <img src="assets/img/img_rcswipe_${i}.jpg" class="w-full h-full object-cover opacity-90"
-                       alt="RCSWIPE screenshot ${i}"
-                       onerror="this.src='https://placehold.co/320x180?text=SWIPE-${i}'">
-                </div>
-              `).join('')}
-            </div>
-            <button type="button"
-                    class="screenshot-carousel-nav prev absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
-              <span class="material-icons text-sm">chevron_left</span>
-            </button>
-            <button type="button"
-                    class="screenshot-carousel-nav next absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-1 rounded-full cursor-pointer z-10">
-              <span class="material-icons text-sm">chevron_right</span>
-            </button>
-            <div class="screenshot-carousel-indicators absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1"></div>
-          </div>
-
-          <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
-            The most realistic patch of RCSWIPE till date!
-          </p>
-
-          <div class="app-card-footer">
-            <button onclick="window.router.navigateTo('/rcswipe')" class="btn w-full bg-blue-600 text-white py-2 rounded-lg">
-              Download Now
-            </button>
-          </div>
-        </div>
-      `)}
-
       ${renderCard('rc20', `
         <!-- RC20 CARD -->
         <div class="app-card-content">
@@ -402,5 +349,6 @@ window.toggleHomeCard = function (id) {
 };
 
 window.HomePage = HomePage;
+
 
 
