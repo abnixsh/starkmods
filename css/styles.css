@@ -1,4 +1,4 @@
-/* css/styles.css - iOS Liquid Glass + Itachi Theme */
+/* css/styles.css - iOS Liquid Glass + Itachi Uchiha Theme */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
@@ -22,7 +22,7 @@
   --accent: #dc2626;           /* Sharingan Red */
   --accent-hover: #991b1b;     /* Dried Blood Red */
   
-  /* Itachi Background: Deepest Black/Grey */
+  /* Itachi Background: Deepest Black */
   --bg-color: #050505;         
   
   --text-primary: #ffffff;
@@ -30,7 +30,7 @@
   
   /* Akatsuki Glass Cards */
   --glass-bg: rgba(20, 20, 20, 0.7);
-  --glass-border: rgba(220, 38, 38, 0.15); /* Subtle Red Border */
+  --glass-border: rgba(220, 38, 38, 0.2); /* Subtle Red Border */
   --glass-shadow: 0 8px 32px 0 rgba(220, 38, 38, 0.15); /* Red Glow */
   --blur-strength: 25px;
 }
@@ -40,30 +40,34 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg-color);
+  background-color: var(--bg-color) !important;
+  /* Subtle mesh gradient background */
   background-image: 
     radial-gradient(at 0% 0%, rgba(var(--accent), 0.15) 0px, transparent 50%),
     radial-gradient(at 100% 100%, rgba(var(--accent), 0.15) 0px, transparent 50%);
   background-attachment: fixed;
-  color: var(--text-primary);
+  color: var(--text-primary) !important;
   transition: all 0.4s ease;
   margin: 0;
   overflow-x: hidden;
 }
 
-/* --- ITACHI CROW ANIMATION BACKGROUND (Dark Mode Only) --- */
+/* --- ITACHI CROW TEXTURE (Dark Mode Only) --- */
 .dark body::before {
   content: "";
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
-  background-image: url('https://cdn.pixabay.com/photo/2017/02/16/11/13/bird-2071185_1280.jpg'); /* Silhouette of birds/crows */
-  background-size: cover;
-  opacity: 0.05; /* Very subtle texture */
+  /* Optional: Add a subtle crow pattern or noise texture here if you have one */
+  background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.1;
   pointer-events: none;
   z-index: -1;
-  filter: grayscale(100%);
 }
 
 /* --- HEADER (Liquid Glass) --- */
@@ -71,62 +75,58 @@ header {
   background: var(--glass-bg) !important;
   backdrop-filter: blur(var(--blur-strength)) saturate(180%);
   -webkit-backdrop-filter: blur(var(--blur-strength)) saturate(180%);
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border) !important;
   position: sticky;
   top: 0;
   z-index: 50;
   transition: all 0.3s ease;
+  box-shadow: var(--glass-shadow);
 }
 
 .dark header {
-  border-bottom: 1px solid rgba(220, 38, 38, 0.3); /* Red border in Itachi mode */
+  border-bottom: 1px solid rgba(220, 38, 38, 0.3) !important;
 }
 
-/* --- CARDS (The iOS Liquid Effect) --- */
-.app-card, .glass-card, .info-box, .bg-white, .dark .bg-slate-800 {
+/* --- CARDS & CONTAINERS (Glassmorphism) --- */
+.app-card, .glass-card, .info-box, .bg-white, .dark .bg-slate-800, .content-card {
   background: var(--glass-bg) !important;
   backdrop-filter: blur(var(--blur-strength));
   -webkit-backdrop-filter: blur(var(--blur-strength));
   border: 1px solid var(--glass-border) !important;
-  box-shadow: var(--glass-shadow);
-  border-radius: 20px; /* iOS rounded corners */
+  box-shadow: var(--glass-shadow) !important;
+  border-radius: 24px; /* iOS rounded corners */
 }
 
-/* Hover Effect - Itachi Mode Glow */
+/* Hover Effects */
 .app-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15) !important;
 }
 .dark .app-card:hover {
-  box-shadow: 0 0 25px rgba(220, 38, 38, 0.4); /* Intense Sharingan Glow */
+  box-shadow: 0 0 25px rgba(220, 38, 38, 0.4) !important; /* Sharingan Glow */
   border-color: var(--accent) !important;
 }
 
 /* --- BUTTONS --- */
-.btn, button.bg-blue-600 {
+.btn, button.bg-blue-600, .bg-blue-600 {
   background: linear-gradient(135deg, var(--accent), var(--accent-hover)) !important;
-  border-radius: 12px;
+  border-radius: 14px;
   border: none;
-  color: white;
+  color: white !important;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
   transition: transform 0.2s, box-shadow 0.2s;
+  font-weight: 600;
 }
 
-.btn:hover, button.bg-blue-600:hover {
+.btn:hover, button.bg-blue-600:hover, .bg-blue-600:hover {
   transform: scale(1.02);
   box-shadow: 0 6px 20px rgba(var(--accent), 0.4);
-}
-
-/* Itachi Mode specific button text */
-.dark .btn {
-  font-weight: 800; /* Bolder text for anime feel */
-  letter-spacing: 0.5px;
 }
 
 /* --- TYPOGRAPHY --- */
 h1, h2, h3 {
   font-weight: 800 !important;
-  letter-spacing: -0.02em; /* Tight iOS style tracking */
+  letter-spacing: -0.02em;
 }
 
 .text-slate-500, .dark .text-slate-400 {
@@ -137,23 +137,38 @@ h1, h2, h3 {
   color: var(--text-primary) !important;
 }
 
-/* --- INPUT FIELDS (Glassmorphism) --- */
-input, select, textarea {
+/* --- INPUTS & FORMS --- */
+input, select, textarea, .form-input {
   background: rgba(255, 255, 255, 0.5) !important;
   backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border) !important;
   color: var(--text-primary) !important;
   border-radius: 12px;
+  padding: 0.75rem;
 }
 
-.dark input, .dark select, .dark textarea {
+.dark input, .dark select, .dark textarea, .dark .form-input {
   background: rgba(0, 0, 0, 0.5) !important;
   border-color: #333 !important;
 }
 
-.dark input:focus {
-  border-color: var(--accent) !important; /* Red border on focus */
-  box-shadow: 0 0 10px rgba(220, 38, 38, 0.2);
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent), 0.2) !important;
+}
+
+/* --- NAVIGATION LINKS --- */
+.nav-link {
+  border-radius: 50px;
+  transition: all 0.2s;
+}
+.nav-link:hover {
+  background: rgba(255,255,255,0.3) !important;
+}
+.dark .nav-link:hover {
+  background: rgba(220, 38, 38, 0.2) !important;
+  color: #fff !important;
 }
 
 /* --- BADGES --- */
@@ -164,18 +179,7 @@ input, select, textarea {
   text-transform: uppercase;
   font-size: 0.65rem;
   letter-spacing: 0.5px;
-}
-
-/* --- NAVIGATION LINKS --- */
-.nav-link {
-  border-radius: 50px; /* Pill shape */
-}
-.nav-link:hover {
-  background: rgba(255,255,255,0.2) !important;
-}
-.dark .nav-link:hover {
-  background: rgba(220, 38, 38, 0.15) !important; /* Red tint hover */
-  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
 /* --- MOBILE MENU --- */
@@ -185,7 +189,7 @@ input, select, textarea {
   border-top: 1px solid var(--glass-border);
 }
 
-/* --- SCROLLBAR (Itachi Red) --- */
+/* --- SCROLLBAR --- */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -197,8 +201,11 @@ input, select, textarea {
   border-radius: 4px;
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: #555;
+  background: #333;
 }
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent); /* Red on hover */
+  background: var(--accent);
 }
+
+/* --- UTILS --- */
+.hidden { display: none !important; }
