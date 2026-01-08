@@ -1,153 +1,155 @@
 // pages/rc25.js
 
-// Global config state
-window.rc25Config = window.rc25Config || null;
-window.rc25ConfigLoaded = window.rc25ConfigLoaded || false;
-window._rc25ConfigLoading = window._rc25ConfigLoading || false;
+// Global config state (Defaults set immediately to prevent loading stuck)
+window.rc25Config = {
+  enabled: true,
+  link: 'https://dupload.net/rovsuelnyeth' // Default link if DB fails
+};
+window.rc25ConfigLoaded = false;
 
-// Load config from Firestore once
-window.loadRc25ConfigOnce = function () {
-  if (window.rc25ConfigLoaded || window._rc25ConfigLoading) return;
-  if (!window.db) { setTimeout(window.loadRc25ConfigOnce, 200); return; }
+// Background Fetch (Doesn't block UI)
+window.fetchRc25ConfigBackground = function () {
+  if (window.rc25ConfigLoaded || !window.db) {
+    if (!window.db) setTimeout(window.fetchRc25ConfigBackground, 500); // Retry if DB not ready
+    return;
+  }
 
-  window._rc25ConfigLoading = true;
   window.db.collection('gameConfig').doc('rc25').get()
     .then(doc => {
-      window._rc25ConfigLoading = false;
+      if (doc.exists) {
+        window.rc25Config = doc.data();
+        // If link changed or disabled, update UI live without refresh
+        const btn = document.getElementById('main-download-btn');
+        const statusBadge = document.getElementById('status-badge');
+        
+        if (btn && window.rc25Config.enabled === false) {
+            btn.href = "javascript:void(0)";
+            btn.innerHTML = `<span class="material-icons">lock</span> Temporarily Disabled`;
+            btn.classList.add('grayscale', 'cursor-not-allowed');
+        } else if (btn) {
+            btn.href = window.rc25Config.link;
+        }
+      }
       window.rc25ConfigLoaded = true;
-      window.rc25Config = doc.exists ? (doc.data() || {}) : {};
-      if (window.router) window.router.handleRoute('/rc25');
     })
-    .catch(() => { window._rc25ConfigLoading = false; window.rc25ConfigLoaded = true; });
+    .catch(err => console.warn('Config fetch error, using defaults', err));
 };
 
 function Rc25Page() {
-  if (!window.rc25ConfigLoaded) {
-    window.loadRc25ConfigOnce();
-    return `<div class="max-w-4xl mx-auto py-20 text-center"><div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div></div>`;
-  }
+  // Trigger background fetch
+  window.fetchRc25ConfigBackground();
 
   const isAdmin = !!window.isAdmin;
-  const cfg = window.rc25Config || {};
-  const enabled = cfg.enabled !== false;
-  const downloadLink = cfg.link || 'https://dupload.net/rovsuelnyeth';
-  const youtubeVideoId = 'AyCpwTJWVKc'; // Replace with your video ID
+  const youtubeVideoId = 'K9xpbC-Po6o'; // Your v7+ Video ID
+  const channelLink = 'https://youtube.com/@starkmodsofficial18';
 
-  // --- FIXED: Variable name matches the HTML usage below ---
-  const downloadButtonHtml = enabled
-    ? `<a href="${downloadLink}" target="_blank" class="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-2xl font-bold shadow-lg shadow-green-500/20 transition transform hover:-translate-y-1 flex items-center justify-center gap-2 group">
-         <span class="material-icons group-hover:animate-bounce">download</span> 
-         <span>Download RC25 Patch v7+</span>
-       </a>`
-    : `<button disabled class="w-full py-4 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded-2xl font-bold cursor-not-allowed flex items-center justify-center gap-2">
-         <span class="material-icons">lock_clock</span> Download Paused (Update Coming)
-       </button>`;
-
-  // Admin Controls
+  // Admin Controls HTML
   const adminControls = isAdmin ? `
-    <div class="mt-6 p-4 rounded-xl bg-slate-800 border border-slate-700 text-xs">
-      <div class="flex justify-between items-center mb-2">
-        <span class="text-slate-300 font-bold">👑 Admin Panel</span>
-        <span class="px-2 py-0.5 rounded ${enabled ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'} font-bold">
-          ${enabled ? 'ACTIVE' : 'DISABLED'}
-        </span>
+    <div class="mt-8 p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 backdrop-blur-md">
+      <div class="flex justify-between items-center mb-3">
+        <span class="text-xs font-black uppercase tracking-widest text-slate-500">Admin Controls</span>
       </div>
-      <div class="flex gap-2">
-        <button onclick="window.toggleRc25Download()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg font-bold transition">
-          ${enabled ? 'Disable' : 'Enable'}
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="window.toggleRc25Download()" class="btn bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs py-2 shadow-sm border border-slate-200 dark:border-slate-600">
+          Toggle Status
         </button>
-        <button onclick="window.editRc25DownloadLink()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-bold transition">
-          Change Link
+        <button onclick="window.editRc25DownloadLink()" class="btn bg-blue-600 text-white text-xs py-2 shadow-blue-500/30">
+          Update Link
         </button>
       </div>
     </div>` : '';
 
   return `
-  <div class="max-w-5xl mx-auto animate-fade-in pb-24 px-4">
+  <div class="max-w-5xl mx-auto animate-fade-in pb-32 px-3 sm:px-6 relative">
     
-    <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
+    <nav class="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 mb-6 bg-white/40 dark:bg-black/20 backdrop-blur-md py-2 px-4 rounded-full w-fit border border-white/20">
       <a href="/" class="hover:text-blue-600 transition flex items-center gap-1"><span class="material-icons text-sm">home</span> Home</a>
-      <span class="material-icons text-xs">chevron_right</span>
-      <span class="text-slate-800 dark:text-white font-bold">RC25 Patch</span>
+      <span class="material-icons text-[10px] opacity-50">chevron_right</span>
+      <span class="text-slate-900 dark:text-white">RC25 Patch</span>
     </nav>
 
-    <div class="relative rounded-3xl overflow-hidden bg-black shadow-2xl mb-8 group">
-      <div class="absolute inset-0">
-        <img src="assets/img/img_rc25_1.jpg" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-700" onerror="this.src='https://placehold.co/800x400?text=RC25+Banner'">
-        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-      </div>
+    <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl mb-8 group border border-white/30 dark:border-slate-700/50">
       
-      <div class="relative z-10 p-8 sm:p-12 flex flex-col items-start justify-end h-[400px] sm:h-[500px]">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-600/90 text-white text-[10px] font-bold uppercase tracking-widest mb-3 backdrop-blur-md border border-white/20">
-          <span class="material-icons text-xs">verified</span> Official Patch
+      <div class="absolute inset-0">
+        <img src="assets/img/img_rc25_1.jpg" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition duration-[2s]" onerror="this.src='https://placehold.co/800x600?text=RC25+v7+'">
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+        <div class="absolute inset-0 bg-white/5 backdrop-blur-[2px]"></div> </div>
+      
+      <div class="relative z-10 p-6 sm:p-12 flex flex-col items-center text-center justify-end min-h-[450px]">
+        
+        <div id="status-badge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 text-white text-[10px] font-bold uppercase tracking-widest mb-4 backdrop-blur-xl border border-white/30 shadow-lg">
+          <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_10px_#4ade80]"></span> v7+ Live Now
         </div>
-        <h1 class="text-4xl sm:text-6xl font-black text-white mb-2 leading-tight">
-          REAL CRICKET 25 <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">PROJECT REBORN</span>
+
+        <h1 class="text-4xl sm:text-7xl font-black text-white mb-3 tracking-tight drop-shadow-lg leading-none">
+          RC25 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-300">REBORN</span>
         </h1>
-        <p class="text-slate-300 max-w-lg mb-6 text-sm sm:text-base">
-          Keeping the legacy alive. The most advanced community patch for RC20 with updated squads, jerseys, stadiums, and 30+ new shots.
+        
+        <p class="text-slate-200 max-w-lg mb-8 text-sm sm:text-lg font-medium drop-shadow-md opacity-90">
+          Experience the biggest update yet. Updated Squads, New Jerseys, and 4K Textures.
         </p>
-        <div class="flex flex-wrap gap-3">
-           <a href="#download-area" class="bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-slate-200 transition flex items-center gap-2">
-             <span class="material-icons">download</span> Get v7+
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full sm:w-auto">
+           <a id="main-download-btn" href="${window.rc25Config.link}" target="_blank" class="w-full sm:w-auto px-8 py-4 bg-white text-black rounded-2xl font-bold hover:bg-slate-100 transition shadow-xl flex items-center justify-center gap-2 transform active:scale-95">
+             <span class="material-icons">download</span> Download Patch
            </a>
-           <a href="https://youtube.com/@YourChannel" target="_blank" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-bold transition flex items-center gap-2">
-             <span class="material-icons">play_arrow</span> Watch Trailer
+           <a href="#video-guide" class="w-full sm:w-auto px-8 py-4 bg-white/20 text-white border border-white/30 rounded-2xl font-bold backdrop-blur-md hover:bg-white/30 transition flex items-center justify-center gap-2">
+             <span class="material-icons">play_circle</span> Watch Trailer
            </a>
         </div>
       </div>
     </div>
 
-    <div class="grid lg:grid-cols-3 gap-8">
+    <div class="grid lg:grid-cols-3 gap-6">
       
-      <div class="lg:col-span-2 space-y-8">
+      <div class="lg:col-span-2 space-y-6">
         
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
-          <h3 class="text-xl font-bold mb-4 text-slate-900 dark:text-white flex items-center gap-2">
-            <span class="material-icons text-blue-500">star</span> Key Features
-          </h3>
-          <div class="grid sm:grid-cols-2 gap-4">
-            ${['Updated 2025 Squads', 'Realistic Faces', 'New Bowling Actions', 'The Hundred Tournament', '4K Stadium Textures', '30+ New Batting Shots', 'Updated Scoreboards', 'No Root Required'].map(f => `
-              <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700">
-                <span class="material-icons text-green-500 text-sm">check_circle</span>
-                <span class="text-sm font-semibold text-slate-700 dark:text-slate-300">${f}</span>
-              </div>
-            `).join('')}
-          </div>
+        <div class="grid grid-cols-3 gap-3">
+            <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 rounded-2xl p-4 text-center shadow-sm">
+                <div class="text-2xl font-black text-blue-600">30+</div>
+                <div class="text-[9px] uppercase font-bold text-slate-500">New Shots</div>
+            </div>
+            <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 rounded-2xl p-4 text-center shadow-sm">
+                <div class="text-2xl font-black text-purple-600">4K</div>
+                <div class="text-[9px] uppercase font-bold text-slate-500">Graphics</div>
+            </div>
+            <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 rounded-2xl p-4 text-center shadow-sm">
+                <div class="text-2xl font-black text-green-600">100%</div>
+                <div class="text-[9px] uppercase font-bold text-slate-500">Safe</div>
+            </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm overflow-hidden">
-          <div class="flex justify-between items-center mb-4">
-             <h3 class="text-xl font-bold text-slate-900 dark:text-white">Installation Guide</h3>
-             <span class="text-xs font-bold text-red-500 flex items-center gap-1"><span class="material-icons text-sm">smart_display</span> Watch First</span>
-          </div>
-          <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black">
+        <div id="video-guide" class="bg-white/70 dark:bg-slate-900/60 backdrop-blur-2xl border border-white/50 dark:border-slate-700 rounded-[2rem] p-2 shadow-xl">
+          <div class="relative w-full aspect-video rounded-[1.5rem] overflow-hidden bg-black shadow-inner">
             <iframe class="absolute inset-0 w-full h-full" 
-                    src="https://www.youtube.com/embed/${youtubeVideoId}?rel=0" 
-                    title="Installation Guide" frameborder="0" 
+                    src="https://www.youtube.com/embed/${youtubeVideoId}?rel=0&modestbranding=1" 
+                    title="RC25 Installation" frameborder="0" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
             </iframe>
           </div>
-          <p class="text-xs text-slate-500 mt-3 text-center">Follow the video carefully to avoid "OBB Error".</p>
+          <div class="p-4 flex justify-between items-center">
+             <div>
+                <h3 class="font-bold text-slate-900 dark:text-white">Installation Guide</h3>
+                <p class="text-xs text-slate-500">Watch carefully to avoid errors.</p>
+             </div>
+             <a href="${channelLink}" target="_blank" class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-full shadow-lg shadow-red-500/30 hover:bg-red-700 transition">
+               Subscribe
+             </a>
+          </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
-           <h3 class="text-xl font-bold mb-6 text-slate-900 dark:text-white">Update Timeline</h3>
+        <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
+           <h3 class="text-lg font-bold mb-6 text-slate-900 dark:text-white px-2">Update Log</h3>
            <div class="relative border-l-2 border-slate-200 dark:border-slate-700 ml-3 space-y-8">
               <div class="relative pl-8">
-                 <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-600 ring-4 ring-white dark:ring-slate-800 animate-pulse"></div>
-                 <h4 class="font-bold text-blue-600">Version 8.0 (Upcoming)</h4>
-                 <p class="text-xs text-slate-500 mt-1">Mega update with Career Mode fixes, IPL 2025 Auction rosters, and new commentary.</p>
+                 <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 ring-4 ring-white dark:ring-slate-800 animate-pulse shadow-lg shadow-blue-500/50"></div>
+                 <h4 class="font-bold text-blue-600 dark:text-blue-400 text-sm">Version 8.0 (Coming Soon)</h4>
+                 <p class="text-xs text-slate-500 mt-1 leading-relaxed">Auction 2025 Roster, New Commentary packs & Career Mode crash fix.</p>
               </div>
-              <div class="relative pl-8 opacity-70">
+              <div class="relative pl-8">
                  <div class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-slate-400"></div>
-                 <h4 class="font-bold text-slate-800 dark:text-slate-200">Version 7+ (Current)</h4>
-                 <p class="text-xs text-slate-500 mt-1">Added "The Hundred", Fixed crash issues, Enhanced lighting.</p>
-              </div>
-              <div class="relative pl-8 opacity-50">
-                 <div class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-slate-400"></div>
-                 <h4 class="font-bold text-slate-800 dark:text-slate-200">Version 1 - 6</h4>
-                 <p class="text-xs text-slate-500 mt-1">The beginning of the legacy. Basic texture replacements.</p>
+                 <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Version 7+ (Current)</h4>
+                 <p class="text-xs text-slate-500 mt-1 leading-relaxed">Added The Hundred, Realistic Lighting, and fixed texture bugs.</p>
               </div>
            </div>
         </div>
@@ -156,33 +158,25 @@ function Rc25Page() {
 
       <div class="space-y-6">
         
-        <div id="download-area" class="sticky top-24 bg-white dark:bg-slate-800 border-2 border-blue-500/20 dark:border-blue-500/20 rounded-3xl p-6 shadow-xl text-center">
-           <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl mx-auto flex items-center justify-center mb-4 text-blue-600">
-             <span class="material-icons text-3xl">cloud_download</span>
-           </div>
-           <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Ready to Play?</h3>
-           <p class="text-xs text-slate-500 mb-6">100% Safe • No Virus • Password in Video</p>
-           
-           ${downloadButtonHtml}
-           
-           <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
-             ${adminControls}
-           </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-6 text-white text-center shadow-lg relative overflow-hidden">
-           <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+        <div class="relative rounded-3xl p-6 overflow-hidden shadow-2xl text-center group cursor-pointer" onclick="window.router.navigateTo('/rc20')">
+           <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-violet-700 opacity-90 transition group-hover:scale-105 duration-700"></div>
+           <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
            
            <div class="relative z-10">
-             <h3 class="text-lg font-bold mb-2">Want More Power?</h3>
-             <p class="text-xs text-indigo-100 mb-4">
-               Check out our <strong>Premium RC20 Mod Menu</strong> with Unlimited Coins, Tickets & All Tournaments Unlocked.
+             <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-md text-white border border-white/20">
+                <span class="material-icons">diamond</span>
+             </div>
+             <h3 class="text-xl font-bold text-white mb-2">Go Premium</h3>
+             <p class="text-indigo-100 text-xs mb-6 leading-relaxed">
+               Unlock Unlimited Coins, Tickets & All Tournaments in our <strong>RC20 VIP Menu</strong>.
              </p>
-             <button onclick="window.router.navigateTo('/rc20')" class="w-full py-3 bg-white text-indigo-600 rounded-xl font-bold shadow-md hover:bg-indigo-50 transition flex items-center justify-center gap-2">
-               <span>Check Premium Mod</span> <span class="material-icons text-sm">arrow_forward</span>
+             <button class="w-full py-3 bg-white text-indigo-700 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 text-sm">
+               View RC20 Mod
              </button>
            </div>
         </div>
+
+        ${adminControls}
 
       </div>
 
@@ -195,14 +189,20 @@ window.toggleRc25Download = function () {
   const db = window.db;
   const cfg = window.rc25Config || {};
   db.collection('gameConfig').doc('rc25').set({ enabled: !cfg.enabled, link: cfg.link }, { merge: true })
-    .then(() => { window.rc25Config.enabled = !cfg.enabled; window.router.handleRoute('/rc25'); });
+    .then(() => { 
+        window.rc25Config.enabled = !cfg.enabled; 
+        window.Rc25Page && (document.getElementById('app-content').innerHTML = window.Rc25Page()); 
+    });
 };
 
 window.editRc25DownloadLink = function () {
   const link = prompt("New Download Link:", window.rc25Config?.link || "");
   if(link) {
     window.db.collection('gameConfig').doc('rc25').set({ link }, { merge: true })
-      .then(() => { window.rc25Config.link = link; window.router.handleRoute('/rc25'); });
+      .then(() => { 
+          window.rc25Config.link = link; 
+          window.Rc25Page && (document.getElementById('app-content').innerHTML = window.Rc25Page()); 
+      });
   }
 };
 
