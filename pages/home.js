@@ -139,7 +139,7 @@ function HomePage() {
           <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Mods</div>
        </div>
        <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md p-3 rounded-2xl border border-white/40 dark:border-slate-700/50 text-center shadow-sm hover:scale-105 transition cursor-default">
-          <div class="text-lg sm:text-2xl font-black text-green-600">10k</div>
+          <div class="text-lg sm:text-2xl font-black text-green-600">40k</div>
           <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Users</div>
        </div>
        <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md p-3 rounded-2xl border border-white/40 dark:border-slate-700/50 text-center shadow-sm hover:scale-105 transition cursor-default">
