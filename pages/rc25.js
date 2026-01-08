@@ -31,10 +31,10 @@ function Rc25Page() {
   const cfg = window.rc25Config || {};
   const enabled = cfg.enabled !== false;
   const downloadLink = cfg.link || 'https://dupload.net/rovsuelnyeth';
-  const youtubeVideoId = 'AyCpwTJWVKc'; // Replace with your actual Video ID (not full URL)
+  const youtubeVideoId = 'AyCpwTJWVKc'; // Replace with your video ID
 
-  // Download Button Logic
-  const downloadBtn = enabled
+  // --- FIXED: Variable name matches the HTML usage below ---
+  const downloadButtonHtml = enabled
     ? `<a href="${downloadLink}" target="_blank" class="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-2xl font-bold shadow-lg shadow-green-500/20 transition transform hover:-translate-y-1 flex items-center justify-center gap-2 group">
          <span class="material-icons group-hover:animate-bounce">download</span> 
          <span>Download RC25 Patch v7+</span>
