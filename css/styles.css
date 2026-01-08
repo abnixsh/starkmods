@@ -1,207 +1,111 @@
-/* css/styles.css - Clean iOS Theme */
+/* css/styles.css - Liquid Glass + Ambient Glow */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
 
 :root {
-  /* iOS Color Palette (Light) */
-  --accent: #007AFF;           /* Apple Blue */
-  --accent-hover: #0062cc;
-  
-  --bg-body: #F2F2F7;          /* iOS System Gray 6 */
-  --bg-card: #FFFFFF;
-  --bg-secondary: #E5E5EA;     /* iOS System Gray 5 */
-  
-  --text-primary: #000000;
-  --text-secondary: #8E8E93;   /* iOS System Gray */
-  
-  --border-color: rgba(60, 60, 67, 0.12); /* iOS Separator */
-  
-  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --radius-card: 18px;
-  --radius-btn: 12px;
+  --accent: #2563eb;
+  --bg-body: #f8fafc;
+  --text-primary: #0f172a;
 }
 
 .dark {
-  /* iOS Color Palette (Dark) */
-  --accent: #0A84FF;           /* Apple Dark Mode Blue */
-  --accent-hover: #007AFF;
-  
-  --bg-body: #000000;
-  --bg-card: #1C1C1E;          /* iOS Dark System Gray 6 */
-  --bg-secondary: #2C2C2E;     /* iOS Dark System Gray 5 */
-  
-  --text-primary: #FFFFFF;
-  --text-secondary: #98989D;
-  
-  --border-color: rgba(84, 84, 88, 0.35);
-  
-  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --accent: #3b82f6;
+  --bg-body: #020617; /* Deep Navy/Black */
+  --text-primary: #f8fafc;
 }
 
-/* --- GLOBAL SETTINGS --- */
-* { box-sizing: border-box; }
-
-html { scroll-behavior: smooth; }
-
+/* --- ANIMATED BACKGROUND --- */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-body) !important;
-  color: var(--text-primary) !important;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  margin: 0;
-  -webkit-font-smoothing: antialiased; /* iOS crisp text */
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* --- HEADER (Glassmorphism) --- */
-header, .glass-header {
-  background-color: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--border-color) !important;
-  position: sticky;
-  top: 0;
-  z-index: 50;
+/* The Ambient Glow Orbs */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: -1;
+  opacity: 0.4;
+  animation: float 20s infinite alternate;
 }
 
-.dark header, .dark .glass-header {
-  background-color: rgba(28, 28, 30, 0.8) !important;
+/* Light Mode Orbs */
+body::before { background: radial-gradient(#60a5fa, transparent); top: -10%; left: -10%; }
+body::after { background: radial-gradient(#c084fc, transparent); bottom: -10%; right: -10%; }
+
+/* Dark Mode Orbs (More vibrant to show through glass) */
+.dark body::before { background: radial-gradient(#1d4ed8, transparent); opacity: 0.25; }
+.dark body::after { background: radial-gradient(#7e22ce, transparent); opacity: 0.2; }
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, 50px) scale(1.1); }
+  100% { transform: translate(-30px, 20px) scale(0.9); }
 }
 
-/* --- CARDS --- */
-.app-card, .info-box, .bg-white, .content-card {
-  background-color: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card) !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden; /* Ensures images respect rounded corners */
+/* --- LIQUID GLASS CARD --- */
+.app-card {
+  /* Key to the Liquid look: High Blur + Low Opacity */
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  border-radius: 24px; /* iOS Super Ellipse */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.dark .app-card, .dark .info-box, .dark .bg-slate-800 {
-  background-color: var(--bg-card) !important;
-  border-color: var(--border-color) !important;
+.dark .app-card {
+  /* Dark Mode Liquid: Very transparent dark layer + White border shine */
+  background: rgba(15, 23, 42, 0.45); /* See-through dark */
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 .app-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.5); /* Shine on hover */
 }
 
-/* --- TYPOGRAPHY --- */
-h1, h2, h3, .font-bold {
-  font-weight: 600 !important; /* Apple tends to use SemiBold */
-  letter-spacing: -0.02em;
+.dark .app-card:hover {
+  background: rgba(30, 41, 59, 0.6); /* Slightly lighter on hover */
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 15px 45px rgba(37, 99, 235, 0.15); /* Blue glow */
 }
 
-.text-slate-500, .dark .text-slate-400 {
-  color: var(--text-secondary) !important;
-}
-
-/* --- BUTTONS --- */
-.btn, button.bg-blue-600 {
-  background-color: var(--accent) !important;
-  color: #fff !important;
-  border-radius: var(--radius-btn);
-  font-weight: 600;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  transition: all 0.2s;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.btn:hover, button.bg-blue-600:hover {
-  background-color: var(--accent-hover) !important;
-  transform: scale(1.02);
-}
-
-/* --- INPUTS --- */
-input, select, textarea, .form-input {
-  background-color: var(--bg-secondary) !important;
-  border: 1px solid transparent;
-  color: var(--text-primary) !important;
-  border-radius: 10px;
-  padding: 10px 14px;
-}
-
-input:focus, select:focus, textarea:focus {
-  background-color: var(--bg-card) !important;
-  border-color: var(--accent);
-  outline: none;
-}
-
-/* --- NAVIGATION --- */
-.nav-link {
-  color: var(--text-primary) !important;
-  font-weight: 500;
-  border-radius: 8px;
-  padding: 8px 12px;
-  transition: background-color 0.2s;
-}
-
-.nav-link:hover {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
-.dark .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* --- BADGES --- */
-.badge {
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 11px;
+/* --- BUTTONS (iOS Style) --- */
+.btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  border-radius: 16px;
+  color: white;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  border: none;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+  transition: all 0.2s;
 }
+.btn:active { transform: scale(0.96); }
 
-/* --- MOBILE MENU --- */
-#mobile-menu {
-  background-color: var(--bg-card) !important;
-  border-top: 1px solid var(--border-color);
+/* --- HEADER --- */
+.glass-header {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
-
-/* --- HERO SECTION --- */
-.hero-section {
-  text-align: center;
-  padding: 3rem 1rem;
-}
-
-.hero-title {
-  font-size: 2.5rem;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.hero-description {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* --- CAROUSEL (iOS Page Control Style) --- */
-.screenshot-carousel {
-  border-radius: var(--radius-card);
-}
-.screenshot-carousel-nav {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.3);
-}
-.screenshot-carousel-indicator {
-  background: rgba(255,255,255,0.4);
-}
-.screenshot-carousel-indicator.active {
-  background: #fff;
+.dark .glass-header {
+  background: rgba(2, 6, 23, 0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 /* --- SCROLLBAR --- */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-thumb {
-  background-color: #C1C1C1;
-  border-radius: 4px;
-}
-.dark ::-webkit-scrollbar-thumb {
-  background-color: #48484A;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.dark ::-webkit-scrollbar-thumb { background: #334155; }
