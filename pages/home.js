@@ -1,12 +1,15 @@
 // pages/home.js
 
+// Global state
 window.homeHiddenCards = window.homeHiddenCards || [];
 window.homeConfigLoaded = window.homeConfigLoaded || false;
 window._homeConfigFetchStarted = window._homeConfigFetchStarted || false;
 
+// Load hidden cards logic
 window.loadHomeHiddenCardsOnce = function () {
   if (window.homeConfigLoaded || window._homeConfigFetchStarted) return;
   if (!window.db) { setTimeout(window.loadHomeHiddenCardsOnce, 200); return; }
+  
   window._homeConfigFetchStarted = true;
   db.collection('siteConfig').doc('homeCards').get()
     .then(doc => {
@@ -23,263 +26,166 @@ function HomePage() {
   const isAdmin = !!window.isAdmin;
   const isHidden = (id) => window.homeHiddenCards.includes(id);
 
-  // Admin Controls
+  // Admin Controls (Show/Hide)
   const adminControls = (id) => {
     if (!isAdmin) return '';
-    const hidden = isHidden(id);
     return `
-      <div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10">
-        <span class="text-[10px] uppercase font-bold text-slate-400">ID: ${id}</span>
-        <button onclick="window.toggleHomeCard('${id}')"
-                class="text-[10px] font-bold px-2 py-1 rounded bg-white/10 hover:bg-white/20 text-slate-300 transition">
-          ${hidden ? '👁️ SHOW' : '🚫 HIDE'}
+      <div class="absolute top-4 right-4 z-20">
+        <button onclick="window.toggleHomeCard('${id}')" 
+                class="text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-md border border-white/20 transition shadow-lg
+                ${isHidden(id) ? 'bg-red-500/80 text-white' : 'bg-black/30 text-white'}">
+          ${isHidden(id) ? 'HIDDEN' : 'VISIBLE'}
         </button>
       </div>`;
   };
 
-  const renderCard = (id, innerHtml) => {
+  // Card Template
+  const renderCard = (id, title, pkg, badge, badgeColor, imgPath, desc, link) => {
     if (!isAdmin && isHidden(id)) return '';
-    const hiddenStyle = isHidden(id) ? 'opacity-50 grayscale border-red-500/30' : '';
-    return `<article class="app-card p-5 ${hiddenStyle}" data-card-id="${id}">${adminControls(id)}${innerHtml}</article>`;
+    const opacityClass = isHidden(id) ? 'opacity-60 grayscale' : '';
+
+    return `
+      <article class="app-card flex flex-col h-full p-5 ${opacityClass}" data-card-id="${id}">
+        ${adminControls(id)}
+        
+        <div class="flex items-start gap-4 mb-4">
+          <img src="${imgPath}" 
+               class="w-16 h-16 rounded-2xl shadow-md object-cover bg-slate-100" 
+               onerror="this.src='https://placehold.co/128/007AFF/ffffff?text=${title}'">
+          <div>
+            <h3 class="text-lg font-bold leading-tight">${title}</h3>
+            <p class="text-[10px] text-muted font-mono mb-2">${pkg}</p>
+            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-${badgeColor}-100 text-${badgeColor}-700 dark:bg-${badgeColor}-900/30 dark:text-${badgeColor}-300">
+              ${badge}
+            </span>
+          </div>
+        </div>
+
+        <div class="relative h-40 mb-4 rounded-2xl overflow-hidden bg-black/5 dark:bg-black/40 group cursor-pointer"
+             onclick="window.router.navigateTo('${link}')">
+           <img src="assets/img/img_${id}_1.jpg" 
+                class="w-full h-full object-cover transition duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100"
+                onerror="this.src='https://placehold.co/600x320/1e293b/ffffff?text=${title}+Gameplay'">
+           
+           <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex items-end p-4">
+             <span class="text-white text-xs font-bold flex items-center gap-1">
+               <span class="material-icons text-sm">visibility</span> Preview
+             </span>
+           </div>
+        </div>
+
+        <p class="text-sm text-muted mb-6 line-clamp-2 flex-1">
+          ${desc}
+        </p>
+
+        <button onclick="window.router.navigateTo('${link}')" 
+                class="btn w-full py-3.5 mt-auto flex items-center justify-center gap-2 group shadow-lg shadow-blue-500/20">
+          <span>Download</span> 
+          <span class="material-icons text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
+        </button>
+      </article>
+    `;
   };
 
   return `
-  <div class="max-w-7xl mx-auto pb-24 animate-fade-in relative px-4">
+  <div class="max-w-7xl mx-auto pb-24 animate-fade-in px-4 pt-6">
 
-    <section class="relative rounded-[2.5rem] p-8 sm:p-12 mb-10 text-center overflow-hidden border border-white/20 shadow-2xl isolate mt-4">
-       <div class="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
+    <section class="relative rounded-[2.5rem] p-8 sm:p-14 mb-12 text-center overflow-hidden border border-white/20 shadow-2xl isolate">
+       <div class="absolute inset-0 bg-white/40 dark:bg-black/40 backdrop-blur-3xl -z-10"></div>
        
-       <div class="relative z-10">
-          <div class="inline-flex items-center gap-2 py-1 px-3 rounded-full bg-black/20 dark:bg-white/10 border border-white/10 backdrop-blur-md mb-6 shadow-inner">
-            <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-            </span>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">
-              v7.0 Update Live
-            </span>
-          </div>
+       <div class="relative z-10 flex flex-col items-center">
+          <span class="py-1 px-4 rounded-full bg-black/5 dark:bg-white/10 border border-white/10 backdrop-blur-md mb-6 text-[10px] font-bold uppercase tracking-widest">
+            <span class="text-green-500">●</span> System Online
+          </span>
 
-          <h1 class="text-4xl sm:text-7xl font-black text-slate-900 dark:text-white mb-4 tracking-tighter drop-shadow-sm">
+          <h1 class="text-5xl sm:text-7xl font-black mb-4 tracking-tighter drop-shadow-sm text-gradient">
             Stark Mods
           </h1>
           
-          <p class="text-sm sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-lg mx-auto font-medium opacity-90 leading-relaxed">
-            Premium, Secure & Anti-Ban Mod Menus.
+          <p class="text-lg text-muted mb-8 max-w-xl mx-auto font-medium">
+            Next-Gen Mod Menus for RC25, WCC3 & more. Secure, Anti-Ban & Always Updated.
           </p>
           
           <div class="flex flex-wrap justify-center gap-3">
-             <button onclick="document.getElementById('search-mods').focus()" 
-                     class="btn px-8 py-3.5 flex items-center gap-2">
-               <span class="material-icons text-sm">search</span> Browse
+             <button onclick="document.getElementById('search-mods').focus()" class="btn px-8 py-3.5">
+               Browse Mods
              </button>
-             
              <button onclick="window.open('https://t.me/imsergiomoreio', '_blank')" 
-                     class="px-6 py-3.5 rounded-2xl font-bold bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-700/80 text-blue-600 dark:text-blue-400 border border-white/20 backdrop-blur-md transition flex items-center gap-2">
-               <span class="material-icons text-sm">telegram</span> Telegram
-             </button>
-
-             <button onclick="window.open('https://discord.gg/your-invite-link', '_blank')" 
-                     class="px-6 py-3.5 rounded-2xl font-bold bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-700/80 text-indigo-600 dark:text-indigo-400 border border-white/20 backdrop-blur-md transition flex items-center gap-2">
-               <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.086 2.157 2.419 0 1.334-.956 2.419-2.157 2.419zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.086 2.157 2.419 0 1.334-.946 2.419-2.157 2.419z"/></svg>
-               Discord
+                     class="px-8 py-3.5 rounded-2xl font-bold bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 text-blue-600 dark:text-blue-400 border border-white/20 backdrop-blur-md transition">
+               Telegram
              </button>
           </div>
        </div>
     </section>
 
-    <div class="sticky top-20 z-40 mb-8 max-w-3xl mx-auto">
-      <div class="flex gap-2 p-1.5 rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 shadow-lg">
-         
-         <div class="relative flex-1 group">
-            <span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition">search</span>
-            <input type="text" id="search-mods" onkeyup="window.filterMods()" 
-                   placeholder="Search games..."
-                   class="w-full pl-12 pr-4 py-3 bg-transparent border-none outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 font-medium">
+    <div class="sticky top-20 z-40 mb-10 max-w-2xl mx-auto">
+      <div class="glass-bar p-2 rounded-full flex items-center shadow-xl border border-white/20">
+         <span class="material-icons text-slate-400 ml-4">search</span>
+         <input type="text" id="search-mods" onkeyup="window.filterMods()" 
+                placeholder="Search games..." 
+                class="bg-transparent border-none outline-none w-full px-3 text-sm font-bold text-main placeholder-slate-400 h-10">
+         <div class="pr-2">
+            <select id="filter-category" onchange="window.filterMods()" class="bg-slate-100 dark:bg-slate-800 border-none rounded-full px-4 py-2 text-xs font-bold cursor-pointer outline-none">
+               <option value="all">All</option>
+               <option value="free">Free</option>
+               <option value="premium">Premium</option>
+            </select>
          </div>
-         
-         <div class="w-px bg-slate-200 dark:bg-white/10 my-2"></div>
-
-         <select id="filter-category" onchange="window.filterMods()" 
-                 class="px-4 bg-transparent border-none outline-none text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer rounded-xl transition">
-            <option value="all">All</option>
-            <option value="free">Free</option>
-            <option value="premium">Paid</option>
-         </select>
       </div>
     </div>
 
-    <section class="grid md:grid-cols-3 gap-6" id="mods-grid">
+    <div class="grid md:grid-cols-3 gap-6" id="mods-grid">
+      
+      ${renderCard('rc25', 'RC25 Fan-Made', 'com.nautilus.RC3D', 'v7.0', 'green', 'assets/icons/icon_rc25.jpg', 
+        'The ultimate RC25 Patch. Upgraded Enhanced version of RC20 for the fans of Real Cricket.', '/rc25')}
 
-      ${renderCard('rc25', `
-        <div class="app-card-content h-full flex flex-col">
-          <div class="flex gap-4 mb-5">
-            <img src="assets/icons/icon_rc25.jpg" class="h-16 w-16 rounded-2xl shadow-lg object-cover ring-1 ring-white/10" onerror="this.src='https://placehold.co/64?text=RC25'" />
-            <div class="pt-1">
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC25 Fan-Made</h3>
-              <p class="text-[10px] text-slate-500 font-mono mb-2">com.nautilus.RC3D</p>
-              <div class="flex gap-2">
-                <span class="badge bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">v7+</span>
-                <span class="badge bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300">Free</span>
-              </div>
-            </div>
-          </div>
+      ${renderCard('rc24', 'RC Realistic V2', 'com.nautilus.RealCricket', 'v4.5', 'green', 'assets/icons/icon_rc24.png', 
+        'Realistic textures, stadiums, and faces. The best graphical overhaul for RC24.', '/rc24')}
 
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed opacity-90">
-            The ultimate RC25 Patch. Upgraded Enhanced version of RC20 for the fans of Real Cricket.
-          </p>
+      ${renderCard('rc20', 'RC20 Mod Menu', 'com.nautilus.RC3D', 'Premium', 'amber', 'assets/icons/icon_rc20.jpg', 
+        'VIP Menu: Unlimited Coins, Tickets, All Tournaments Unlocked & Timing Hack.', '/rc20')}
 
-          <button onclick="window.router.navigateTo('/rc25')" class="btn w-full py-3.5 shadow-lg shadow-blue-500/20 flex justify-center gap-2 group">
-            <span>Download</span> <span class="material-icons text-sm group-hover:translate-x-1 transition">arrow_forward</span>
-          </button>
-        </div>
-      `)}
+      ${renderCard('wcc3', 'WCC3 Mod Menu', 'com.nextwave.wcc3', 'Premium', 'amber', 'assets/icons/icon_wcc3.png', 
+        'Unlock Career Mode, Unlimited Platinum, and NPL Auction instantly.', '/wcc3')}
 
-      ${renderCard('rc24', `
-        <div class="app-card-content h-full flex flex-col">
-          <div class="flex gap-4 mb-5">
-            <img src="assets/icons/icon_rc24.png" class="h-16 w-16 rounded-2xl shadow-lg object-cover ring-1 ring-white/10" onerror="this.src='https://placehold.co/64?text=RC24'" />
-            <div class="pt-1">
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC Realistic V2</h3>
-              <p class="text-[10px] text-slate-500 font-mono mb-2">com.nautilus.RealCricket</p>
-              <div class="flex gap-2">
-                <span class="badge bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">v4.5</span>
-                <span class="badge bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300">Free</span>
-              </div>
-            </div>
-          </div>
+    </div>
 
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed opacity-90">
-            The most realistic patch of RC24 till date! Enhanced graphics and gameplay.
-          </p>
-
-          <button onclick="window.router.navigateTo('/rc24')" class="btn w-full py-3.5 shadow-lg shadow-blue-500/20 flex justify-center gap-2 group">
-            <span>Download</span> <span class="material-icons text-sm group-hover:translate-x-1 transition">arrow_forward</span>
-          </button>
-        </div>
-      `)}
-
-      ${renderCard('rc20', `
-        <div class="app-card-content h-full flex flex-col">
-          <div class="flex gap-4 mb-5">
-            <img src="assets/icons/icon_rc20.jpg" class="h-16 w-16 rounded-2xl shadow-lg object-cover ring-1 ring-white/10" onerror="this.src='https://placehold.co/64?text=RC20'" />
-            <div class="pt-1">
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC20 Mod Menu</h3>
-              <p class="text-[10px] text-slate-500 font-mono mb-2">com.nautilus.RC3D</p>
-              <div class="flex gap-2">
-                <span class="badge bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">v6.1</span>
-                <span class="badge bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300">Premium</span>
-              </div>
-            </div>
-          </div>
-
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed opacity-90">
-            VIP Mod Menu. Timing Hack, Unlimited Coins/Tickets, All Tournaments Unlocked.
-          </p>
-
-          <button onclick="window.router.navigateTo('/rc20')" class="w-full bg-slate-900 hover:bg-black dark:bg-white/10 dark:hover:bg-white/20 dark:text-white text-white py-3.5 rounded-2xl font-bold shadow-lg transition flex justify-center gap-2 group border border-white/10">
-            <span>View Details</span> <span class="material-icons text-sm group-hover:translate-x-1 transition">visibility</span>
-          </button>
-        </div>
-      `)}
-
-      ${renderCard('wcc3', `
-        <div class="app-card-content h-full flex flex-col">
-          <div class="flex gap-4 mb-5">
-            <img src="assets/icons/icon_wcc3.png" class="h-16 w-16 rounded-2xl shadow-lg object-cover ring-1 ring-white/10" onerror="this.src='https://placehold.co/64?text=WCC3'" />
-            <div class="pt-1">
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">WCC3 Mod Menu</h3>
-              <p class="text-[10px] text-slate-500 font-mono mb-2">com.nextwave.wcc3</p>
-              <div class="flex gap-2">
-                <span class="badge bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">v3.2</span>
-                <span class="badge bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300">Premium</span>
-              </div>
-            </div>
-          </div>
-
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed opacity-90">
-            VIP Mod Menu with Career Mode Unlock, Unlimited Platinum, NPL Auction & more.
-          </p>
-
-          <button onclick="window.router.navigateTo('/wcc3')" class="w-full bg-slate-900 hover:bg-black dark:bg-white/10 dark:hover:bg-white/20 dark:text-white text-white py-3.5 rounded-2xl font-bold shadow-lg transition flex justify-center gap-2 group border border-white/10">
-            <span>View Details</span> <span class="material-icons text-sm group-hover:translate-x-1 transition">visibility</span>
-          </button>
-        </div>
-      `)}
-
-    </section>
-  </div>
-  `;
+  </div>`;
 }
 
-// ----------------------
-// SEARCH & FILTER FUNCTION
-// ----------------------
+// Logic
 window.filterMods = function() {
    const query = document.getElementById('search-mods').value.toLowerCase();
    const filter = document.getElementById('filter-category').value;
    const cards = document.querySelectorAll('.app-card');
-
-   let foundCount = 0;
+   let found = 0;
 
    cards.forEach(card => {
       const text = card.innerText.toLowerCase();
       const isFree = text.includes('free');
-      const isPremium = text.includes('premium') || text.includes('paid');
+      const isPremium = text.includes('premium');
       
-      let matchesSearch = text.includes(query);
-      let matchesFilter = true;
+      let match = text.includes(query);
+      if (filter === 'free' && !isFree) match = false;
+      if (filter === 'premium' && !isPremium) match = false;
 
-      if (filter === 'free' && !isFree) matchesFilter = false;
-      if (filter === 'premium' && !isPremium) matchesFilter = false;
-
-      if (matchesSearch && matchesFilter) {
-         card.style.display = 'block';
-         setTimeout(() => card.style.opacity = '1', 50);
-         foundCount++;
+      if (match) {
+         card.style.display = 'flex';
+         found++;
       } else {
          card.style.display = 'none';
       }
    });
-
-   // No Results Message
-   const grid = document.getElementById('mods-grid');
-   const noResultId = 'no-results-msg';
-   let noResultEl = document.getElementById(noResultId);
-
-   if(foundCount === 0) {
-       if(!noResultEl) {
-           noResultEl = document.createElement('div');
-           noResultEl.id = noResultId;
-           noResultEl.className = 'col-span-1 md:col-span-3 text-center py-20 text-slate-400 bg-white/50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 backdrop-blur-sm';
-           noResultEl.innerHTML = `
-             <div class="flex flex-col items-center">
-                <span class="material-icons text-4xl mb-2 text-slate-300">search_off</span>
-                <p class="font-bold text-lg">No mods found</p>
-                <p class="text-sm">Try searching for "RC24" or "WCC3"</p>
-             </div>
-           `;
-           grid.appendChild(noResultEl);
-       }
-   } else {
-       if(noResultEl) noResultEl.remove();
-   }
 };
 
-window.toggleHomeCard = function (id) {
-  if (!window.isAdmin) return alert('Only admin can hide/show cards.');
-  
-  let arr = Array.isArray(window.homeHiddenCards) ? window.homeHiddenCards.slice() : [];
-  const idx = arr.indexOf(id);
-  if (idx === -1) arr.push(id);
-  else arr.splice(idx, 1);
-
-  db.collection('siteConfig').doc('homeCards')
-    .set({ hidden: arr }, { merge: true })
-    .then(() => {
-      window.homeHiddenCards = arr;
-      if (window.router) window.router.handleRoute('/');
-    });
+window.toggleHomeCard = function(id) {
+  if(!window.isAdmin) return;
+  let arr = window.homeHiddenCards.includes(id) 
+    ? window.homeHiddenCards.filter(x => x !== id)
+    : [...window.homeHiddenCards, id];
+    
+  db.collection('siteConfig').doc('homeCards').set({ hidden: arr }, { merge: true })
+    .then(() => { window.homeHiddenCards = arr; window.router.handleRoute('/'); });
 };
 
 window.HomePage = HomePage;
