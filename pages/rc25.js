@@ -43,7 +43,7 @@ function Rc25Page() {
   const v7TrailerLink = 'https://youtu.be/K9xpbC-Po6o'; // Your v7+ Trailer
   // 👇 REPLACE THIS with your actual "Applying Process" video ID
   const installationVideoId = 'AyCpwTJWVKc'; 
-  const channelLink = 'https://youtube.com/@starkmodsofficial18';
+  const channelLink = 'https://youtube.com/@starkofficial17';
 
   // Admin Controls HTML
   const adminControls = isAdmin ? `
@@ -130,7 +130,7 @@ function Rc25Page() {
              The most advanced community patch for RC20. We have updated everything from Squads to Stadiums. 
              Experience realistic textures, new commentary, and updated gameplay mechanics.
              <br><br>
-             <span class="text-blue-600 dark:text-blue-400 font-bold">Version 8.0 Coming Soon:</span> Includes Career Mode crash fix and IPL 2025 Auction rosters.
+             <span class="text-blue-600 dark:text-blue-400 font-bold">Version 8 Coming Soon:</span> No Features Revealed yet!
            </p>
         </div>
 
@@ -159,7 +159,7 @@ function Rc25Page() {
               <div class="relative pl-8">
                  <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 ring-4 ring-white dark:ring-slate-800 animate-pulse shadow-lg shadow-blue-500/50"></div>
                  <h4 class="font-bold text-blue-600 dark:text-blue-400 text-sm">Version 8.0 (Coming Soon)</h4>
-                 <p class="text-xs text-slate-500 mt-1 leading-relaxed">Auction 2025 Roster, New Commentary packs & Career Mode crash fix.</p>
+                 <p class="text-xs text-slate-500 mt-1 leading-relaxed">No Features Reavealed Yet!.</p>
               </div>
               <div class="relative pl-8">
                  <div class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-slate-400"></div>
@@ -221,3 +221,4 @@ window.editRc25DownloadLink = function () {
 };
 
 window.Rc25Page = Rc25Page;
+
