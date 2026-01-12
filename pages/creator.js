@@ -2,56 +2,45 @@
 
 // --- PLAN CONFIG ---
 const CREATOR_PLANS = {
-  P100: {
-    code: 'P100',
-    name: 'Starter',
-    priceINR: 100,
-    maxRequests: 20,
-    periodDays: 30,
-    description: '20 credits · Custom Player only'
-  },
-  P300: {
-    code: 'P300',
-    name: 'Pro',
-    priceINR: 300,
-    maxRequests: 70,
-    periodDays: 30,
-    description: '70 credits · All Mod Creator features'
-  },
-  P1000: {
-    code: 'P1000',
-    name: 'Elite',
-    priceINR: 1000,
-    maxRequests: null, // unlimited
-    periodDays: 60,
-    description: 'Unlimited requests · 60 days'
-  }
+  P100: { code: 'P100', name: 'Starter', priceINR: 100, maxRequests: 20, periodDays: 30 },
+  P300: { code: 'P300', name: 'Pro', priceINR: 300, maxRequests: 70, periodDays: 30 },
+  P1000: { code: 'P1000', name: 'Elite', priceINR: 1000, maxRequests: null, periodDays: 60 }
 };
 
-const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; // Update with your link
+const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; // Your Link
 
 // Globals
 window.creatorSub = null;
-window.creatorPlansReason = null;
 window.currentPlayerGame = 'rc25';
 window.currentJerseyGame = 'rc25';
 window.teamBuilder = null;
 
 function resetTeamBuilder() {
   window.teamBuilder = {
-    mode: 'new',
-    teamName: '',
-    teamShortName: '',
-    replaceTeamName: '',
-    players: [] 
+    mode: 'new', teamName: '', teamShortName: '', replaceTeamName: '', players: []
   };
 }
 
 /* =========================================
-   1. MAIN DASHBOARD (MENU)
+   1. SMART ROUTER (THE FIX)
    ========================================= */
-
+// This function decides which page to show based on the URL
 function CreatorPage() {
+  const path = window.location.pathname;
+  
+  if (path === '/creator-player') return CreatorPlayerPage();
+  if (path === '/creator-jersey') return CreatorJerseyPage();
+  if (path === '/creator-team')   return CreatorTeamPage();
+  if (path === '/creator-history') return CreatorHistoryPage();
+  if (path === '/creator-plans')  return CreatorPlansPage();
+  
+  return CreatorMenuUI(); // Default: Show Menu
+}
+
+/* =========================================
+   2. MAIN MENU UI
+   ========================================= */
+function CreatorMenuUI() {
   if (!window.currentUser) {
     return `
       <div class="max-w-4xl mx-auto py-24 text-center animate-fade-in px-4">
@@ -92,7 +81,7 @@ function CreatorPage() {
       <div class="grid sm:grid-cols-3 gap-6">
         
         <button class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden"
-                onclick="window.router && window.router.navigateTo('/creator-player')">
+                onclick="window.router.navigateTo('/creator-player')">
           <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition"></div>
           <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400 shadow-sm">
              <span class="material-icons text-3xl">person</span>
@@ -106,6 +95,210 @@ function CreatorPage() {
                 onclick="window.goToCreatorJersey()">
           <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/20 rounded-full blur-2xl group-hover:bg-green-500/30 transition"></div>
           <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4 text-green-600 dark:text-green-400 shadow-sm">
+             <span class="material-icons text-3xl">checkroom</span>
+          </div>
+          <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Jersey</div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Upload textures for any team.</p>
+          
+          <div class="feature-lock-overlay hidden absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl cursor-not-allowed">
+             <span class="bg-black/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1"><span class="material-icons text-xs">lock</span> Locked</span>
+          </div>
+        </button>
+
+        <button id="btn-feature-team" 
+                class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden"
+                onclick="window.goToCreatorTeam()">
+          <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition"></div>
+          <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-4 text-purple-600 dark:text-purple-400 shadow-sm">
+             <span class="material-icons text-3xl">groups</span>
+          </div>
+          <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Team</div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Build full squads (Pro/Elite).</p>
+
+          <div class="feature-lock-overlay hidden absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl cursor-not-allowed">
+             <span class="bg-black/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1"><span class="material-icons text-xs">lock</span> Pro Only</span>
+          </div>
+        </button>
+
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================
+   3. CUSTOM PLAYER FORM
+   ========================================= */
+function CreatorPlayerPage() {
+  if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
+  const g = window.currentPlayerGame || 'rc25';
+  setTimeout(() => { if (window.loadCreatorSubscription) window.loadCreatorSubscription(); }, 200);
+
+  const gameBtn = (id, label) => `
+    <button onclick="window.setPlayerGame('${id}')" class="px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm ${g === id ? 'bg-blue-600 text-white shadow-blue-500/30' : 'bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'}">
+      ${label}
+    </button>`;
+
+  return `
+    <div class="max-w-3xl mx-auto animate-fade-in pb-24 px-4 pt-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-black text-slate-900 dark:text-white">Custom Player</h1>
+        <button onclick="window.router.navigateTo('/creator')" class="text-xs font-bold text-slate-500 hover:text-blue-600 bg-white/50 px-3 py-2 rounded-lg">Back</button>
+      </div>
+
+      <div class="flex gap-2 mb-6 overflow-x-auto pb-2">${gameBtn('rc25', 'RC25')}${gameBtn('rc24', 'RC24')}${gameBtn('rcswipe', 'RC Swipe')}</div>
+
+      <div class="app-card p-6 sm:p-8">
+        <form onsubmit="window.submitCustomPlayer(event)" class="space-y-6">
+          <div class="grid sm:grid-cols-2 gap-5">
+              <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Team Name</label><input id="cp-team" type="text" class="form-input w-full" placeholder="e.g. India"></div>
+              <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Player Name</label><input id="cp-name" type="text" class="form-input w-full" placeholder="Enter Name"></div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div class="col-span-2 sm:col-span-1">
+                  <label class="block text-xs font-bold mb-2 text-blue-600 uppercase">Role</label>
+                  <select id="cp-type" class="form-input w-full font-bold"><option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">All Rounder</option><option value="keeper">Wicket Keeper</option></select>
+              </div>
+              <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Bat Hand</label><select id="cp-bat-hand" class="form-input w-full"><option value="right">Right</option><option value="left">Left</option></select></div>
+              <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Bowl Hand</label><select id="cp-bowl-hand" class="form-input w-full"><option value="right">Right</option><option value="left">Left</option></select></div>
+          </div>
+          <div class="bg-slate-50/50 dark:bg-black/20 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50">
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                  <div><label class="block text-[10px] font-bold mb-1 text-slate-400 uppercase">Bat Style</label><select id="cp-bat-type" class="form-input w-full text-xs"><option value="balanced">Balanced</option><option value="radical">Radical</option><option value="brute">Brute</option></select></div>
+                  <div><label class="block text-[10px] font-bold mb-1 text-slate-400 uppercase">Bowl Style</label><select id="cp-bowl-type" class="form-input w-full text-xs"><option value="fast-med">Fast Med</option><option value="faster">Fast</option><option value="off-spinner">Off Spin</option><option value="leg-spinner">Leg Spin</option></select></div>
+              </div>
+              <div><label class="block text-[10px] font-bold mb-1 text-slate-400 uppercase">Jersey Number</label><input id="cp-jersey" type="number" class="form-input w-full text-xs" placeholder="18"></div>
+          </div>
+          <button type="submit" class="btn w-full py-4 shadow-lg shadow-blue-500/20 text-sm">Submit Request</button>
+        </form>
+      </div>
+    </div>`;
+}
+
+/* =========================================
+   4. CUSTOM TEAM PAGE
+   ========================================= */
+function CreatorTeamPage() {
+  if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
+  if (!window.teamBuilder) resetTeamBuilder();
+  setTimeout(() => { if (window.loadCreatorSubscription) window.loadCreatorSubscription(); }, 200);
+
+  return `
+    <div class="max-w-4xl mx-auto animate-fade-in pb-24 px-4 pt-6">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-black text-slate-900 dark:text-white">Team Builder</h1>
+        <button onclick="window.router.navigateTo('/creator')" class="text-xs font-bold text-slate-500 hover:text-blue-600 bg-white/50 px-3 py-2 rounded-lg">Back</button>
+      </div>
+
+      <div class="app-card p-6 mb-6">
+        <h2 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4 border-b border-slate-100 dark:border-slate-700 pb-2">Step 1: Team Details</h2>
+        <div class="grid sm:grid-cols-2 gap-5 mb-4">
+           <div><label class="block text-xs font-bold mb-2 text-slate-500">Team Name</label><input id="ct-team-name" type="text" class="form-input w-full" placeholder="Stark XI"></div>
+           <div><label class="block text-xs font-bold mb-2 text-slate-500">Short Name</label><input id="ct-team-short" type="text" maxlength="3" class="form-input w-full uppercase" placeholder="STK"></div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div><label class="block text-xs font-bold mb-2 text-slate-500">Jersey</label><input id="ct-jersey-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
+          <div><label class="block text-xs font-bold mb-2 text-slate-500">Logo</label><input id="ct-logo-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
+        </div>
+      </div>
+
+      <div class="app-card p-6 mb-8">
+        <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-700 pb-2">
+             <h2 class="text-sm font-bold uppercase tracking-widest text-slate-400">Step 2: Squad</h2>
+             <span class="text-xs bg-blue-100 dark:bg-blue-900 text-blue-600 px-2 py-1 rounded font-bold" id="squad-count">0/12</span>
+        </div>
+        <form onsubmit="window.addTeamPlayer(event)" class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 mb-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+             <div class="col-span-2"><input id="tp-name" type="text" class="form-input w-full text-xs" placeholder="Player Name"></div>
+             <div><input id="tp-jersey" type="number" class="form-input w-full text-xs" placeholder="No."></div>
+             <div><select id="tp-type" class="form-input w-full text-xs"><option value="batsman">Bat</option><option value="bowler">Bowl</option><option value="all-rounder">AR</option><option value="keeper">WK</option></select></div>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">R Bat</option><option value="left">L Bat</option></select>
+              <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">R Bowl</option><option value="left">L Bowl</option></select>
+              <select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Balanced</option><option value="brute">Brute</option></select>
+              <select id="tp-bowl-type" class="form-input w-full text-xs"><option value="fast-med">Fast</option><option value="off-spinner">Spin</option></select>
+          </div>
+          <button type="submit" class="mt-3 w-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition"><span class="material-icons text-xs">add</span> Add to Squad</button>
+        </form>
+        <div id="ct-players-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+          <div class="text-center text-slate-400 text-xs py-4 italic">Squad is empty. Add players above.</div>
+        </div>
+      </div>
+
+      <button onclick="window.submitCustomTeam()" class="btn w-full py-4 shadow-xl shadow-purple-500/20 text-sm">Submit Team Request</button>
+    </div>`;
+}
+
+/* =========================================
+   5. JERSEY PAGE
+   ========================================= */
+function CreatorJerseyPage() {
+  if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
+  return `
+    <div class="max-w-3xl mx-auto animate-fade-in pb-24 px-4 pt-6">
+      <div class="flex items-center justify-between mb-6">
+         <h1 class="text-2xl font-black text-slate-900 dark:text-white">Custom Jersey</h1>
+         <button onclick="window.router.navigateTo('/creator')" class="text-xs font-bold text-slate-500 hover:text-blue-600 bg-white/50 px-3 py-2 rounded-lg">Back</button>
+      </div>
+      <div class="app-card p-6 sm:p-8">
+        <form onsubmit="window.submitCustomJersey(event)" class="space-y-6">
+          <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Team Name</label><input id="cj-team" type="text" class="form-input w-full" placeholder="e.g. Mumbai Indians"></div>
+          <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Jersey Texture (PNG/JPG)</label><input id="cj-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-700"></div>
+          <button type="submit" class="btn w-full py-4 shadow-lg shadow-green-500/20 text-sm bg-gradient-to-r from-green-600 to-green-700">Submit Jersey</button>
+        </form>
+      </div>
+    </div>`;
+}
+
+/* =========================================
+   6. HISTORY PAGE (With 24h Notice)
+   ========================================= */
+function CreatorHistoryPage() {
+  if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/'), 50); return ''; }
+  if (window.historyUnsubscribe) window.historyUnsubscribe();
+  
+  setTimeout(() => {
+    const container = document.getElementById('creator-history');
+    if(!container) return;
+    
+    window.historyUnsubscribe = db.collection('modRequests')
+      .where('userId', '==', window.currentUser.uid)
+      .onSnapshot(snap => {
+         if(snap.empty) { container.innerHTML = '<div class="text-center py-8 text-slate-400">No requests yet.</div>'; return; }
+         const docs = [];
+         snap.forEach(d => docs.push(d.data()));
+         docs.sort((a,b) => (b.timestamp?.toMillis?.() || 0) - (a.timestamp?.toMillis?.() || 0));
+
+         let html = '';
+         docs.forEach(r => {
+            let statusClass = 'text-amber-600 border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800';
+            let statusText = 'Waiting (Approx 24h)';
+            
+            if (r.status === 'approved') {
+                statusClass = 'text-green-600 border-green-200 bg-green-50 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800';
+                statusText = 'Approved';
+            } else if (r.status === 'rejected') {
+                statusClass = 'text-red-600 border-red-200 bg-red-50 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800';
+                statusText = 'Rejected';
+            }
+
+            let title = r.type === 'team' ? `Team: ${r.teamName}` : r.type === 'jersey' ? `Jersey: ${r.teamName}` : `Player: ${r.playerName}`;
+            
+            html += `
+              <div class="app-card p-4 flex justify-between items-start gap-4">
+                 <div>
+                    <div class="font-bold text-slate-900 dark:text-white text-sm mb-1">${title}</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                       ${r.gameId ? r.gameId.toUpperCase() : 'RC25'} · ${new Date(r.createdAt).toLocaleDateString()}
+                    </div>
+                    ${r.downloadUrl ? `<a href="${r.downloadUrl}" target="_blank" class="inline-flex items-center gap-1 bg-blue-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:bg-blue-700 transition">Download Mod <span class="material-icons text-[10px]">download</span></a>` : ''}
+                 </div>
+                 <div class="text-[9px] uppercase font-bold px-2 py-1 rounded border ${statusClass} whitespace-nowrap">
+                    ${statusText}
+                 </div>
+              </div>`;
+         });
+         container.innerHTML = html;          <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4 text-green-600 dark:text-green-400 shadow-sm">
              <span class="material-icons text-3xl">checkroom</span>
           </div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Jersey</div>
