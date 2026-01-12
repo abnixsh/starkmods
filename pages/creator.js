@@ -1,6 +1,6 @@
 // pages/creator.js
 
-// --- CONFIGURATION ---
+// --- PLAN CONFIG ---
 const CREATOR_PLANS = {
   P100: { code: 'P100', name: 'Starter', priceINR: 100, maxRequests: 20, periodDays: 30 },
   P300: { code: 'P300', name: 'Pro', priceINR: 300, maxRequests: 70, periodDays: 30 },
@@ -26,25 +26,24 @@ function resetTeamBuilder() {
 }
 
 /* ========================================================================
-   1. MAIN ROUTER FUNCTION (The "Smart Router")
-   This fixes the issue where buttons didn't open the right page.
+   1. MAIN ROUTER FUNCTION (The Traffic Controller)
    ======================================================================== */
 function CreatorPage() {
-  const path = window.location.pathname;
+  const path = window.location.pathname; // Gets the current URL path
 
-  // Route traffic to specific sub-pages based on URL
+  // Check the URL and show the correct page
   if (path === '/creator-player') return CreatorPlayerPage();
   if (path === '/creator-jersey') return CreatorJerseyPage();
   if (path === '/creator-team')   return CreatorTeamPage();
   if (path === '/creator-history') return CreatorHistoryPage();
   if (path === '/creator-plans')  return CreatorPlansPage();
 
-  // Default: Show the Main Menu
+  // If none match (e.g. just '/creator'), show the Main Menu
   return CreatorMenuUI();
 }
 
 /* ========================================================================
-   2. MAIN MENU UI (Liquid Glass + Locks)
+   2. MAIN MENU UI (The Dashboard)
    ======================================================================== */
 function CreatorMenuUI() {
   if (!window.currentUser) {
@@ -99,7 +98,7 @@ function CreatorMenuUI() {
 
         <button id="btn-feature-jersey" 
                 class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden"
-                onclick="window.goToCreatorJersey()">
+                onclick="window.router.navigateTo('/creator-jersey')">
           <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/20 rounded-full blur-2xl group-hover:bg-green-500/30 transition"></div>
           <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4 text-green-600 dark:text-green-400 shadow-sm">
              <span class="material-icons text-3xl">checkroom</span>
@@ -114,7 +113,7 @@ function CreatorMenuUI() {
 
         <button id="btn-feature-team" 
                 class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden"
-                onclick="window.goToCreatorTeam()">
+                onclick="window.router.navigateTo('/creator-team')">
           <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition"></div>
           <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-4 text-purple-600 dark:text-purple-400 shadow-sm">
              <span class="material-icons text-3xl">groups</span>
@@ -182,7 +181,7 @@ function CreatorPlayerPage() {
 }
 
 /* ========================================================================
-   4. CUSTOM TEAM PAGE
+   4. CUSTOM TEAM PAGE (Fixed Button Issue)
    ======================================================================== */
 function CreatorTeamPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
