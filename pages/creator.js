@@ -1,13 +1,16 @@
 // pages/creator.js
 
-// --- CONFIGURATION ---
+/* =========================================
+   1. CONFIGURATION & DATA
+   ========================================= */
+
 const CREATOR_PLANS = {
   P100: { code: 'P100', name: 'Starter', priceINR: 100, maxRequests: 20, periodDays: 30 },
   P300: { code: 'P300', name: 'Pro', priceINR: 300, maxRequests: 70, periodDays: 30 },
   P1000: { code: 'P1000', name: 'Elite', priceINR: 1000, maxRequests: null, periodDays: 60 }
 };
 
-const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; // Put your actual link here
+const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; 
 
 const BOWLING_ACTIONS = {
   fast: ['Shaheen Afridi', 'Adam Milne', 'Mark Wood', 'Pat Cummins', 'Haris Rauf', 'Mitchell Starc', 'Jasprit Bumrah', 'Jofra Archer', 'Kagiso Rabada', 'Lasith Malinga'],
@@ -15,11 +18,21 @@ const BOWLING_ACTIONS = {
   spin: ['Glenn Maxwell', 'Ravindra Jadeja', 'Axar Patel', 'Keshav Maharaj', 'Maheesh Theekshana', 'Shadab Khan', 'Kuldeep Yadav', 'Ish Sodhi', 'Yuzvendra Chahal', 'Wanindu Hasaranga', 'Shane Warne', 'Adam Zampa']
 };
 
+const TEAMS_DATA = {
+  International: ["India", "Australia", "England", "Pakistan", "New Zealand", "South Africa", "West Indies", "Sri Lanka", "Bangladesh", "Afghanistan"],
+  IPL: ["CSK", "Mumbai Indians", "RCB", "KKR", "SRH", "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Lucknow Super Giants", "Gujarat Titans"],
+  PSL: ["Islamabad United", "Karachi Kings", "Lahore Qalandars", "Multan Sultans", "Peshawar Zalmi", "Quetta Gladiators"],
+  BBL: ["Adelaide Strikers", "Brisbane Heat", "Hobart Hurricanes", "Melbourne Renegades", "Melbourne Stars", "Perth Scorchers", "Sydney Sixers", "Sydney Thunder"],
+  Legends: ["India Legends", "World Giants", "Asia Lions"]
+};
+
 // --- GLOBAL STATE ---
 window.creatorSub = null;
 window.currentPlayerGame = 'rc25';
 window.currentJerseyGame = 'rc25';
 window.teamBuilder = null;
+// Temp storage for custom face upload in Single Player mode
+window.tempCustomFaceBase64 = null; 
 
 function resetTeamBuilder() {
   window.teamBuilder = { 
@@ -30,9 +43,10 @@ function resetTeamBuilder() {
   };
 }
 
-/* ========================================================================
-   1. MAIN ROUTER FUNCTION
-   ======================================================================== */
+/* =========================================
+   2. MAIN ROUTER & MENU
+   ========================================= */
+
 function CreatorPage() {
   const path = window.location.pathname;
   if (path === '/creator-player') return CreatorPlayerPage();
@@ -43,9 +57,6 @@ function CreatorPage() {
   return CreatorMenuUI();
 }
 
-/* ========================================================================
-   2. MAIN MENU UI
-   ======================================================================== */
 function CreatorMenuUI() {
   if (!window.currentUser) {
     return `
@@ -53,11 +64,8 @@ function CreatorMenuUI() {
         <div class="w-24 h-24 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-md">
           <span class="material-icons text-5xl text-blue-600 dark:text-blue-400">build_circle</span>
         </div>
-        <h1 class="text-3xl font-black mb-3 text-slate-900 dark:text-white drop-shadow-sm">Login Required</h1>
-        <p class="text-slate-500 dark:text-slate-400 mb-8 font-medium">Access premium Mod Creator tools.</p>
-        <button onclick="window.googleLogin()" class="btn px-8 py-3 shadow-lg hover:scale-105 transition transform">
-          Login with Google
-        </button>
+        <h1 class="text-3xl font-black mb-3 text-slate-900 dark:text-white">Login Required</h1>
+        <button onclick="window.googleLogin()" class="btn px-8 py-3 shadow-lg hover:scale-105 transition transform">Login with Google</button>
       </div>`;
   }
 
@@ -67,58 +75,145 @@ function CreatorMenuUI() {
     <div class="max-w-5xl mx-auto animate-fade-in pb-24 px-4 pt-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div>
-          <h1 class="text-4xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">Mod Creator</h1>
+          <h1 class="text-4xl font-black text-slate-900 dark:text-white mb-2">Mod Creator</h1>
           <p class="text-slate-500 dark:text-slate-400 font-medium">Design Players, Jerseys & Teams.</p>
         </div>
-        <button onclick="window.router.navigateTo('/creator-history')"
-              class="px-5 py-2.5 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-md border border-slate-200 dark:border-slate-700 font-bold text-sm text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 transition shadow-sm flex items-center gap-2 w-fit">
-          <span class="material-icons text-sm">history</span> Request History
+        <button onclick="window.router.navigateTo('/creator-history')" class="px-5 py-2.5 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-md font-bold text-sm shadow-sm flex items-center gap-2">
+          <span class="material-icons text-sm">history</span> History
         </button>
       </div>
 
-      <div id="creator-sub-status" class="app-card p-6 mb-10 flex items-center justify-between bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20">
-        <div class="flex items-center gap-3">
-           <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-           <span class="text-sm font-bold text-slate-500">Loading plan...</span>
-        </div>
+      <div id="creator-sub-status" class="app-card p-6 mb-10 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20">
+        <div class="flex items-center gap-3"><div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div> Loading...</div>
       </div>
 
       <div class="grid sm:grid-cols-3 gap-6">
-        
-        <button class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden cursor-pointer" onclick="window.router.navigateTo('/creator-player')">
-          <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition"></div>
+        <button class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.router.navigateTo('/creator-player')">
           <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400 shadow-sm"><span class="material-icons text-3xl">person</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Player</div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Attributes, Faces, Actions.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Detailed attributes, Faces & Actions.</p>
         </button>
 
-        <button id="btn-feature-jersey" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden cursor-pointer" onclick="window.goToCreatorJersey()">
-          <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/20 rounded-full blur-2xl group-hover:bg-green-500/30 transition"></div>
+        <button id="btn-feature-jersey" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.goToCreatorJersey()">
           <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4 text-green-600 dark:text-green-400 shadow-sm"><span class="material-icons text-3xl">checkroom</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Jersey</div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Upload textures for any team.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Upload textures for any team.</p>
           <div class="feature-lock-overlay hidden absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl cursor-not-allowed">
-             <span class="bg-black/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1"><span class="material-icons text-xs">lock</span> Locked</span>
+             <span class="bg-black/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1"><span class="material-icons text-xs">lock</span> Locked</span>
           </div>
         </button>
 
-        <button id="btn-feature-team" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden cursor-pointer" onclick="window.goToCreatorTeam()">
-          <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition"></div>
+        <button id="btn-feature-team" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.goToCreatorTeam()">
           <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-4 text-purple-600 dark:text-purple-400 shadow-sm"><span class="material-icons text-3xl">groups</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Team</div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Build full squads (Pro/Elite).</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Build full squads (Pro/Elite).</p>
           <div class="feature-lock-overlay hidden absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl cursor-not-allowed">
-             <span class="bg-black/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1"><span class="material-icons text-xs">lock</span> Pro Only</span>
+             <span class="bg-black/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1"><span class="material-icons text-xs">lock</span> Pro Only</span>
           </div>
         </button>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-/* ========================================================================
-   3. CUSTOM PLAYER PAGE
-   ======================================================================== */
+/* =========================================
+   3. HELPER UI COMPONENTS (Team & Face Selectors)
+   ========================================= */
+
+// --- TEAM SELECTOR UI ---
+function renderTeamSelectorHTML(idPrefix) {
+  return `
+    <div class="relative group">
+      <input id="${idPrefix}-team" type="text" readonly placeholder="Select Team" 
+             class="form-input w-full cursor-pointer bg-white/50 dark:bg-black/20"
+             onclick="document.getElementById('${idPrefix}-team-dropdown').classList.toggle('hidden')">
+      <span class="material-icons absolute right-3 top-3 text-slate-400 pointer-events-none">arrow_drop_down</span>
+      
+      <div id="${idPrefix}-team-dropdown" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 mt-2 max-h-60 overflow-y-auto">
+        ${Object.keys(TEAMS_DATA).map(category => `
+          <div class="border-b border-slate-100 dark:border-slate-700 last:border-0">
+            <div class="px-4 py-2 bg-slate-50 dark:bg-slate-700/50 text-[10px] font-bold uppercase text-slate-500 sticky top-0">${category}</div>
+            ${TEAMS_DATA[category].map(t => `
+              <div onclick="window.selectTeam('${idPrefix}', '${t}')" 
+                   class="px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer transition">
+                ${t}
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+window.selectTeam = function(prefix, team) {
+  document.getElementById(`${prefix}-team`).value = team;
+  document.getElementById(`${prefix}-team-dropdown`).classList.add('hidden');
+};
+
+// --- FACE SELECTOR UI ---
+function renderFaceSelectorHTML(idPrefix) {
+  return `
+    <div class="relative">
+      <div class="flex gap-2">
+         <input id="${idPrefix}-face-display" type="text" readonly placeholder="Select Face" 
+                class="form-input w-full cursor-pointer bg-white/50 dark:bg-black/20"
+                onclick="window.toggleFaceDropdown('${idPrefix}')">
+         <input id="${idPrefix}-face-file" type="file" accept="image/*" class="hidden" onchange="window.handleCustomFaceUpload('${idPrefix}', this)">
+         <button type="button" onclick="document.getElementById('${idPrefix}-face-file').click()" 
+                 class="px-3 bg-slate-200 dark:bg-slate-700 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition" title="Upload Custom">
+            <span class="material-icons text-sm">upload</span>
+         </button>
+      </div>
+
+      <div id="${idPrefix}-face-dropdown" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 mt-2 p-3">
+         <div class="text-[10px] font-bold text-slate-400 mb-2 uppercase text-center">Select Preset Face</div>
+         <div class="grid grid-cols-5 gap-2 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+            ${Array.from({length: 80}, (_, i) => i + 1).map(i => `
+               <div onclick="window.selectFace('${idPrefix}', ${i})" class="cursor-pointer group">
+                  <img src="assets/faces/face_${i}.png" class="w-full aspect-square rounded-lg object-cover border border-slate-200 dark:border-slate-600 hover:border-blue-500 transition" onerror="this.src='https://placehold.co/50?text=${i}'">
+                  <div class="text-[8px] text-center mt-1 text-slate-500 font-mono">${i}</div>
+               </div>
+            `).join('')}
+         </div>
+         <button type="button" onclick="document.getElementById('${idPrefix}-face-dropdown').classList.add('hidden')" class="w-full mt-2 py-2 bg-slate-100 dark:bg-slate-700 text-[10px] font-bold rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600">Close</button>
+      </div>
+    </div>`;
+}
+
+window.toggleFaceDropdown = function(prefix) {
+    document.getElementById(`${prefix}-face-dropdown`).classList.toggle('hidden');
+};
+
+window.selectFace = function(prefix, id) {
+    document.getElementById(`${prefix}-face-display`).value = `Preset: Face ${id}`;
+    document.getElementById(`${prefix}-face-display`).dataset.faceId = id; // Store ID
+    document.getElementById(`${prefix}-face-display`).dataset.isCustom = "false";
+    document.getElementById(`${prefix}-face-dropdown`).classList.add('hidden');
+};
+
+window.handleCustomFaceUpload = async function(prefix, input) {
+    if(input.files && input.files[0]) {
+        try {
+            const b64 = await readFileAsBase64(input.files[0]);
+            document.getElementById(`${prefix}-face-display`).value = `Custom: ${input.files[0].name}`;
+            document.getElementById(`${prefix}-face-display`).dataset.isCustom = "true";
+            
+            // Store B64 globally for Single Player, or return it for Team Player
+            if(prefix === 'cp') {
+                window.tempCustomFaceBase64 = b64; 
+            } else {
+                // For Team Builder add player logic
+                input.dataset.tempB64 = b64; 
+            }
+        } catch(e) {
+            alert("Upload failed: " + e.message);
+        }
+    }
+};
+
+/* =========================================
+   4. CUSTOM PLAYER PAGE
+   ========================================= */
+
 function CreatorPlayerPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
   const g = window.currentPlayerGame || 'rc25';
@@ -131,13 +226,9 @@ function CreatorPlayerPage() {
 
   const slider = (id, label, color) => `
     <div>
-      <div class="flex justify-between mb-1">
-        <label class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">${label}</label>
-        <span id="val-${id}" class="text-[10px] font-bold text-${color}-500">50</span>
-      </div>
+      <div class="flex justify-between mb-1"><label class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">${label}</label><span id="val-${id}" class="text-[10px] font-bold text-${color}-500">50</span></div>
       <input id="${id}" type="range" min="1" max="100" value="50" oninput="document.getElementById('val-${id}').innerText = this.value" class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-${color}-500">
-    </div>
-  `;
+    </div>`;
 
   return `
     <div class="max-w-3xl mx-auto animate-fade-in pb-24 px-4 pt-6">
@@ -151,24 +242,18 @@ function CreatorPlayerPage() {
       <div class="app-card p-6 sm:p-8">
         <form onsubmit="window.submitCustomPlayer(event)" class="space-y-6">
           <div class="grid sm:grid-cols-2 gap-5">
-              <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Team Name</label><input id="cp-team" type="text" class="form-input w-full" placeholder="e.g. India"></div>
+              <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Team</label>${renderTeamSelectorHTML('cp')}</div>
               <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Player Name</label><input id="cp-name" type="text" class="form-input w-full" placeholder="Enter Name"></div>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div class="col-span-2">
+          <div class="grid grid-cols-2 gap-4">
+              <div>
                   <label class="block text-xs font-bold mb-2 text-blue-600 uppercase">Role</label>
                   <select id="cp-type" class="form-input w-full font-bold" onchange="window.updateBowlingOptions('cp')">
-                    <option value="batsman">Batsman</option>
-                    <option value="bowler">Bowler</option>
-                    <option value="all-rounder">All Rounder</option>
-                    <option value="keeper">Wicket Keeper</option>
+                    <option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">All Rounder</option><option value="keeper">Wicket Keeper</option>
                   </select>
               </div>
-              <div class="col-span-2">
-                  <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face ID / Skin</label>
-                  <input id="cp-face" type="text" class="form-input w-full" placeholder="1-80">
-              </div>
+              <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face ID / Skin</label>${renderFaceSelectorHTML('cp')}</div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
@@ -179,20 +264,16 @@ function CreatorPlayerPage() {
           <div class="bg-white/50 dark:bg-black/20 p-5 rounded-2xl border border-white/20 dark:border-white/5 backdrop-blur-md">
               <h3 class="text-xs font-black uppercase text-blue-500 mb-4 flex items-center gap-1"><span class="material-icons text-sm">sports_cricket</span> Batting Skill</h3>
               <div class="mb-4"><label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Bat Style</label><select id="cp-bat-type" class="form-input w-full text-xs font-bold"><option value="balanced">Balanced</option><option value="radical">Radical</option><option value="brute">Brute</option><option value="defensive">Defensive</option></select></div>
-              <div class="space-y-4">
-                 ${slider('cp-timing', 'Timing (1-100)', 'blue')}
-                 ${slider('cp-aggression', 'Aggression (1-100)', 'red')}
-                 ${slider('cp-technique', 'Technique (1-100)', 'purple')}
-              </div>
+              <div class="space-y-4">${slider('cp-timing', 'Timing', 'blue')}${slider('cp-aggression', 'Aggression', 'red')}${slider('cp-technique', 'Technique', 'purple')}</div>
           </div>
 
           <div id="cp-bowling-section" class="hidden bg-white/50 dark:bg-black/20 p-5 rounded-2xl border border-white/20 dark:border-white/5 backdrop-blur-md">
               <h3 class="text-xs font-black uppercase text-green-500 mb-4 flex items-center gap-1"><span class="material-icons text-sm">sports_baseball</span> Bowling Skill</h3>
               <div class="grid grid-cols-2 gap-4 mb-4">
-                  <div><label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Bowl Style</label><select id="cp-bowl-type" class="form-input w-full text-xs" onchange="window.updateBowlingActions('cp')"><option value="fast">Fast</option><option value="medium">Medium</option><option value="off-spinner">Off Spin</option><option value="leg-spinner">Leg Spin</option></select></div>
+                  <div><label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Bowl Style</label><select id="cp-bowl-type" class="form-input w-full text-xs" onchange="window.updateBowlingActions('cp')"><option value="fast">Fast</option><option value="medium">Medium</option><option value="spin">Spin</option></select></div>
                   <div><label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Action</label><select id="cp-bowl-action" class="form-input w-full text-xs font-bold text-slate-700 dark:text-white"></select></div>
               </div>
-              <div class="space-y-4">${slider('cp-bowl-move', 'Movement (Swing/Spin)', 'green')}${slider('cp-bowl-skill', 'Accuracy & Skill', 'orange')}</div>
+              <div class="space-y-4">${slider('cp-bowl-move', 'Movement', 'green')}${slider('cp-bowl-skill', 'Accuracy', 'orange')}</div>
           </div>
 
           <div><label class="block text-[10px] font-bold mb-1 text-slate-400 uppercase">Jersey Number</label><input id="cp-jersey" type="number" class="form-input w-full text-xs" placeholder="18"></div>
@@ -202,9 +283,10 @@ function CreatorPlayerPage() {
     </div>`;
 }
 
-/* ========================================================================
-   4. CUSTOM TEAM PAGE (Enhanced Squad Builder)
-   ======================================================================== */
+/* =========================================
+   5. CUSTOM TEAM PAGE (Squad Builder)
+   ========================================= */
+
 function CreatorTeamPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
   if (!window.teamBuilder) resetTeamBuilder();
@@ -226,12 +308,12 @@ function CreatorTeamPage() {
       <div class="app-card p-6 mb-6">
         <h2 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4 border-b border-slate-100 dark:border-slate-700 pb-2">Step 1: Team Details</h2>
         <div class="grid sm:grid-cols-2 gap-5 mb-4">
-           <div><label class="block text-xs font-bold mb-2 text-slate-500">Team Name</label><input id="ct-team-name" type="text" class="form-input w-full" placeholder="Your Team Name"></div>
-           <div><label class="block text-xs font-bold mb-2 text-slate-500">Short Name</label><input id="ct-team-short" type="text" maxlength="3" class="form-input w-full uppercase" placeholder="RCB"></div>
+           <div><label class="block text-xs font-bold mb-2 text-slate-500">Team Name</label><input id="ct-team-name" type="text" class="form-input w-full" placeholder="Stark XI"></div>
+           <div><label class="block text-xs font-bold mb-2 text-slate-500">Short Name</label><input id="ct-team-short" type="text" maxlength="3" class="form-input w-full uppercase" placeholder="STK"></div>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
-          <div><label class="block text-xs font-bold mb-2 text-slate-500">Jersey Texture</label><input id="ct-jersey-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
-          <div><label class="block text-xs font-bold mb-2 text-slate-500">Logo Image</label><input id="ct-logo-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
+          <div><label class="block text-xs font-bold mb-2 text-slate-500">Jersey</label><input id="ct-jersey-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
+          <div><label class="block text-xs font-bold mb-2 text-slate-500">Logo</label><input id="ct-logo-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
         </div>
       </div>
 
@@ -245,17 +327,15 @@ function CreatorTeamPage() {
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
              <div class="col-span-2"><input id="tp-name" type="text" class="form-input w-full text-xs" placeholder="Player Name"></div>
              <div><input id="tp-jersey" type="number" class="form-input w-full text-xs" placeholder="No."></div>
-             <div><select id="tp-type" class="form-input w-full text-xs" onchange="window.updateBowlingOptions('tp')"><option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">All Rounder</option><option value="keeper">Wicket Keeper</option></select></div>
+             <div><select id="tp-type" class="form-input w-full text-xs" onchange="window.updateBowlingOptions('tp')"><option value="batsman">Bat</option><option value="bowler">Bowl</option><option value="all-rounder">AR</option><option value="keeper">WK</option></select></div>
           </div>
           
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-              <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
-              <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
-              <select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Balanced</option><option value="radical">Radical</option><option value="brute">Brute</option><option value="defensive">Defensive</option></select>
-              <input id="tp-face" type="text" class="form-input w-full text-xs" placeholder="Face ID">
+          <div class="grid grid-cols-2 gap-3 mb-3">
+              <div><label class="text-[9px] font-bold uppercase text-slate-400">Face</label>${renderFaceSelectorHTML('tp')}</div>
+              <div><label class="text-[9px] font-bold uppercase text-slate-400">Style</label><select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Bat: Bal</option><option value="radical">Bat: Rad</option><option value="brute">Bat: Bru</option><option value="defensive">Bat: Def</option></select></div>
           </div>
 
-          <div class="grid sm:grid-cols-2 gap-4 mb-3 bg-white/50 dark:bg-black/20 p-3 rounded-lg border border-slate-200 dark:border-slate-600">
+          <div class="grid sm:grid-cols-2 gap-4 mb-3 bg-white/50 dark:bg-black/20 p-3 rounded-lg">
              <div class="space-y-2">
                 <div class="text-[9px] font-bold text-blue-500 uppercase mb-1">Batting</div>
                 ${sliderCompact('tp-timing', 'Time', 'blue')}
@@ -265,9 +345,7 @@ function CreatorTeamPage() {
              <div id="tp-bowling-section" class="hidden space-y-2">
                 <div class="text-[9px] font-bold text-green-500 uppercase mb-1">Bowling</div>
                 <div class="grid grid-cols-2 gap-2 mb-1">
-                    <select id="tp-bowl-type" class="form-input w-full text-[10px] py-1" onchange="window.updateBowlingActions('tp')">
-                      <option value="fast">Fast</option><option value="medium">Med</option><option value="off-spinner">Off</option><option value="leg-spinner">Leg</option>
-                    </select>
+                    <select id="tp-bowl-type" class="form-input w-full text-[10px] py-1" onchange="window.updateBowlingActions('tp')"><option value="fast">Fast</option><option value="medium">Med</option><option value="spin">Spin</option></select>
                     <select id="tp-bowl-action" class="form-input w-full text-[10px] py-1"></select>
                 </div>
                 ${sliderCompact('tp-bowl-move', 'Move', 'green')}
@@ -287,9 +365,188 @@ function CreatorTeamPage() {
     </div>`;
 }
 
-/* ========================================================================
-   5. CUSTOM JERSEY PAGE
-   ======================================================================== */
+/* =========================================
+   6. SUBMISSION LOGIC (BOT DATA FIX)
+   ========================================= */
+
+// --- PLAYER ---
+window.submitCustomPlayer = async function (evt) {
+  evt.preventDefault();
+  if (!window.checkCreatorSubBeforeRequest()) return;
+  const btn = evt.target.querySelector('button[type="submit"]'); 
+  if(btn) { btn.disabled = true; btn.innerText = 'Sending...'; }
+  
+  try {
+      // Get Face Data
+      const faceDisplay = document.getElementById('cp-face-display');
+      let faceData = faceDisplay.value || 'Random';
+      // If custom upload, use Base64 stored
+      if(faceDisplay.dataset.isCustom === "true" && window.tempCustomFaceBase64) {
+          faceData = "CUSTOM_UPLOAD_BASE64"; // Bot will need to handle this or just send the b64
+      }
+
+      const role = document.getElementById('cp-type').value;
+      const isBowler = role === 'bowler' || role === 'all-rounder';
+      
+      const data = {
+        type: 'player', 
+        gameId: window.currentPlayerGame, 
+        userId: window.currentUser.uid, 
+        email: window.currentUser.email,
+        userName: window.currentUser.displayName, 
+        createdAt: new Date().toISOString(),
+        
+        teamName: document.getElementById('cp-team').value, 
+        playerName: document.getElementById('cp-name').value, 
+        playerType: role,
+        
+        // Face Logic
+        faceSelection: faceDisplay.value,
+        customFaceBase64: faceDisplay.dataset.isCustom === "true" ? window.tempCustomFaceBase64 : null,
+        
+        jerseyNumber: document.getElementById('cp-jersey').value,
+        batHand: document.getElementById('cp-bat-hand').value,
+        bowlHand: document.getElementById('cp-bowl-hand').value,
+        
+        // Sliders (Values 1-100)
+        batting: {
+            style: document.getElementById('cp-bat-type').value,
+            timing: document.getElementById('cp-timing').value,
+            aggression: document.getElementById('cp-aggression').value,
+            technique: document.getElementById('cp-technique').value
+        },
+        
+        // Bowling (Conditionally added)
+        bowling: isBowler ? {
+            style: document.getElementById('cp-bowl-type').value,
+            action: document.getElementById('cp-bowl-action').value,
+            movement: document.getElementById('cp-bowl-move').value,
+            skill: document.getElementById('cp-bowl-skill').value
+        } : null
+      };
+
+      await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+      await window.incrementCreatorUsage();
+      
+      try { await fetch('/api/custom-player', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); } catch(err){}
+
+      alert("✅ Request Sent! It will be completed under 24 hours.");
+      window.router.navigateTo('/creator-history');
+
+  } catch(e) { alert("Error: " + (e.message || e)); if(btn) btn.disabled = false; }
+};
+
+// --- TEAM SQUAD LOGIC ---
+window.addTeamPlayer = function (e) {
+  e.preventDefault();
+  if (!window.teamBuilder) resetTeamBuilder();
+  if (window.teamBuilder.players.length >= 15) { alert('Squad full.'); return; }
+  
+  const role = document.getElementById('tp-type').value;
+  const isBowler = role === 'bowler' || role === 'all-rounder';
+  
+  // Get Face
+  const faceDisplay = document.getElementById('tp-face-display');
+  const customFaceB64 = document.getElementById('tp-face-file').dataset.tempB64 || null;
+
+  const p = {
+      name: document.getElementById('tp-name').value.trim(),
+      role: role,
+      jersey: document.getElementById('tp-jersey').value,
+      
+      face: faceDisplay.value || 'Random',
+      customFaceBase64: customFaceB64, // If uploaded
+      
+      batHand: document.getElementById('tp-bat-hand').value,
+      bowlHand: document.getElementById('tp-bowl-hand').value,
+      
+      batting: {
+          style: document.getElementById('tp-bat-type').value,
+          timing: document.getElementById('tp-timing').value,
+          aggression: document.getElementById('tp-aggression').value,
+          technique: document.getElementById('tp-technique').value
+      },
+      
+      bowling: isBowler ? {
+          style: document.getElementById('tp-bowl-type').value,
+          action: document.getElementById('tp-bowl-action').value,
+          movement: document.getElementById('tp-bowl-move').value,
+          skill: document.getElementById('tp-bowl-skill').value
+      } : null
+  };
+  
+  if (!p.name) { alert('Enter Name'); return; }
+  window.teamBuilder.players.push(p); 
+  e.target.reset(); 
+  // Reset custom face temp
+  document.getElementById('tp-face-display').value = '';
+  document.getElementById('tp-face-file').value = '';
+  delete document.getElementById('tp-face-file').dataset.tempB64;
+  
+  document.getElementById('tp-bowling-section').classList.add('hidden');
+  window.renderTeamPlayersList();
+};
+
+window.renderTeamPlayersList = function () {
+  const list = document.getElementById('ct-players-list');
+  document.getElementById('squad-count').innerText = `${window.teamBuilder.players.length}/15`;
+  list.innerHTML = window.teamBuilder.players.map((p, i) => `
+      <div class="flex justify-between items-center bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs mb-1">
+        <div><span class="font-bold">${i+1}. ${p.name}</span> <span class="text-slate-500">(${p.role})</span></div>
+        <button onclick="window.removeTeamPlayer(${i})" class="text-red-500 font-bold">X</button>
+      </div>`).join('') || `<div class="text-center text-slate-400 text-xs py-4">Squad is empty.</div>`;
+};
+window.removeTeamPlayer = function(i) { window.teamBuilder.players.splice(i, 1); window.renderTeamPlayersList(); };
+
+// --- SUBMIT TEAM REQUEST ---
+window.submitCustomTeam = async function() {
+    if(!window.checkCreatorSubForTeam()) return;
+    if(!window.teamBuilder || !window.teamBuilder.players.length) { alert("Squad is empty!"); return; }
+    
+    try {
+        const jFile = document.getElementById('ct-jersey-file').files[0]; 
+        const lFile = document.getElementById('ct-logo-file').files[0];
+        
+        if(!jFile || !lFile) throw new Error("Please upload both Jersey and Logo.");
+        
+        const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); 
+        if(btn) btn.disabled = true;
+        
+        const jB = await readFileAsBase64(jFile); 
+        const lB = await readFileAsBase64(lFile);
+        
+        const data = {
+            type: 'team', 
+            userId: window.currentUser.uid, 
+            email: window.currentUser.email, 
+            userName: window.currentUser.displayName,
+            teamName: document.getElementById('ct-team-name').value, 
+            teamShortName: document.getElementById('ct-team-short').value,
+            mode: 'new', 
+            players: window.teamBuilder.players, // Contains full slider data
+            createdAt: new Date().toISOString()
+        };
+        
+        await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+        await window.incrementCreatorUsage();
+        
+        try { 
+            await fetch('/api/custom-team', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({ ...data, jerseyBase64: jB, logoBase64: lB }) 
+            }); 
+        } catch(err){ console.warn("API Error", err); }
+        
+        alert("✅ Request Sent! It will be completed under 24 hours.");
+        window.router.navigateTo('/creator-history');
+    } catch(e) { alert("Error: " + (e.message || e)); }
+};
+
+/* =========================================
+   7. JERSEY PAGE & HISTORY
+   ========================================= */
+
 function CreatorJerseyPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
   setTimeout(() => { if (window.loadCreatorSubscription) window.loadCreatorSubscription(); }, 200);
@@ -310,9 +567,21 @@ function CreatorJerseyPage() {
     </div>`;
 }
 
-/* ========================================================================
-   6. HISTORY & PLANS
-   ======================================================================== */
+window.submitCustomJersey = async function (evt) {
+  evt.preventDefault();
+  if (!window.checkCreatorSubBeforeRequest()) return;
+  try {
+      const f = document.getElementById('cj-file').files[0]; if(!f) throw new Error("Select File");
+      const b64 = await readFileAsBase64(f);
+      const data = { type: 'jersey', gameId: window.currentJerseyGame, userId: window.currentUser.uid, email: window.currentUser.email, userName: window.currentUser.displayName, teamName: document.getElementById('cj-team').value, createdAt: new Date().toISOString() };
+      await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+      await window.incrementCreatorUsage();
+      try { await fetch('/api/custom-jersey', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...data, jerseyBase64: b64}) }); } catch(err){}
+      alert("✅ Request Sent! It will be completed under 24 hours.");
+      window.router.navigateTo('/creator-history');
+  } catch(e) { alert("Error: " + e.message); }
+};
+
 function CreatorHistoryPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/'), 50); return ''; }
   if (window.historyUnsubscribe) window.historyUnsubscribe();
@@ -332,27 +601,11 @@ function CreatorHistoryPage() {
   return `<div class="max-w-4xl mx-auto animate-fade-in pb-24 px-4 pt-6"><h1 class="text-2xl font-black mb-6">History</h1><div id="creator-history" class="space-y-4"></div></div>`;
 }
 
-function CreatorPlansPage() {
-  if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/'), 50); return ''; }
-  const renderCard = (code) => {
-      const p = CREATOR_PLANS[code];
-      return `<div class="app-card p-6 flex flex-col hover:scale-105 transition"><h3 class="text-xl font-black">${p.name}</h3><div class="text-3xl font-black text-blue-600 mt-2 mb-6">₹${p.priceINR}</div><button onclick="window.buyCreatorPlan('${code}')" class="btn w-full py-3 text-sm">Select</button></div>`;
-  };
-  return `<div class="max-w-5xl mx-auto animate-fade-in pb-20 px-4 pt-6"><h1 class="text-3xl font-black text-center mb-10">Choose Plan</h1><div class="grid md:grid-cols-3 gap-6">${renderCard('P100')}${renderCard('P300')}${renderCard('P1000')}</div></div>`;
-}
+/* =========================================
+   8. HELPERS & UTILS
+   ========================================= */
 
-window.buyCreatorPlan = function(code) {
-    const p = CREATOR_PLANS[code];
-    window.cart = [{ gameId: `sub_${code}`, gameName: 'Creator Sub', planName: p.name, price: p.priceINR, image: 'assets/icons/icon_site.jpg', subPlanCode: code }];
-    if(window.updateCartBadge) window.updateCartBadge();
-    window.router.navigateTo('/checkout');
-};
-
-/* ========================================================================
-   8. HELPERS & LOGIC (FIXED)
-   ======================================================================== */
-
-// File Upload Fix
+// File Read Fix (ProgressEvent)
 async function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
     if(!file) { reject(new Error("No file selected")); return; }
@@ -361,7 +614,7 @@ async function readFileAsBase64(file) {
     const reader = new FileReader();
     reader.onload = () => {
         if(reader.result) resolve(reader.result.split(',')[1]);
-        else reject(new Error("File reading result empty"));
+        else reject(new Error("File empty"));
     };
     reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsDataURL(file);
@@ -391,155 +644,20 @@ window.updateBowlingActions = function(prefix) {
     select.innerHTML = actions.map(a => `<option value="${a}">${a}</option>`).join('');
 };
 
-// Team Builder
-window.addTeamPlayer = function (e) {
-  e.preventDefault();
-  if (!window.teamBuilder) resetTeamBuilder();
-  if (window.teamBuilder.players.length >= 15) { alert('Squad full.'); return; }
-  
-  const role = document.getElementById('tp-type').value;
-  const isBowler = role === 'bowler' || role === 'all-rounder';
-  
-  const p = {
-      name: document.getElementById('tp-name').value.trim(),
-      playerType: role,
-      faceID: document.getElementById('tp-face').value || 'Random',
-      jerseyNumber: document.getElementById('tp-jersey').value,
-      battingHand: document.getElementById('tp-bat-hand').value,
-      bowlingHand: document.getElementById('tp-bowl-hand').value,
-      
-      // Sliders & Details
-      battingStyle: document.getElementById('tp-bat-type').value,
-      battingTiming: document.getElementById('tp-timing').value,
-      battingAggression: document.getElementById('tp-aggression').value,
-      battingTechnique: document.getElementById('tp-technique').value,
-      
-      bowlingStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'N/A',
-      bowlingAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A',
-      bowlingMovement: isBowler ? document.getElementById('tp-bowl-move').value : 'N/A',
-      bowlingSkill: isBowler ? document.getElementById('tp-bowl-skill').value : 'N/A'
+function CreatorPlansPage() {
+  if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/'), 50); return ''; }
+  const renderCard = (code) => {
+      const p = CREATOR_PLANS[code];
+      return `<div class="app-card p-6 flex flex-col hover:scale-105 transition"><h3 class="text-xl font-black">${p.name}</h3><div class="text-3xl font-black text-blue-600 mt-2 mb-6">₹${p.priceINR}</div><button onclick="window.buyCreatorPlan('${code}')" class="btn w-full py-3 text-sm">Select</button></div>`;
   };
-  
-  if (!p.name) { alert('Enter Name'); return; }
-  window.teamBuilder.players.push(p); e.target.reset(); 
-  document.getElementById('tp-bowling-section').classList.add('hidden');
-  window.renderTeamPlayersList();
-};
+  return `<div class="max-w-5xl mx-auto animate-fade-in pb-20 px-4 pt-6"><h1 class="text-3xl font-black text-center mb-10">Choose Plan</h1><div class="grid md:grid-cols-3 gap-6">${renderCard('P100')}${renderCard('P300')}${renderCard('P1000')}</div></div>`;
+}
 
-window.renderTeamPlayersList = function () {
-  const list = document.getElementById('ct-players-list');
-  document.getElementById('squad-count').innerText = `${window.teamBuilder.players.length}/15`;
-  list.innerHTML = window.teamBuilder.players.map((p, i) => `
-      <div class="flex justify-between items-center bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs mb-1">
-        <div><span class="font-bold">${i+1}. ${p.name}</span> <span class="text-slate-500">(${p.playerType})</span></div>
-        <button onclick="window.removeTeamPlayer(${i})" class="text-red-500 font-bold">X</button>
-      </div>`).join('') || `<div class="text-center text-slate-400 text-xs py-4">Squad is empty.</div>`;
-};
-window.removeTeamPlayer = function(i) { window.teamBuilder.players.splice(i, 1); window.renderTeamPlayersList(); };
-
-// --- SUBMIT PLAYER ---
-window.submitCustomPlayer = async function (evt) {
-  evt.preventDefault();
-  if (!window.checkCreatorSubBeforeRequest()) return;
-  const btn = evt.target.querySelector('button[type="submit"]'); 
-  if(btn) { btn.disabled = true; btn.innerText = 'Sending...'; }
-  
-  try {
-      const role = document.getElementById('cp-type').value;
-      const isBowler = role === 'bowler' || role === 'all-rounder';
-      
-      const data = {
-        type: 'player', gameId: window.currentPlayerGame, userId: window.currentUser.uid, email: window.currentUser.email,
-        userName: window.currentUser.displayName, createdAt: new Date().toISOString(),
-        
-        teamName: document.getElementById('cp-team').value, 
-        playerName: document.getElementById('cp-name').value, 
-        playerType: role,
-        faceID: document.getElementById('cp-face').value || 'Random',
-        jerseyNumber: document.getElementById('cp-jersey').value,
-        
-        battingHand: document.getElementById('cp-bat-hand').value, 
-        battingStyle: document.getElementById('cp-bat-type').value,
-        battingTiming: document.getElementById('cp-timing').value,
-        battingAggression: document.getElementById('cp-aggression').value,
-        battingTechnique: document.getElementById('cp-technique').value,
-        
-        bowlingHand: document.getElementById('cp-bowl-hand').value,
-        bowlingStyle: isBowler ? document.getElementById('cp-bowl-type').value : 'N/A',
-        bowlingAction: isBowler ? document.getElementById('cp-bowl-action').value : 'N/A',
-        bowlingMovement: isBowler ? document.getElementById('cp-bowl-move').value : 'N/A',
-        bowlingSkill: isBowler ? document.getElementById('cp-bowl-skill').value : 'N/A'
-      };
-
-      await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-      await window.incrementCreatorUsage();
-      
-      try { await fetch('/api/custom-player', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); } catch(err){}
-
-      alert("✅ Request Sent! It will be completed under 24 hours.");
-      window.router.navigateTo('/creator-history');
-
-  } catch(e) { alert("Error: " + (e.message || e)); if(btn) btn.disabled = false; }
-};
-
-// --- SUBMIT TEAM ---
-window.submitCustomTeam = async function() {
-    if(!window.checkCreatorSubForTeam()) return;
-    if(!window.teamBuilder || !window.teamBuilder.players.length) { alert("Squad is empty!"); return; }
-    
-    try {
-        const jFile = document.getElementById('ct-jersey-file').files[0]; 
-        const lFile = document.getElementById('ct-logo-file').files[0];
-        
-        if(!jFile || !lFile) throw new Error("Please upload both Jersey and Logo.");
-        
-        const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); 
-        if(btn) btn.disabled = true;
-        
-        const jB = await readFileAsBase64(jFile); 
-        const lB = await readFileAsBase64(lFile);
-        
-        const data = {
-            type: 'team', 
-            userId: window.currentUser.uid, 
-            email: window.currentUser.email, 
-            userName: window.currentUser.displayName,
-            teamName: document.getElementById('ct-team-name').value, 
-            teamShortName: document.getElementById('ct-team-short').value,
-            mode: 'new', 
-            players: window.teamBuilder.players, // This array now has full details
-            createdAt: new Date().toISOString()
-        };
-        
-        await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-        await window.incrementCreatorUsage();
-        
-        try { 
-            await fetch('/api/custom-team', { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'}, 
-                body: JSON.stringify({ ...data, jerseyBase64: jB, logoBase64: lB }) 
-            }); 
-        } catch(err){ console.warn("API Error", err); }
-        
-        alert("✅ Request Sent! It will be completed under 24 hours.");
-        window.router.navigateTo('/creator-history');
-    } catch(e) { alert("Error: " + (e.message || e)); }
-};
-
-window.submitCustomJersey = async function (evt) {
-  evt.preventDefault();
-  if (!window.checkCreatorSubBeforeRequest()) return;
-  try {
-      const f = document.getElementById('cj-file').files[0]; if(!f) throw new Error("Select File");
-      const b64 = await readFileAsBase64(f);
-      const data = { type: 'jersey', gameId: window.currentJerseyGame, userId: window.currentUser.uid, email: window.currentUser.email, userName: window.currentUser.displayName, teamName: document.getElementById('cj-team').value, createdAt: new Date().toISOString() };
-      await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-      await window.incrementCreatorUsage();
-      try { await fetch('/api/custom-jersey', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...data, jerseyBase64: b64}) }); } catch(err){}
-      alert("✅ Request Sent! It will be completed under 24 hours.");
-      window.router.navigateTo('/creator-history');
-  } catch(e) { alert("Error: " + e.message); }
+window.buyCreatorPlan = function(code) {
+    const p = CREATOR_PLANS[code];
+    window.cart = [{ gameId: `sub_${code}`, gameName: 'Creator Sub', planName: p.name, price: p.priceINR, image: 'assets/icons/icon_site.jpg', subPlanCode: code }];
+    if(window.updateCartBadge) window.updateCartBadge();
+    window.router.navigateTo('/checkout');
 };
 
 // Utils & Subs
