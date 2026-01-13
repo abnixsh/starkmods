@@ -167,7 +167,7 @@ function CreatorPlayerPage() {
               </div>
               <div class="col-span-2">
                   <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face ID / Skin</label>
-                  <input id="cp-face" type="text" class="form-input w-full" placeholder="e.g. 104 or Random">
+                  <input id="cp-face" type="text" class="form-input w-full" placeholder="1-80">
               </div>
           </div>
 
@@ -226,8 +226,8 @@ function CreatorTeamPage() {
       <div class="app-card p-6 mb-6">
         <h2 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4 border-b border-slate-100 dark:border-slate-700 pb-2">Step 1: Team Details</h2>
         <div class="grid sm:grid-cols-2 gap-5 mb-4">
-           <div><label class="block text-xs font-bold mb-2 text-slate-500">Team Name</label><input id="ct-team-name" type="text" class="form-input w-full" placeholder="Stark XI"></div>
-           <div><label class="block text-xs font-bold mb-2 text-slate-500">Short Name</label><input id="ct-team-short" type="text" maxlength="3" class="form-input w-full uppercase" placeholder="STK"></div>
+           <div><label class="block text-xs font-bold mb-2 text-slate-500">Team Name</label><input id="ct-team-name" type="text" class="form-input w-full" placeholder="Your Team Name"></div>
+           <div><label class="block text-xs font-bold mb-2 text-slate-500">Short Name</label><input id="ct-team-short" type="text" maxlength="3" class="form-input w-full uppercase" placeholder="RCB"></div>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
           <div><label class="block text-xs font-bold mb-2 text-slate-500">Jersey Texture</label><input id="ct-jersey-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
@@ -245,13 +245,13 @@ function CreatorTeamPage() {
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
              <div class="col-span-2"><input id="tp-name" type="text" class="form-input w-full text-xs" placeholder="Player Name"></div>
              <div><input id="tp-jersey" type="number" class="form-input w-full text-xs" placeholder="No."></div>
-             <div><select id="tp-type" class="form-input w-full text-xs" onchange="window.updateBowlingOptions('tp')"><option value="batsman">Bat</option><option value="bowler">Bowl</option><option value="all-rounder">AR</option><option value="keeper">WK</option></select></div>
+             <div><select id="tp-type" class="form-input w-full text-xs" onchange="window.updateBowlingOptions('tp')"><option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">AR</option><option value="keeper">WK</option></select></div>
           </div>
           
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-              <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">R Bat</option><option value="left">L Bat</option></select>
-              <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">R Bowl</option><option value="left">L Bowl</option></select>
-              <select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Bat: Bal</option><option value="radical">Bat: Rad</option><option value="brute">Bat: Bru</option><option value="defensive">Bat: Def</option></select>
+              <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">Bat Right</option><option value="left">L Bat</option></select>
+              <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">Bowl Right</option><option value="left">L Bowl</option></select>
+              <select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Balanced</option><option value="radical">Radical</option><option value="brute">Brute</option><option value="defensive">Defensive</option></select>
               <input id="tp-face" type="text" class="form-input w-full text-xs" placeholder="Face ID">
           </div>
 
