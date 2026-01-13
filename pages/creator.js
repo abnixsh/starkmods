@@ -7,7 +7,7 @@ const CREATOR_PLANS = {
   P1000: { code: 'P1000', name: 'Elite', priceINR: 1000, maxRequests: null, periodDays: 60 }
 };
 
-const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; 
+const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; // Put your actual link here
 
 const BOWLING_ACTIONS = {
   fast: ['Shaheen Afridi', 'Adam Milne', 'Mark Wood', 'Pat Cummins', 'Haris Rauf', 'Mitchell Starc', 'Jasprit Bumrah', 'Jofra Archer', 'Kagiso Rabada', 'Lasith Malinga'],
@@ -84,7 +84,7 @@ function CreatorMenuUI() {
           <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition"></div>
           <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400 shadow-sm"><span class="material-icons text-3xl">person</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Player</div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Detailed attributes & sliders.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Attributes, Faces, Actions.</p>
         </button>
 
         <button id="btn-feature-jersey" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden cursor-pointer" onclick="window.router.navigateTo('/creator-jersey')">
@@ -151,7 +151,7 @@ function CreatorPlayerPage() {
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div class="col-span-2 sm:col-span-2">
+              <div class="col-span-2">
                   <label class="block text-xs font-bold mb-2 text-blue-600 uppercase">Role</label>
                   <select id="cp-type" class="form-input w-full font-bold" onchange="window.updateBowlingOptions('cp')">
                     <option value="batsman">Batsman</option>
@@ -160,6 +160,13 @@ function CreatorPlayerPage() {
                     <option value="keeper">Wicket Keeper</option>
                   </select>
               </div>
+              <div class="col-span-2">
+                  <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face ID / Skin</label>
+                  <input id="cp-face" type="text" class="form-input w-full" placeholder="e.g. 104 or Random">
+              </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
               <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Bat Hand</label><select id="cp-bat-hand" class="form-input w-full"><option value="right">Right</option><option value="left">Left</option></select></div>
               <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Bowl Hand</label><select id="cp-bowl-hand" class="form-input w-full"><option value="right">Right</option><option value="left">Left</option></select></div>
           </div>
@@ -178,9 +185,9 @@ function CreatorPlayerPage() {
               </div>
 
               <div class="space-y-4">
-                 ${slider('cp-timing', 'Timing', 'blue')}
-                 ${slider('cp-aggression', 'Aggression', 'red')}
-                 ${slider('cp-technique', 'Technique', 'purple')}
+                 ${slider('cp-timing', 'Timing (1-100)', 'blue')}
+                 ${slider('cp-aggression', 'Aggression (1-100)', 'red')}
+                 ${slider('cp-technique', 'Technique (1-100)', 'purple')}
               </div>
           </div>
 
@@ -225,10 +232,10 @@ function CreatorTeamPage() {
   if (!window.teamBuilder) resetTeamBuilder();
   setTimeout(() => { if (window.loadCreatorSubscription) window.loadCreatorSubscription(); }, 200);
 
-  const sliderCompact = (id, label) => `
+  const sliderCompact = (id, label, color) => `
     <div class="flex items-center gap-2">
        <span class="text-[9px] font-bold w-12 text-slate-500 uppercase">${label}</span>
-       <input id="${id}" type="range" min="1" max="100" value="70" class="flex-1 h-1 bg-slate-300 rounded appearance-none cursor-pointer" title="${label}">
+       <input id="${id}" type="range" min="1" max="100" value="70" class="flex-1 h-1 bg-slate-300 rounded appearance-none cursor-pointer accent-${color}-500" title="${label}">
     </div>`;
 
   return `
@@ -267,21 +274,26 @@ function CreatorTeamPage() {
               <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">R Bat</option><option value="left">L Bat</option></select>
               <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">R Bowl</option><option value="left">L Bowl</option></select>
               <select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Bal</option><option value="radical">Rad</option><option value="brute">Brute</option><option value="defensive">Def</option></select>
-              <select id="tp-bowl-type" class="form-input w-full text-xs" onchange="window.updateBowlingActions('tp')"><option value="fast">Fast</option><option value="medium">Med</option><option value="spin">Spin</option></select>
+              <input id="tp-face" type="text" class="form-input w-full text-xs" placeholder="Face ID">
           </div>
 
           <div class="grid sm:grid-cols-2 gap-4 mb-3 bg-white/50 dark:bg-black/20 p-3 rounded-lg">
              <div class="space-y-2">
                 <div class="text-[9px] font-bold text-blue-500 uppercase mb-1">Batting</div>
-                ${sliderCompact('tp-timing', 'Time')}
-                ${sliderCompact('tp-aggression', 'Aggr')}
-                ${sliderCompact('tp-technique', 'Tech')}
+                ${sliderCompact('tp-timing', 'Time', 'blue')}
+                ${sliderCompact('tp-aggression', 'Aggr', 'red')}
+                ${sliderCompact('tp-technique', 'Tech', 'purple')}
              </div>
              <div id="tp-bowling-section" class="hidden space-y-2">
                 <div class="text-[9px] font-bold text-green-500 uppercase mb-1">Bowling</div>
-                <select id="tp-bowl-action" class="form-input w-full text-[10px] py-1 mb-1"></select>
-                ${sliderCompact('tp-bowl-move', 'Move')}
-                ${sliderCompact('tp-bowl-skill', 'Skill')}
+                <div class="grid grid-cols-2 gap-2 mb-1">
+                    <select id="tp-bowl-type" class="form-input w-full text-[10px] py-1" onchange="window.updateBowlingActions('tp')">
+                      <option value="fast">Fast</option><option value="medium">Med</option><option value="off-spinner">Off</option><option value="leg-spinner">Leg</option>
+                    </select>
+                    <select id="tp-bowl-action" class="form-input w-full text-[10px] py-1"></select>
+                </div>
+                ${sliderCompact('tp-bowl-move', 'Move', 'green')}
+                ${sliderCompact('tp-bowl-skill', 'Skill', 'orange')}
              </div>
           </div>
 
@@ -313,7 +325,7 @@ function CreatorJerseyPage() {
       <div class="app-card p-6 sm:p-8">
         <form onsubmit="window.submitCustomJersey(event)" class="space-y-6">
           <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Team Name</label><input id="cj-team" type="text" class="form-input w-full" placeholder="e.g. Mumbai Indians"></div>
-          <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Jersey Texture</label><input id="cj-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-700"></div>
+          <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Jersey Texture (PNG/JPG)</label><input id="cj-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-700"></div>
           <button type="submit" class="btn w-full py-4 shadow-lg shadow-green-500/20 text-sm bg-gradient-to-r from-green-600 to-green-700">Submit Jersey</button>
         </form>
       </div>
@@ -397,6 +409,7 @@ window.addTeamPlayer = function (e) {
   const p = {
       name: document.getElementById('tp-name').value.trim(),
       playerType: role,
+      faceID: document.getElementById('tp-face').value || 'Random',
       jerseyNumber: document.getElementById('tp-jersey').value,
       battingHand: document.getElementById('tp-bat-hand').value,
       bowlingHand: document.getElementById('tp-bowl-hand').value,
@@ -449,6 +462,7 @@ window.submitCustomPlayer = async function (evt) {
         teamName: document.getElementById('cp-team').value, 
         playerName: document.getElementById('cp-name').value, 
         playerType: role,
+        faceID: document.getElementById('cp-face').value || 'Random',
         jerseyNumber: document.getElementById('cp-jersey').value,
         
         battingHand: document.getElementById('cp-bat-hand').value, 
