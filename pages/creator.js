@@ -7,9 +7,8 @@ const CREATOR_PLANS = {
   P1000: { code: 'P1000', name: 'Elite', priceINR: 1000, maxRequests: null, periodDays: 60 }
 };
 
-const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; // Put your actual link here
+const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; 
 
-// --- BOWLING ACTION DATA ---
 const BOWLING_ACTIONS = {
   fast: ['Shaheen Afridi', 'Adam Milne', 'Mark Wood', 'Pat Cummins', 'Haris Rauf', 'Mitchell Starc', 'Jasprit Bumrah', 'Jofra Archer', 'Kagiso Rabada', 'Lasith Malinga'],
   medium: ['Arshdeep Singh', 'Hardik Pandya', 'Paul Collingwood', 'Bhuvneshwar Kumar', 'Shane Watson'],
@@ -23,13 +22,7 @@ window.currentJerseyGame = 'rc25';
 window.teamBuilder = null;
 
 function resetTeamBuilder() {
-  window.teamBuilder = {
-    mode: 'new',
-    teamName: '',
-    teamShortName: '',
-    replaceTeamName: '',
-    players: [] 
-  };
+  window.teamBuilder = { mode: 'new', teamName: '', teamShortName: '', players: [] };
 }
 
 /* ========================================================================
@@ -86,14 +79,15 @@ function CreatorMenuUI() {
       </div>
 
       <div class="grid sm:grid-cols-3 gap-6">
-        <button class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.router.navigateTo('/creator-player')">
+        
+        <button class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden cursor-pointer" onclick="window.router.navigateTo('/creator-player')">
           <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition"></div>
           <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400 shadow-sm"><span class="material-icons text-3xl">person</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Player</div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Detailed attributes & actions.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Detailed attributes & sliders.</p>
         </button>
 
-        <button id="btn-feature-jersey" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.goToCreatorJersey()">
+        <button id="btn-feature-jersey" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden cursor-pointer" onclick="window.router.navigateTo('/creator-jersey')">
           <div class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/20 rounded-full blur-2xl group-hover:bg-green-500/30 transition"></div>
           <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4 text-green-600 dark:text-green-400 shadow-sm"><span class="material-icons text-3xl">checkroom</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Jersey</div>
@@ -103,7 +97,7 @@ function CreatorMenuUI() {
           </div>
         </button>
 
-        <button id="btn-feature-team" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.goToCreatorTeam()">
+        <button id="btn-feature-team" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden cursor-pointer" onclick="window.router.navigateTo('/creator-team')">
           <div class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition"></div>
           <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-4 text-purple-600 dark:text-purple-400 shadow-sm"><span class="material-icons text-3xl">groups</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Team</div>
@@ -118,7 +112,7 @@ function CreatorMenuUI() {
 }
 
 /* ========================================================================
-   3. CUSTOM PLAYER PAGE (Enhanced)
+   3. CUSTOM PLAYER PAGE (Enhanced Sliders)
    ======================================================================== */
 function CreatorPlayerPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
@@ -129,6 +123,16 @@ function CreatorPlayerPage() {
     <button onclick="window.setPlayerGame('${id}')" class="px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm ${g === id ? 'bg-blue-600 text-white shadow-blue-500/30' : 'bg-white/50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700'}">
       ${label}
     </button>`;
+
+  const slider = (id, label, color) => `
+    <div>
+      <div class="flex justify-between mb-1">
+        <label class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">${label}</label>
+        <span id="val-${id}" class="text-[10px] font-bold text-${color}-500">50</span>
+      </div>
+      <input id="${id}" type="range" min="1" max="100" value="50" oninput="document.getElementById('val-${id}').innerText = this.value" class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-${color}-500">
+    </div>
+  `;
 
   return `
     <div class="max-w-3xl mx-auto animate-fade-in pb-24 px-4 pt-6">
@@ -160,36 +164,48 @@ function CreatorPlayerPage() {
               <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Bowl Hand</label><select id="cp-bowl-hand" class="form-input w-full"><option value="right">Right</option><option value="left">Left</option></select></div>
           </div>
 
-          <div class="bg-slate-50/50 dark:bg-black/20 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50">
-              <h3 class="text-xs font-black uppercase text-blue-500 mb-3 flex items-center gap-1"><span class="material-icons text-sm">sports_cricket</span> Batting Details</h3>
-              <div class="grid grid-cols-2 gap-4 mb-3">
-                  <div><label class="block text-[10px] font-bold mb-1 text-slate-400">Bat Style</label><select id="cp-bat-type" class="form-input w-full text-xs"><option value="balanced">Balanced</option><option value="radical">Radical</option><option value="brute">Brute</option></select></div>
-                  <div><label class="block text-[10px] font-bold mb-1 text-slate-400">Timing</label><select id="cp-timing" class="form-input w-full text-xs"><option value="normal">Normal</option><option value="early">Early</option><option value="late">Late</option><option value="perfect">Perfect</option></select></div>
+          <div class="bg-white/50 dark:bg-black/20 p-5 rounded-2xl border border-white/20 dark:border-white/5 backdrop-blur-md">
+              <h3 class="text-xs font-black uppercase text-blue-500 mb-4 flex items-center gap-1"><span class="material-icons text-sm">sports_cricket</span> Batting Skill</h3>
+              
+              <div class="mb-4">
+                 <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Bat Style</label>
+                 <select id="cp-bat-type" class="form-input w-full text-xs font-bold">
+                    <option value="balanced">Balanced</option>
+                    <option value="radical">Radical</option>
+                    <option value="brute">Brute</option>
+                    <option value="defensive">Defensive</option>
+                 </select>
               </div>
-              <div class="grid grid-cols-2 gap-4">
-                  <div><label class="block text-[10px] font-bold mb-1 text-slate-400">Aggression</label><select id="cp-aggression" class="form-input w-full text-xs"><option value="defensive">Defensive</option><option value="balanced">Balanced</option><option value="aggressive">Aggressive</option></select></div>
-                  <div><label class="block text-[10px] font-bold mb-1 text-slate-400">Technique</label><select id="cp-technique" class="form-input w-full text-xs"><option value="standard">Standard</option><option value="unorthodox">Unorthodox</option><option value="textbook">Textbook</option></select></div>
+
+              <div class="space-y-4">
+                 ${slider('cp-timing', 'Timing', 'blue')}
+                 ${slider('cp-aggression', 'Aggression', 'red')}
+                 ${slider('cp-technique', 'Technique', 'purple')}
               </div>
           </div>
 
-          <div id="cp-bowling-section" class="hidden bg-slate-50/50 dark:bg-black/20 p-4 rounded-xl border border-slate-100 dark:border-slate-700/50">
-              <h3 class="text-xs font-black uppercase text-green-500 mb-3 flex items-center gap-1"><span class="material-icons text-sm">sports_baseball</span> Bowling Details</h3>
-              <div class="grid grid-cols-2 gap-4 mb-3">
+          <div id="cp-bowling-section" class="hidden bg-white/50 dark:bg-black/20 p-5 rounded-2xl border border-white/20 dark:border-white/5 backdrop-blur-md">
+              <h3 class="text-xs font-black uppercase text-green-500 mb-4 flex items-center gap-1"><span class="material-icons text-sm">sports_baseball</span> Bowling Skill</h3>
+              
+              <div class="grid grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label class="block text-[10px] font-bold mb-1 text-slate-400">Bowl Style</label>
+                    <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Bowl Style</label>
                     <select id="cp-bowl-type" class="form-input w-full text-xs" onchange="window.updateBowlingActions('cp')">
                         <option value="fast">Fast</option>
-                        <option value="medium">Fast-Med / Medium</option>
+                        <option value="medium">Medium/Fast-Med</option>
                         <option value="off-spinner">Off Spin</option>
                         <option value="leg-spinner">Leg Spin</option>
                     </select>
                   </div>
-                  <div><label class="block text-[10px] font-bold mb-1 text-slate-400">Movement</label><select id="cp-bowl-move" class="form-input w-full text-xs"><option value="swing">Swing</option><option value="seam">Seam</option><option value="cut">Cutter</option><option value="drift">Drift (Spin)</option></select></div>
+                  <div>
+                     <label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Action</label>
+                     <select id="cp-bowl-action" class="form-input w-full text-xs font-bold text-slate-700 dark:text-white"></select>
+                  </div>
               </div>
-              <div>
-                 <label class="block text-[10px] font-bold mb-1 text-slate-400">Bowling Action</label>
-                 <select id="cp-bowl-action" class="form-input w-full text-xs font-bold text-slate-700 dark:text-white">
-                    </select>
+
+              <div class="space-y-4">
+                 ${slider('cp-bowl-move', 'Movement (Swing/Spin)', 'green')}
+                 ${slider('cp-bowl-skill', 'Accuracy & Skill', 'orange')}
               </div>
           </div>
 
@@ -209,6 +225,12 @@ function CreatorTeamPage() {
   if (!window.teamBuilder) resetTeamBuilder();
   setTimeout(() => { if (window.loadCreatorSubscription) window.loadCreatorSubscription(); }, 200);
 
+  const sliderCompact = (id, label) => `
+    <div class="flex items-center gap-2">
+       <span class="text-[9px] font-bold w-12 text-slate-500 uppercase">${label}</span>
+       <input id="${id}" type="range" min="1" max="100" value="70" class="flex-1 h-1 bg-slate-300 rounded appearance-none cursor-pointer" title="${label}">
+    </div>`;
+
   return `
     <div class="max-w-4xl mx-auto animate-fade-in pb-24 px-4 pt-6">
       <div class="flex items-center justify-between mb-6">
@@ -223,8 +245,8 @@ function CreatorTeamPage() {
            <div><label class="block text-xs font-bold mb-2 text-slate-500">Short Name</label><input id="ct-team-short" type="text" maxlength="3" class="form-input w-full uppercase" placeholder="STK"></div>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
-          <div><label class="block text-xs font-bold mb-2 text-slate-500">Jersey Texture</label><input id="ct-jersey-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
-          <div><label class="block text-xs font-bold mb-2 text-slate-500">Logo Image</label><input id="ct-logo-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
+          <div><label class="block text-xs font-bold mb-2 text-slate-500">Jersey</label><input id="ct-jersey-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
+          <div><label class="block text-xs font-bold mb-2 text-slate-500">Logo</label><input id="ct-logo-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold"></div>
         </div>
       </div>
 
@@ -244,22 +266,30 @@ function CreatorTeamPage() {
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
               <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">R Bat</option><option value="left">L Bat</option></select>
               <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">R Bowl</option><option value="left">L Bowl</option></select>
-              <select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Bat: Bal</option><option value="radical">Bat: Rad</option><option value="brute">Bat: Bru</option></select>
-              <select id="tp-timing" class="form-input w-full text-xs"><option value="normal">Time: Norm</option><option value="perfect">Time: Perf</option></select>
+              <select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Bal</option><option value="radical">Rad</option><option value="brute">Brute</option><option value="defensive">Def</option></select>
+              <select id="tp-bowl-type" class="form-input w-full text-xs" onchange="window.updateBowlingActions('tp')"><option value="fast">Fast</option><option value="medium">Med</option><option value="spin">Spin</option></select>
           </div>
 
-          <div id="tp-bowling-section" class="hidden grid-cols-2 gap-3 bg-white/50 dark:bg-black/30 p-2 rounded mb-3">
-              <select id="tp-bowl-type" class="form-input w-full text-xs" onchange="window.updateBowlingActions('tp')">
-                  <option value="fast">Fast</option><option value="medium">Medium</option><option value="off-spinner">Off Spin</option><option value="leg-spinner">Leg Spin</option>
-              </select>
-              <select id="tp-bowl-action" class="form-input w-full text-xs font-bold"></select>
+          <div class="grid sm:grid-cols-2 gap-4 mb-3 bg-white/50 dark:bg-black/20 p-3 rounded-lg">
+             <div class="space-y-2">
+                <div class="text-[9px] font-bold text-blue-500 uppercase mb-1">Batting</div>
+                ${sliderCompact('tp-timing', 'Time')}
+                ${sliderCompact('tp-aggression', 'Aggr')}
+                ${sliderCompact('tp-technique', 'Tech')}
+             </div>
+             <div id="tp-bowling-section" class="hidden space-y-2">
+                <div class="text-[9px] font-bold text-green-500 uppercase mb-1">Bowling</div>
+                <select id="tp-bowl-action" class="form-input w-full text-[10px] py-1 mb-1"></select>
+                ${sliderCompact('tp-bowl-move', 'Move')}
+                ${sliderCompact('tp-bowl-skill', 'Skill')}
+             </div>
           </div>
 
-          <button type="submit" class="w-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 transition"><span class="material-icons text-xs">add</span> Add to Squad</button>
+          <button type="submit" class="w-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1"><span class="material-icons text-xs">add</span> Add to Squad</button>
         </form>
 
         <div id="ct-players-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-          <div class="text-center text-slate-400 text-xs py-4 italic">Squad is empty. Add players above.</div>
+          <div class="text-center text-slate-400 text-xs py-4 italic">Squad is empty.</div>
         </div>
       </div>
 
@@ -281,15 +311,9 @@ function CreatorJerseyPage() {
          <button onclick="window.router.navigateTo('/creator')" class="text-xs font-bold text-slate-500 hover:text-blue-600 bg-white/50 px-3 py-2 rounded-lg">Back</button>
       </div>
       <div class="app-card p-6 sm:p-8">
-        <div class="mb-6 bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border border-green-100 dark:border-green-800/50 flex items-start gap-3">
-            <span class="material-icons text-green-600 mt-0.5">tips_and_updates</span>
-            <div class="text-xs text-green-800 dark:text-green-200 leading-relaxed">
-               <span class="font-bold">Tip:</span> Use our <a href="${JERSEY_TESTER_LINK}" target="_blank" class="underline font-bold hover:text-green-600">Jersey Tester App</a> to design your kit, then export the PNG and upload it here.
-            </div>
-        </div>
         <form onsubmit="window.submitCustomJersey(event)" class="space-y-6">
           <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Team Name</label><input id="cj-team" type="text" class="form-input w-full" placeholder="e.g. Mumbai Indians"></div>
-          <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Jersey Texture (PNG/JPG)</label><input id="cj-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-700"></div>
+          <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Jersey Texture</label><input id="cj-file" type="file" accept="image/*" class="text-xs w-full file:bg-slate-100 file:border-0 file:rounded-lg file:px-3 file:py-1 file:text-xs file:font-bold file:text-slate-700"></div>
           <button type="submit" class="btn w-full py-4 shadow-lg shadow-green-500/20 text-sm bg-gradient-to-r from-green-600 to-green-700">Submit Jersey</button>
         </form>
       </div>
@@ -335,29 +359,26 @@ window.buyCreatorPlan = function(code) {
 };
 
 /* ========================================================================
-   8. HELPERS & LOGIC (Updated for Bowling Actions)
+   8. HELPERS & LOGIC (Updated for New Fields)
    ======================================================================== */
 
-// --- Show/Hide Bowling Options ---
 window.updateBowlingOptions = function(prefix) {
     const role = document.getElementById(`${prefix}-type`).value;
     const section = document.getElementById(`${prefix}-bowling-section`);
     if(role === 'bowler' || role === 'all-rounder') {
         section.classList.remove('hidden');
-        if(prefix === 'tp') section.classList.add('grid'); // For team player grid layout
-        window.updateBowlingActions(prefix); // Init actions
+        if(prefix === 'tp') section.classList.add('block');
+        window.updateBowlingActions(prefix);
     } else {
         section.classList.add('hidden');
-        if(prefix === 'tp') section.classList.remove('grid');
+        if(prefix === 'tp') section.classList.remove('block');
     }
 };
 
-// --- Populate Actions based on Style ---
 window.updateBowlingActions = function(prefix) {
     const style = document.getElementById(`${prefix}-bowl-type`).value;
     const select = document.getElementById(`${prefix}-bowl-action`);
     let key = 'medium';
-    
     if(style === 'fast') key = 'fast';
     else if(style.includes('spin')) key = 'spin';
     
@@ -365,7 +386,6 @@ window.updateBowlingActions = function(prefix) {
     select.innerHTML = actions.map(a => `<option value="${a}">${a}</option>`).join('');
 };
 
-// --- Add Team Player ---
 window.addTeamPlayer = function (e) {
   e.preventDefault();
   if (!window.teamBuilder) resetTeamBuilder();
@@ -381,15 +401,22 @@ window.addTeamPlayer = function (e) {
       battingHand: document.getElementById('tp-bat-hand').value,
       bowlingHand: document.getElementById('tp-bowl-hand').value,
       battingStyle: document.getElementById('tp-bat-type').value,
+      
+      // Sliders
       battingTiming: document.getElementById('tp-timing').value,
-      // Only capture bowling stats if relevant
+      battingAggression: document.getElementById('tp-aggression').value,
+      battingTechnique: document.getElementById('tp-technique').value,
+      
+      // Bowling
       bowlingStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'N/A',
-      bowlingAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A'
+      bowlingAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A',
+      bowlingMovement: isBowler ? document.getElementById('tp-bowl-move').value : 'N/A',
+      bowlingSkill: isBowler ? document.getElementById('tp-bowl-skill').value : 'N/A'
   };
   
   if (!p.name) { alert('Enter Name'); return; }
   window.teamBuilder.players.push(p); e.target.reset(); 
-  document.getElementById('tp-bowling-section').classList.add('hidden'); // Reset UI
+  document.getElementById('tp-bowling-section').classList.add('hidden');
   window.renderTeamPlayersList();
 };
 
@@ -404,7 +431,7 @@ window.renderTeamPlayersList = function () {
 };
 window.removeTeamPlayer = function(i) { window.teamBuilder.players.splice(i, 1); window.renderTeamPlayersList(); };
 
-// --- SUBMIT PLAYER (Sends all new fields) ---
+// --- SUBMIT PLAYER ---
 window.submitCustomPlayer = async function (evt) {
   evt.preventDefault();
   if (!window.checkCreatorSubBeforeRequest()) return;
@@ -433,13 +460,14 @@ window.submitCustomPlayer = async function (evt) {
         bowlingHand: document.getElementById('cp-bowl-hand').value,
         bowlingStyle: isBowler ? document.getElementById('cp-bowl-type').value : 'N/A',
         bowlingAction: isBowler ? document.getElementById('cp-bowl-action').value : 'N/A',
-        bowlingMovement: isBowler ? document.getElementById('cp-bowl-move').value : 'N/A'
+        bowlingMovement: isBowler ? document.getElementById('cp-bowl-move').value : 'N/A',
+        bowlingSkill: isBowler ? document.getElementById('cp-bowl-skill').value : 'N/A'
       };
 
       await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
       await window.incrementCreatorUsage();
       
-      // Send to Backend/Bot
+      // Bot notification
       try { await fetch('/api/custom-player', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); } catch(err){}
 
       alert("✅ Request Sent! It will be completed under 24 hours.");
@@ -448,30 +476,22 @@ window.submitCustomPlayer = async function (evt) {
   } catch(e) { alert("Error: " + (e.message || e)); if(btn) btn.disabled = false; }
 };
 
-// --- SUBMIT TEAM ---
 window.submitCustomTeam = async function() {
     if(!window.checkCreatorSubForTeam()) return;
     if(!window.teamBuilder || !window.teamBuilder.players.length) { alert("Squad is empty!"); return; }
-    
     try {
-        const jFile = document.getElementById('ct-jersey-file').files[0];
-        const lFile = document.getElementById('ct-logo-file').files[0];
+        const jFile = document.getElementById('ct-jersey-file').files[0]; const lFile = document.getElementById('ct-logo-file').files[0];
         if(!jFile || !lFile) throw new Error("Upload Jersey & Logo.");
-        
-        const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]');
-        if(btn) btn.disabled = true;
-        
+        const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); if(btn) btn.disabled = true;
         const jB = await readFileAsBase64(jFile); const lB = await readFileAsBase64(lFile);
         const data = {
             type: 'team', userId: window.currentUser.uid, email: window.currentUser.email, userName: window.currentUser.displayName,
             teamName: document.getElementById('ct-team-name').value, teamShortName: document.getElementById('ct-team-short').value,
             mode: 'new', players: window.teamBuilder.players, createdAt: new Date().toISOString()
         };
-        
         await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
         await window.incrementCreatorUsage();
         try { await fetch('/api/custom-team', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ ...data, jerseyBase64: jB, logoBase64: lB }) }); } catch(err){}
-        
         alert("✅ Request Sent! It will be completed under 24 hours.");
         window.router.navigateTo('/creator-history');
     } catch(e) { alert("Error: " + (e.message || e)); }
@@ -492,7 +512,6 @@ window.submitCustomJersey = async function (evt) {
   } catch(e) { alert("Error: " + e.message); }
 };
 
-// Utils & Subs
 async function readFileAsBase64(file) { return new Promise((resolve, reject) => { const r = new FileReader(); r.onload = () => resolve(r.result.split(',')[1]); r.onerror = reject; r.readAsDataURL(file); }); }
 window.checkCreatorSubBeforeRequest = function() { if(!window.creatorSub || window.creatorSub.status !== 'active') { if(confirm("Plan Required.")) window.router.navigateTo('/creator-plans'); return false; } if(window.creatorSub.maxRequests && window.creatorSub.usedRequests >= window.creatorSub.maxRequests) { alert("Limit reached."); return false; } return true; };
 window.checkCreatorSubForTeam = function() { if(!window.checkCreatorSubBeforeRequest()) return false; if(window.creatorSub.planCode === 'P100') { if(confirm("Upgrade to Pro?")) window.buyCreatorPlan('P300'); return false; } return true; };
