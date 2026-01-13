@@ -245,12 +245,12 @@ function CreatorTeamPage() {
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
              <div class="col-span-2"><input id="tp-name" type="text" class="form-input w-full text-xs" placeholder="Player Name"></div>
              <div><input id="tp-jersey" type="number" class="form-input w-full text-xs" placeholder="No."></div>
-             <div><select id="tp-type" class="form-input w-full text-xs" onchange="window.updateBowlingOptions('tp')"><option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">AR</option><option value="keeper">WK</option></select></div>
+             <div><select id="tp-type" class="form-input w-full text-xs" onchange="window.updateBowlingOptions('tp')"><option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">All Rounder</option><option value="keeper">Wicket Keeper</option></select></div>
           </div>
           
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-              <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">Bat Right</option><option value="left">L Bat</option></select>
-              <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">Bowl Right</option><option value="left">L Bowl</option></select>
+              <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
+              <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
               <select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Balanced</option><option value="radical">Radical</option><option value="brute">Brute</option><option value="defensive">Defensive</option></select>
               <input id="tp-face" type="text" class="form-input w-full text-xs" placeholder="Face ID">
           </div>
