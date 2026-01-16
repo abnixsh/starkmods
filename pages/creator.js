@@ -40,7 +40,7 @@ window.creatorSub = null;
 window.currentPlayerGame = 'rc25';
 window.currentJerseyGame = 'rc25';
 window.teamBuilder = null;
-window.tempCustomFaceBase64 = null; // Stores Single Player custom face
+window.tempCustomFaceBase64 = null;
 
 function resetTeamBuilder() {
   window.teamBuilder = { 
@@ -99,7 +99,7 @@ function CreatorMenuUI() {
         <button class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.router.navigateTo('/creator-player')">
           <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400 shadow-sm"><span class="material-icons text-3xl">person</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Player</div>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Detailed attributes, Faces & Actions.</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400">Attributes, Faces & Actions.</p>
         </button>
 
         <button id="btn-feature-jersey" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.goToCreatorJersey()">
@@ -127,7 +127,7 @@ function CreatorMenuUI() {
    3. UI HELPER FUNCTIONS
    ========================================= */
 
-// --- TEAM SELECTOR (DROPDOWN) ---
+// --- Team Selector (Collapsible) ---
 function renderTeamSelectorHTML(idPrefix) {
   const categories = Object.keys(TEAMS_DATA);
   let dropdownContent = '';
@@ -167,35 +167,35 @@ window.selectTeam = function(prefix, team) {
   document.getElementById(`${prefix}-team-dropdown`).classList.add('hidden');
 };
 
-// --- FACE SELECTOR (TOGGLE: PRESET / CUSTOM) ---
+// --- Face Selector (Visual + Mobile Friendly) ---
 function renderFaceSelectorHTML(idPrefix) {
   return `
-    <div class="bg-white/50 dark:bg-black/20 rounded-xl p-2 border border-slate-200 dark:border-slate-700">
-      <div class="flex items-center gap-2 mb-2">
+    <div class="bg-white/50 dark:bg-black/20 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+      <div class="flex items-center gap-2 mb-3">
          <label class="text-[10px] font-bold text-slate-500 uppercase flex-1">Face Type</label>
          <div class="flex bg-slate-200 dark:bg-slate-700 rounded-lg p-0.5">
-            <button type="button" onclick="window.switchFaceTab('${idPrefix}', 'preset')" id="${idPrefix}-btn-preset" class="px-3 py-1 text-[9px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm transition">Preset</button>
-            <button type="button" onclick="window.switchFaceTab('${idPrefix}', 'custom')" id="${idPrefix}-btn-custom" class="px-3 py-1 text-[9px] font-bold rounded-md text-slate-500 transition">Custom</button>
+            <button type="button" onclick="window.switchFaceTab('${idPrefix}', 'preset')" id="${idPrefix}-btn-preset" class="px-4 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm transition">Preset</button>
+            <button type="button" onclick="window.switchFaceTab('${idPrefix}', 'custom')" id="${idPrefix}-btn-custom" class="px-4 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition">Custom</button>
          </div>
       </div>
 
       <div id="${idPrefix}-view-preset">
-         <input id="${idPrefix}-face-display" type="text" readonly placeholder="Select from grid below" class="form-input w-full text-xs mb-2 cursor-not-allowed opacity-70">
-         <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 max-h-32 overflow-y-auto pr-1 custom-scrollbar">
+         <input id="${idPrefix}-face-display" type="text" readonly placeholder="Select Below" class="form-input w-full text-xs mb-3 cursor-not-allowed opacity-70">
+         <div class="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
             ${Array.from({length: 80}, (_, i) => i + 1).map(i => `
-               <div onclick="window.selectFace('${idPrefix}', ${i})" class="cursor-pointer border border-transparent hover:border-blue-500 rounded-lg p-0.5 transition">
-                  <img src="assets/faces/face_${i}.png" class="w-full aspect-square rounded object-cover bg-slate-200" onerror="this.src='https://placehold.co/50?text=${i}'">
+               <div onclick="window.selectFace('${idPrefix}', ${i})" class="cursor-pointer border-2 border-transparent hover:border-blue-500 rounded-lg overflow-hidden transition bg-slate-100 dark:bg-slate-800">
+                  <img src="assets/faces/face_${i}.png" class="w-full aspect-square object-cover" onerror="this.src='https://placehold.co/50?text=${i}'">
                </div>
             `).join('')}
          </div>
       </div>
 
-      <div id="${idPrefix}-view-custom" class="hidden text-center py-4">
+      <div id="${idPrefix}-view-custom" class="hidden text-center py-6 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl">
          <label for="${idPrefix}-face-file" class="cursor-pointer block">
             <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-2 text-blue-600">
                <span class="material-icons">cloud_upload</span>
             </div>
-            <span class="text-xs font-bold text-blue-500 underline">Click to Upload Face</span>
+            <span class="text-xs font-bold text-blue-500 underline">Tap to Upload Photo</span>
          </label>
          <input id="${idPrefix}-face-file" type="file" accept="image/*" class="hidden" onchange="window.handleCustomFaceUpload('${idPrefix}', this)">
          <div id="${idPrefix}-custom-preview" class="text-[10px] text-slate-500 mt-2 font-mono truncate px-2">No file selected</div>
@@ -228,13 +228,13 @@ window.switchFaceTab = function(prefix, tab) {
         customView.classList.remove('hidden');
         presetView.classList.add('hidden');
         displayInput.dataset.isCustom = "true";
-        displayInput.value = "Custom Upload"; // Set flag
+        displayInput.value = "Custom Upload"; 
     }
 };
 
 window.selectFace = function(prefix, id) {
     const disp = document.getElementById(`${prefix}-face-display`);
-    disp.value = `Face ID: ${id}`;
+    disp.value = `ID: ${id}`;
     disp.dataset.faceId = id; 
 };
 
@@ -249,7 +249,6 @@ window.handleCustomFaceUpload = async function(prefix, input) {
             if(prefix === 'cp') window.tempCustomFaceBase64 = b64; 
             else input.dataset.tempB64 = b64; 
             
-            // Set display to valid so validation passes
             document.getElementById(`${prefix}-face-display`).value = "Custom Upload";
             
         } catch(e) {
@@ -274,9 +273,9 @@ function CreatorPlayerPage() {
     </button>`;
 
   const slider = (id, label, color) => `
-    <div class="mb-3">
-      <div class="flex justify-between mb-1"><label class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">${label}</label><span id="val-${id}" class="text-[10px] font-bold text-${color}-500">50</span></div>
-      <input id="${id}" type="range" min="1" max="100" value="50" oninput="document.getElementById('val-${id}').innerText = this.value" class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-${color}-500">
+    <div class="mb-4">
+      <div class="flex justify-between mb-2"><label class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">${label}</label><span id="val-${id}" class="text-[10px] font-bold text-${color}-500 bg-${color}-100 dark:bg-${color}-900 px-2 py-0.5 rounded">50</span></div>
+      <input id="${id}" type="range" min="1" max="100" value="50" oninput="document.getElementById('val-${id}').innerText = this.value" class="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full appearance-none cursor-pointer accent-${color}-500">
     </div>`;
 
   return `
@@ -295,29 +294,28 @@ function CreatorPlayerPage() {
               <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Player Name</label><input id="cp-name" type="text" class="form-input w-full" placeholder="Enter Name"></div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                   <label class="block text-xs font-bold mb-2 text-blue-600 uppercase">Role</label>
-                  <select id="cp-type" class="form-input w-full font-bold" onchange="window.updateBowlingOptions('cp')">
+                  <select id="cp-type" class="form-input w-full font-bold h-12" onchange="window.updateBowlingOptions('cp')">
                     <option value="batsman">Batsman</option>
                     <option value="bowler">Bowler</option>
                     <option value="all-rounder">All Rounder</option>
                     <option value="keeper">Wicket Keeper</option>
                   </select>
-                  <div class="mt-4">
+                  
+                  <div class="mt-6">
                      <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Hands</label>
-                     <div class="flex gap-2">
-                        <select id="cp-bat-hand" class="form-input w-full text-xs"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
-                        <select id="cp-bowl-hand" class="form-input w-full text-xs"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
+                     <div class="flex gap-3">
+                        <select id="cp-bat-hand" class="form-input w-full text-xs h-10"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
+                        <select id="cp-bowl-hand" class="form-input w-full text-xs h-10"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
                      </div>
                   </div>
-                  <div class="mt-4">
-                     <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Jersey No.</label>
-                     <input id="cp-jersey" type="number" class="form-input w-full" placeholder="18">
-                  </div>
               </div>
-              
-              <div>${renderFaceSelectorHTML('cp')}</div>
+              <div>
+                  <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face</label>
+                  ${renderFaceSelectorHTML('cp')}
+              </div>
           </div>
 
           <div class="bg-white/50 dark:bg-black/20 p-5 rounded-2xl border border-white/20 dark:border-white/5 backdrop-blur-md">
@@ -335,14 +333,15 @@ function CreatorPlayerPage() {
               ${slider('cp-bowl-move', 'Movement', 'green')}${slider('cp-bowl-skill', 'Accuracy', 'orange')}
           </div>
 
-          <button type="submit" class="btn w-full py-4 shadow-lg shadow-blue-500/20 text-sm">Submit Request</button>
+          <div><label class="block text-[10px] font-bold mb-1 text-slate-400 uppercase">Jersey Number</label><input id="cp-jersey" type="number" class="form-input w-full text-xs h-10" placeholder="18"></div>
+          <button type="submit" class="btn w-full py-4 shadow-lg text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold">Submit Request</button>
         </form>
       </div>
     </div>`;
 }
 
 /* =========================================
-   5. CUSTOM TEAM PAGE (FIXED & MOBILE OPTIMIZED)
+   5. CUSTOM TEAM PAGE (FIXED)
    ========================================= */
 
 function CreatorTeamPage() {
@@ -351,9 +350,9 @@ function CreatorTeamPage() {
   setTimeout(() => { if (window.loadCreatorSubscription) window.loadCreatorSubscription(); }, 200);
 
   const sliderCompact = (id, label, color) => `
-    <div class="flex items-center gap-2 mb-2">
-       <span class="text-[9px] font-bold w-12 text-slate-500 uppercase">${label}</span>
-       <input id="${id}" type="range" min="1" max="100" value="70" class="flex-1 h-2 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-${color}-500" title="${label}">
+    <div class="mb-3">
+       <div class="flex justify-between mb-1"><span class="text-[9px] font-bold w-12 text-slate-500 uppercase">${label}</span> <span id="val-${id}" class="text-[9px] font-bold text-${color}-600">70</span></div>
+       <input id="${id}" type="range" min="1" max="100" value="70" oninput="document.getElementById('val-${id}').innerText = this.value" class="w-full h-2 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-${color}-500">
     </div>`;
 
   return `
@@ -382,44 +381,46 @@ function CreatorTeamPage() {
         </div>
         
         <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 mb-4">
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-             <div class="col-span-2"><input id="tp-name" type="text" class="form-input w-full text-xs font-bold" placeholder="Player Name *"></div>
-             <div><input id="tp-jersey" type="number" class="form-input w-full text-xs" placeholder="No."></div>
-             <div><select id="tp-type" class="form-input w-full text-xs font-bold" onchange="window.updateBowlingOptions('tp')"><option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">All-Rd</option><option value="keeper">Keeper</option></select></div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+             <div class="col-span-2 sm:col-span-1"><input id="tp-name" type="text" class="form-input w-full text-xs font-bold h-10" placeholder="Player Name *"></div>
+             <div><input id="tp-jersey" type="number" class="form-input w-full text-xs h-10" placeholder="No."></div>
+             <div class="col-span-2 sm:col-span-1"><select id="tp-type" class="form-input w-full text-xs font-bold h-10" onchange="window.updateBowlingOptions('tp')"><option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">All-Rd</option><option value="keeper">Keeper</option></select></div>
           </div>
           
-          <div class="grid grid-cols-2 gap-3 mb-3">
-              <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
-              <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
+          <div class="grid grid-cols-2 gap-3 mb-4">
+              <select id="tp-bat-hand" class="form-input w-full text-xs h-9"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
+              <select id="tp-bowl-hand" class="form-input w-full text-xs h-9"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
           </div>
-
           <div class="mb-4">
-             <label class="text-[9px] font-bold uppercase text-slate-400 mb-1 block">Face ID (Required)</label>
+             <label class="text-[9px] font-bold uppercase text-slate-400 mb-1 block">Face</label>
              ${renderFaceSelectorHTML('tp')}
           </div>
 
-          <div class="grid sm:grid-cols-2 gap-4 mb-3 bg-white/50 dark:bg-black/20 p-3 rounded-lg border border-slate-200 dark:border-slate-600">
-             <div class="space-y-1">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="text-[9px] font-bold text-blue-500 uppercase">Batting</span>
-                    <select id="tp-bat-type" class="form-input text-[9px] py-0.5 px-1 w-20"><option value="balanced">Balanced</option><option value="radical">Radical</option><option value="brute">Brute</option><option value="defensive">Defensive</option></select>
+          <div class="bg-white/70 dark:bg-black/40 p-4 rounded-xl border border-slate-200 dark:border-slate-600 mb-4">
+             <div class="mb-3">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-black text-blue-600 uppercase">Batting</span>
+                    <select id="tp-bat-type" class="text-[9px] bg-slate-200 dark:bg-slate-700 rounded px-2 py-1 font-bold border-0"><option value="balanced">Balanced</option><option value="radical">Radical</option><option value="brute">Brute</option><option value="defensive">Defensive</option></select>
                 </div>
                 ${sliderCompact('tp-timing', 'Time', 'blue')}
                 ${sliderCompact('tp-aggression', 'Aggr', 'red')}
                 ${sliderCompact('tp-technique', 'Tech', 'purple')}
              </div>
-             <div id="tp-bowling-section" class="hidden space-y-1">
-                <div class="text-[9px] font-bold text-green-500 uppercase mb-1">Bowling</div>
-                <div class="flex gap-1 mb-1">
-                    <select id="tp-bowl-type" class="form-input text-[9px] py-0.5 w-1/2" onchange="window.updateBowlingActions('tp')"><option value="fast">Fast</option><option value="medium">Med</option><option value="spin">Spin</option></select>
-                    <select id="tp-bowl-action" class="form-input text-[9px] py-0.5 w-1/2"></select>
+             
+             <div id="tp-bowling-section" class="hidden pt-3 border-t border-slate-200 dark:border-slate-600">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] font-black text-green-600 uppercase">Bowling</span>
+                    <div class="flex gap-1">
+                        <select id="tp-bowl-type" class="text-[9px] bg-slate-200 dark:bg-slate-700 rounded px-1 py-1 w-12" onchange="window.updateBowlingActions('tp')"><option value="fast">Fast</option><option value="medium">Med</option><option value="spin">Spin</option></select>
+                        <select id="tp-bowl-action" class="text-[9px] bg-slate-200 dark:bg-slate-700 rounded px-1 py-1 w-16"></select>
+                    </div>
                 </div>
                 ${sliderCompact('tp-bowl-move', 'Move', 'green')}
                 ${sliderCompact('tp-bowl-skill', 'Skill', 'orange')}
              </div>
           </div>
 
-          <button type="button" onclick="window.addTeamPlayer()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-1 shadow-md shadow-blue-500/20"><span class="material-icons text-sm">add_circle</span> Add Player to Squad</button>
+          <button type="button" onclick="window.addTeamPlayer()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1 shadow-lg shadow-blue-500/20 active:scale-95 transition"><span class="material-icons text-sm">add_circle</span> Add Player to Squad</button>
         </div>
 
         <div id="ct-players-list" class="space-y-2 max-h-[300px] overflow-y-auto pr-1">
@@ -427,12 +428,12 @@ function CreatorTeamPage() {
         </div>
       </div>
 
-      <button onclick="window.submitCustomTeam()" class="btn w-full py-4 shadow-xl shadow-purple-500/20 text-sm font-black tracking-wide">SUBMIT TEAM REQUEST</button>
+      <button onclick="window.submitCustomTeam()" class="btn w-full py-4 shadow-xl shadow-purple-500/20 text-sm font-black tracking-wide bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-2xl">SUBMIT TEAM REQUEST</button>
     </div>`;
 }
 
 // ==========================================
-// 6. JERSEY & HISTORY PAGES
+// 6. JERSEY, HISTORY & PLANS
 // ==========================================
 
 function CreatorJerseyPage() {
@@ -456,6 +457,7 @@ function CreatorJerseyPage() {
 function CreatorHistoryPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/'), 50); return ''; }
   if (window.historyUnsubscribe) window.historyUnsubscribe();
+  
   setTimeout(() => {
     const container = document.getElementById('creator-history');
     if(!container) return;
@@ -470,10 +472,6 @@ function CreatorHistoryPage() {
   }, 100);
   return `<div class="max-w-4xl mx-auto animate-fade-in pb-24 px-4 pt-6"><h1 class="text-2xl font-black mb-6">History</h1><div id="creator-history" class="space-y-4"></div></div>`;
 }
-
-// ==========================================
-// 7. PLANS PAGE
-// ==========================================
 
 function CreatorPlansPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/'), 50); return ''; }
@@ -492,7 +490,7 @@ window.buyCreatorPlan = function(code) {
 };
 
 // ==========================================
-// 8. LOGIC & SUBMISSION
+// 8. LOGIC & SUBMISSION (BOT DATA FIXED)
 // ==========================================
 
 async function readFileAsBase64(file) {
@@ -524,7 +522,7 @@ window.updateBowlingActions = function(prefix) {
     select.innerHTML = (BOWLING_ACTIONS[key]||[]).map(a => `<option value="${a}">${a}</option>`).join('');
 };
 
-// --- TEAM BUILDER ADD PLAYER ---
+// --- TEAM ADD PLAYER (FIXED) ---
 window.addTeamPlayer = function () {
   if (!window.teamBuilder) resetTeamBuilder();
   if (window.teamBuilder.players.length >= 15) { alert('Squad full.'); return; }
@@ -543,15 +541,12 @@ window.addTeamPlayer = function () {
       return;
   }
 
-  // FLAT DATA STRUCTURE FOR BOT
+  // OBJECT MAPPED TO SIMPLE KEYS FOR BOT COMPATIBILITY
   const p = {
       name: name,
       role: role,
-      jerseyNumber: document.getElementById('tp-jersey').value || '0',
-      
-      // Face
-      faceID: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId || "Random"),
-      customFace: customFaceB64 ? "Yes" : "No",
+      jersey: document.getElementById('tp-jersey').value || '0',
+      face: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId ? "Preset " + faceDisplay.dataset.faceId : "Random"),
       
       // Hands
       batHand: document.getElementById('tp-bat-hand').value,
@@ -564,20 +559,19 @@ window.addTeamPlayer = function () {
       batTechnique: document.getElementById('tp-technique').value,
       
       // Bowling
-      bowlStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'N/A',
-      bowlAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A',
-      bowlMovement: isBowler ? document.getElementById('tp-bowl-move').value : 'N/A',
-      bowlSkill: isBowler ? document.getElementById('tp-bowl-skill').value : 'N/A'
+      bowlStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'None',
+      bowlAction: isBowler ? document.getElementById('tp-bowl-action').value : 'None',
+      bowlMovement: isBowler ? document.getElementById('tp-bowl-move').value : '0',
+      bowlSkill: isBowler ? document.getElementById('tp-bowl-skill').value : '0'
   };
   
-  if(customFaceB64) p.fullCustomFaceB64 = customFaceB64;
+  if(customFaceB64) p.customFaceBase64 = customFaceB64;
 
   window.teamBuilder.players.push(p);
   
-  // Reset fields
+  // Clear inputs
   document.getElementById('tp-name').value = '';
   document.getElementById('tp-face-display').value = '';
-  delete document.getElementById('tp-face-file').dataset.tempB64;
   document.getElementById('tp-bowling-section').classList.add('hidden');
   
   window.renderTeamPlayersList();
@@ -586,80 +580,41 @@ window.addTeamPlayer = function () {
 window.renderTeamPlayersList = function () {
   const list = document.getElementById('ct-players-list');
   document.getElementById('squad-count').innerText = `${window.teamBuilder.players.length}/15`;
+  
   list.innerHTML = window.teamBuilder.players.map((p, i) => `
       <div class="flex justify-between items-center bg-white/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs mb-1">
-        <div><span class="font-bold">${i+1}. ${p.name}</span> <span class="text-slate-500">(${p.role})</span></div>
-        <button onclick="window.removeTeamPlayer(${i})" class="text-red-500 font-bold">X</button>
+        <div>
+           <span class="font-bold text-slate-800 dark:text-white">${i+1}. ${p.name}</span> 
+           <span class="text-[10px] text-slate-500 uppercase ml-1">${p.role}</span>
+           <div class="text-[9px] text-slate-400">Jer: ${p.jersey} | ${p.face}</div>
+        </div>
+        <button onclick="window.removeTeamPlayer(${i})" class="text-red-500 font-bold px-2">X</button>
       </div>`).join('') || `<div class="text-center text-slate-400 text-xs py-4">Squad is empty.</div>`;
 };
 window.removeTeamPlayer = function(i) { window.teamBuilder.players.splice(i, 1); window.renderTeamPlayersList(); };
 
-// --- SUBMIT PLAYER ---
-window.submitCustomPlayer = async function (evt) {
-  evt.preventDefault();
-  if (!window.checkCreatorSubBeforeRequest()) return;
-  const btn = evt.target.querySelector('button[type="submit"]'); 
-  if(btn) { btn.disabled = true; btn.innerText = 'Sending...'; }
-  
-  try {
-      const role = document.getElementById('cp-type').value;
-      const isBowler = role === 'bowler' || role === 'all-rounder';
-      const faceDisplay = document.getElementById('cp-face-display');
-      
-      const data = {
-        type: 'player', 
-        gameId: window.currentPlayerGame, 
-        userId: window.currentUser.uid, 
-        email: window.currentUser.email,
-        userName: window.currentUser.displayName, 
-        createdAt: new Date().toISOString(),
-        
-        teamName: document.getElementById('cp-team').value || "Custom", 
-        playerName: document.getElementById('cp-name').value, 
-        playerType: role,
-        
-        faceSelection: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId || "Random"),
-        customFaceBase64: faceDisplay.dataset.isCustom === "true" ? window.tempCustomFaceBase64 : null,
-        
-        jerseyNumber: document.getElementById('cp-jersey').value,
-        batHand: document.getElementById('cp-bat-hand').value,
-        bowlHand: document.getElementById('cp-bowl-hand').value,
-        
-        battingStyle: document.getElementById('cp-bat-type').value,
-        battingTiming: document.getElementById('cp-timing').value,
-        battingAggression: document.getElementById('cp-aggression').value,
-        battingTechnique: document.getElementById('cp-technique').value,
-        
-        bowlingStyle: isBowler ? document.getElementById('cp-bowl-type').value : 'N/A',
-        bowlingAction: isBowler ? document.getElementById('cp-bowl-action').value : 'N/A',
-        bowlingMovement: isBowler ? document.getElementById('cp-bowl-move').value : 'N/A',
-        bowlingSkill: isBowler ? document.getElementById('cp-bowl-skill').value : 'N/A'
-      };
-
-      await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-      await window.incrementCreatorUsage();
-      try { await fetch('/api/custom-player', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); } catch(err){}
-      alert("✅ Request Sent! Completed under 24 hours.");
-      window.router.navigateTo('/creator-history');
-  } catch(e) { alert("Error: " + (e.message || e)); if(btn) btn.disabled = false; }
-};
+// --- GENERATE TEXT SUMMARY FOR BOT ---
+function generateBotSummary(players) {
+    return players.map((p, i) => 
+        `${i+1}. ${p.name} (${p.role})\n` + 
+        `   Jer: ${p.jersey} | ${p.face}\n` +
+        `   Bat: ${p.batStyle} | ${p.batHand} | T:${p.batTiming}/A:${p.batAggression}/T:${p.batTechnique}\n` +
+        (p.bowlStyle !== 'None' ? `   Bowl: ${p.bowlStyle} | ${p.bowlHand} | Act:${p.bowlAction} | M:${p.bowlMovement}/S:${p.bowlSkill}` : '   Bowling: N/A')
+    ).join('\n\n');
+}
 
 // --- SUBMIT TEAM ---
 window.submitCustomTeam = async function() {
     if(!window.checkCreatorSubForTeam()) return;
     
-    // Validate inputs
     const tName = document.getElementById('ct-team-name').value.trim();
-    const tShort = document.getElementById('ct-team-short').value.trim();
-    if(!tName || !tShort) { alert("Please enter Team Name and Short Name."); return; }
-    
-    if(!window.teamBuilder || !window.teamBuilder.players.length) { alert("Squad is empty! Add players first."); return; }
+    if(!tName) { alert("Enter Team Name."); return; }
+    if(!window.teamBuilder.players.length) { alert("Squad empty."); return; }
     
     try {
         const jFile = document.getElementById('ct-jersey-file').files[0]; 
         const lFile = document.getElementById('ct-logo-file').files[0];
-        
-        if(!jFile || !lFile) throw new Error("Please upload both Jersey and Logo.");
+        if(!jFile || !lFile) throw new Error("Upload Jersey & Logo.");
         
         const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); 
         if(btn) btn.disabled = true;
@@ -667,28 +622,77 @@ window.submitCustomTeam = async function() {
         const jB = await readFileAsBase64(jFile); 
         const lB = await readFileAsBase64(lFile);
         
+        // Construct detailed text summary for the bot
+        const squadText = generateBotSummary(window.teamBuilder.players);
+        
         const data = {
             type: 'team', 
             userId: window.currentUser.uid, 
             email: window.currentUser.email, 
             userName: window.currentUser.displayName,
             teamName: tName,
-            teamShortName: tShort,
+            teamShortName: document.getElementById('ct-team-short').value,
             mode: 'new', 
             players: window.teamBuilder.players,
+            squadSummary: squadText, // <--- THIS FIXES THE BOT UNDEFINED ISSUE
             createdAt: new Date().toISOString()
         };
         
         await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
         await window.incrementCreatorUsage();
         try { await fetch('/api/custom-team', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ ...data, jerseyBase64: jB, logoBase64: lB }) }); } catch(err){}
-        alert("✅ Request Sent! Completed under 24 hours.");
+        alert("✅ Request Sent!");
         window.router.navigateTo('/creator-history');
-    } catch(e) { 
-        alert("Error: " + (e.message || e)); 
-        const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); 
-        if(btn) btn.disabled = false;
-    }
+    } catch(e) { alert("Error: " + e.message); const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); if(btn) btn.disabled = false; }
+};
+
+window.submitCustomPlayer = async function (evt) {
+  evt.preventDefault();
+  if (!window.checkCreatorSubBeforeRequest()) return;
+  
+  try {
+      const faceDisplay = document.getElementById('cp-face-display');
+      const isBowler = ['bowler', 'all-rounder'].includes(document.getElementById('cp-type').value);
+      
+      const p = {
+          name: document.getElementById('cp-name').value,
+          role: document.getElementById('cp-type').value,
+          face: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId ? "Preset " + faceDisplay.dataset.faceId : "Random"),
+          jersey: document.getElementById('cp-jersey').value,
+          batHand: document.getElementById('cp-bat-hand').value,
+          bowlHand: document.getElementById('cp-bowl-hand').value,
+          batStyle: document.getElementById('cp-bat-type').value,
+          batTiming: document.getElementById('cp-timing').value,
+          batAggression: document.getElementById('cp-aggression').value,
+          batTechnique: document.getElementById('cp-technique').value,
+          bowlStyle: isBowler ? document.getElementById('cp-bowl-type').value : 'None',
+          bowlAction: isBowler ? document.getElementById('cp-bowl-action').value : 'None',
+          bowlMovement: isBowler ? document.getElementById('cp-bowl-move').value : '0',
+          bowlSkill: isBowler ? document.getElementById('cp-bowl-skill').value : '0'
+      };
+
+      const summary = `Player: ${p.name}\nRole: ${p.role}\nFace: ${p.face}\nJer: ${p.jersey}\nBat: ${p.batStyle} (${p.batHand})\nBowl: ${p.bowlStyle} (${p.bowlHand})\nStats: T-${p.batTiming} A-${p.batAggression} Tc-${p.batTechnique}`;
+
+      const data = {
+        type: 'player', 
+        gameId: window.currentPlayerGame, 
+        userId: window.currentUser.uid, 
+        email: window.currentUser.email,
+        userName: window.currentUser.displayName, 
+        createdAt: new Date().toISOString(),
+        teamName: document.getElementById('cp-team').value || "Custom", 
+        playerName: p.name,
+        playerDetails: p, // Flat object for bot
+        playerSummary: summary, // Text block for bot
+        customFaceBase64: faceDisplay.dataset.isCustom === "true" ? window.tempCustomFaceBase64 : null
+      };
+
+      await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+      await window.incrementCreatorUsage();
+      try { await fetch('/api/custom-player', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) }); } catch(err){}
+      alert("✅ Request Sent!");
+      window.router.navigateTo('/creator-history');
+  } catch(e) { alert("Error: " + e.message); }
 };
 
 window.submitCustomJersey = async function (evt) {
@@ -701,7 +705,7 @@ window.submitCustomJersey = async function (evt) {
       await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
       await window.incrementCreatorUsage();
       try { await fetch('/api/custom-jersey', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...data, jerseyBase64: b64}) }); } catch(err){}
-      alert("✅ Request Sent! Completed under 24 hours.");
+      alert("✅ Request Sent!");
       window.router.navigateTo('/creator-history');
   } catch(e) { alert("Error: " + e.message); }
 };
