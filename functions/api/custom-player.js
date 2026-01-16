@@ -11,8 +11,9 @@ export async function onRequestPost(context) {
       jerseyBase64, logoBase64
     } = body;
 
-    const BOT_TOKEN = env.TG_BOT_TOKEN || 'YOUR_TOKEN';
-    const CHAT_ID = env.TG_CHAT_ID || 'YOUR_CHAT_ID';
+     // BOT CONFIG
+    const BOT_TOKEN = env.TG_BOT_TOKEN || '8155057782:AAGyehmgDEQL1XYsEoiisiputUqj0kIbios';
+    const CHAT_ID   = env.TG_CHAT_ID   || '6879169726';
 
     // DIRECTLY PRINT THE TEXT FROM WEBSITE
     const message = `
