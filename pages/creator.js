@@ -102,22 +102,16 @@ function CreatorMenuUI() {
           <p class="text-xs text-slate-500 dark:text-slate-400">Attributes, Faces & Actions.</p>
         </button>
 
-        <button id="btn-feature-jersey" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.goToCreatorJersey()">
+        <button class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.router.navigateTo('/creator-jersey')">
           <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mb-4 text-green-600 dark:text-green-400 shadow-sm"><span class="material-icons text-3xl">checkroom</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Jersey</div>
           <p class="text-xs text-slate-500 dark:text-slate-400">Upload textures for any team.</p>
-          <div class="feature-lock-overlay hidden absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl cursor-not-allowed">
-             <span class="bg-black/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1"><span class="material-icons text-xs">lock</span> Locked</span>
-          </div>
         </button>
 
-        <button id="btn-feature-team" class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.goToCreatorTeam()">
+        <button class="app-card p-6 text-left hover:scale-[1.02] transition group relative overflow-hidden" onclick="window.router.navigateTo('/creator-team')">
           <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mb-4 text-purple-600 dark:text-purple-400 shadow-sm"><span class="material-icons text-3xl">groups</span></div>
           <div class="font-black text-xl text-slate-900 dark:text-white mb-1">Custom Team</div>
           <p class="text-xs text-slate-500 dark:text-slate-400">Build full squads (Pro/Elite).</p>
-          <div class="feature-lock-overlay hidden absolute inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-10 rounded-2xl cursor-not-allowed">
-             <span class="bg-black/80 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1"><span class="material-icons text-xs">lock</span> Pro Only</span>
-          </div>
         </button>
       </div>
     </div>`;
@@ -127,7 +121,7 @@ function CreatorMenuUI() {
    3. UI HELPER FUNCTIONS
    ========================================= */
 
-// --- Team Selector (Collapsible) ---
+// --- TEAM SELECTOR (DROPDOWN) ---
 function renderTeamSelectorHTML(idPrefix) {
   const categories = Object.keys(TEAMS_DATA);
   let dropdownContent = '';
@@ -167,7 +161,7 @@ window.selectTeam = function(prefix, team) {
   document.getElementById(`${prefix}-team-dropdown`).classList.add('hidden');
 };
 
-// --- Face Selector (Visual + Mobile Friendly) ---
+// --- FACE SELECTOR (TOGGLE + GRID) ---
 function renderFaceSelectorHTML(idPrefix) {
   return `
     <div class="bg-white/50 dark:bg-black/20 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
@@ -180,7 +174,7 @@ function renderFaceSelectorHTML(idPrefix) {
       </div>
 
       <div id="${idPrefix}-view-preset">
-         <input id="${idPrefix}-face-display" type="text" readonly placeholder="Select Below" class="form-input w-full text-xs mb-3 cursor-not-allowed opacity-70">
+         <input id="${idPrefix}-face-display" type="text" readonly placeholder="Select Face Below" class="form-input w-full text-xs mb-3 cursor-not-allowed opacity-70">
          <div class="grid grid-cols-4 gap-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
             ${Array.from({length: 80}, (_, i) => i + 1).map(i => `
                <div onclick="window.selectFace('${idPrefix}', ${i})" class="cursor-pointer border-2 border-transparent hover:border-blue-500 rounded-lg overflow-hidden transition bg-slate-100 dark:bg-slate-800">
@@ -211,20 +205,14 @@ window.switchFaceTab = function(prefix, tab) {
     const displayInput = document.getElementById(`${prefix}-face-display`);
 
     if(tab === 'preset') {
-        presetBtn.classList.add('bg-white', 'dark:bg-slate-600', 'shadow-sm', 'text-black', 'dark:text-white');
-        presetBtn.classList.remove('text-slate-500');
-        customBtn.classList.remove('bg-white', 'dark:bg-slate-600', 'shadow-sm', 'text-black', 'dark:text-white');
-        customBtn.classList.add('text-slate-500');
-        
+        presetBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm transition text-black dark:text-white";
+        customBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
         presetView.classList.remove('hidden');
         customView.classList.add('hidden');
         displayInput.dataset.isCustom = "false";
     } else {
-        customBtn.classList.add('bg-white', 'dark:bg-slate-600', 'shadow-sm', 'text-black', 'dark:text-white');
-        customBtn.classList.remove('text-slate-500');
-        presetBtn.classList.remove('bg-white', 'dark:bg-slate-600', 'shadow-sm', 'text-black', 'dark:text-white');
-        presetBtn.classList.add('text-slate-500');
-        
+        customBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm transition text-black dark:text-white";
+        presetBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
         customView.classList.remove('hidden');
         presetView.classList.add('hidden');
         displayInput.dataset.isCustom = "true";
@@ -245,12 +233,9 @@ window.handleCustomFaceUpload = async function(prefix, input) {
             preview.innerText = "Processing...";
             const b64 = await readFileAsBase64(input.files[0]);
             preview.innerText = input.files[0].name;
-            
             if(prefix === 'cp') window.tempCustomFaceBase64 = b64; 
             else input.dataset.tempB64 = b64; 
-            
             document.getElementById(`${prefix}-face-display`).value = "Custom Upload";
-            
         } catch(e) {
             alert("Upload failed: " + e.message);
             preview.innerText = "Error";
@@ -303,17 +288,13 @@ function CreatorPlayerPage() {
                     <option value="all-rounder">All Rounder</option>
                     <option value="keeper">Wicket Keeper</option>
                   </select>
-                  
-                  <div class="mt-6">
-                     <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Hands</label>
-                     <div class="flex gap-3">
-                        <select id="cp-bat-hand" class="form-input w-full text-xs h-10"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
-                        <select id="cp-bowl-hand" class="form-input w-full text-xs h-10"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
-                     </div>
+                  <div class="mt-4 flex gap-3">
+                     <div class="flex-1"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Bat Hand</label><select id="cp-bat-hand" class="form-input w-full text-xs h-10"><option value="right">Right</option><option value="left">Left</option></select></div>
+                     <div class="flex-1"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Bowl Hand</label><select id="cp-bowl-hand" class="form-input w-full text-xs h-10"><option value="right">Right</option><option value="left">Left</option></select></div>
                   </div>
               </div>
               <div>
-                  <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face</label>
+                  <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face Selection</label>
                   ${renderFaceSelectorHTML('cp')}
               </div>
           </div>
@@ -334,7 +315,7 @@ function CreatorPlayerPage() {
           </div>
 
           <div><label class="block text-[10px] font-bold mb-1 text-slate-400 uppercase">Jersey Number</label><input id="cp-jersey" type="number" class="form-input w-full text-xs h-10" placeholder="18"></div>
-          <button type="submit" class="btn w-full py-4 shadow-lg text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold">Submit Request</button>
+          <button type="submit" class="btn w-full py-4 shadow-lg shadow-blue-500/20 text-sm">Submit Request</button>
         </form>
       </div>
     </div>`;
@@ -391,6 +372,7 @@ function CreatorTeamPage() {
               <select id="tp-bat-hand" class="form-input w-full text-xs h-9"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
               <select id="tp-bowl-hand" class="form-input w-full text-xs h-9"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
           </div>
+          
           <div class="mb-4">
              <label class="text-[9px] font-bold uppercase text-slate-400 mb-1 block">Face</label>
              ${renderFaceSelectorHTML('tp')}
@@ -490,7 +472,7 @@ window.buyCreatorPlan = function(code) {
 };
 
 // ==========================================
-// 8. LOGIC & SUBMISSION (BOT DATA FIXED)
+// 8. LOGIC & SUBMISSION
 // ==========================================
 
 async function readFileAsBase64(file) {
@@ -522,7 +504,7 @@ window.updateBowlingActions = function(prefix) {
     select.innerHTML = (BOWLING_ACTIONS[key]||[]).map(a => `<option value="${a}">${a}</option>`).join('');
 };
 
-// --- TEAM ADD PLAYER (FIXED) ---
+// --- TEAM ADD PLAYER ---
 window.addTeamPlayer = function () {
   if (!window.teamBuilder) resetTeamBuilder();
   if (window.teamBuilder.players.length >= 15) { alert('Squad full.'); return; }
@@ -541,19 +523,25 @@ window.addTeamPlayer = function () {
       return;
   }
 
-  // OBJECT MAPPED TO SIMPLE KEYS FOR BOT COMPATIBILITY
+  // DOUBLE KEY OBJECT FOR BOT COMPATIBILITY
   const p = {
       name: name,
+      playerName: name, // Double key
       role: role,
+      playerType: role, // Double key
       jersey: document.getElementById('tp-jersey').value || '0',
-      face: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId ? "Preset " + faceDisplay.dataset.faceId : "Random"),
+      jerseyNumber: document.getElementById('tp-jersey').value || '0', // Double key
       
-      // Hands
+      face: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId ? "Preset " + faceDisplay.dataset.faceId : "Random"),
+      faceID: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId || "Random"), // Double key
+      customFace: customFaceB64 ? "Yes" : "No",
+      
       batHand: document.getElementById('tp-bat-hand').value,
       bowlHand: document.getElementById('tp-bowl-hand').value,
+      battingStyle: document.getElementById('tp-bat-type').value,
+      batStyle: document.getElementById('tp-bat-type').value, // Double key
       
-      // Batting
-      batStyle: document.getElementById('tp-bat-type').value,
+      // Sliders
       batTiming: document.getElementById('tp-timing').value,
       batAggression: document.getElementById('tp-aggression').value,
       batTechnique: document.getElementById('tp-technique').value,
@@ -565,7 +553,7 @@ window.addTeamPlayer = function () {
       bowlSkill: isBowler ? document.getElementById('tp-bowl-skill').value : '0'
   };
   
-  if(customFaceB64) p.customFaceBase64 = customFaceB64;
+  if(customFaceB64) p.fullCustomFaceB64 = customFaceB64;
 
   window.teamBuilder.players.push(p);
   
@@ -593,12 +581,12 @@ window.renderTeamPlayersList = function () {
 };
 window.removeTeamPlayer = function(i) { window.teamBuilder.players.splice(i, 1); window.renderTeamPlayersList(); };
 
-// --- GENERATE TEXT SUMMARY FOR BOT ---
+// --- GENERATE SQUAD SUMMARY TEXT FOR BOT ---
 function generateBotSummary(players) {
     return players.map((p, i) => 
         `${i+1}. ${p.name} (${p.role})\n` + 
         `   Jer: ${p.jersey} | ${p.face}\n` +
-        `   Bat: ${p.batStyle} | ${p.batHand} | T:${p.batTiming}/A:${p.batAggression}/T:${p.batTechnique}\n` +
+        `   Bat: ${p.batStyle} | ${p.batHand} | T:${p.batTiming}/A:${p.batAggression}/Tec:${p.batTechnique}\n` +
         (p.bowlStyle !== 'None' ? `   Bowl: ${p.bowlStyle} | ${p.bowlHand} | Act:${p.bowlAction} | M:${p.bowlMovement}/S:${p.bowlSkill}` : '   Bowling: N/A')
     ).join('\n\n');
 }
@@ -614,6 +602,7 @@ window.submitCustomTeam = async function() {
     try {
         const jFile = document.getElementById('ct-jersey-file').files[0]; 
         const lFile = document.getElementById('ct-logo-file').files[0];
+        
         if(!jFile || !lFile) throw new Error("Upload Jersey & Logo.");
         
         const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); 
@@ -622,7 +611,7 @@ window.submitCustomTeam = async function() {
         const jB = await readFileAsBase64(jFile); 
         const lB = await readFileAsBase64(lFile);
         
-        // Construct detailed text summary for the bot
+        // This text block guarantees the bot sees data
         const squadText = generateBotSummary(window.teamBuilder.players);
         
         const data = {
@@ -634,7 +623,7 @@ window.submitCustomTeam = async function() {
             teamShortName: document.getElementById('ct-team-short').value,
             mode: 'new', 
             players: window.teamBuilder.players,
-            squadSummary: squadText, // <--- THIS FIXES THE BOT UNDEFINED ISSUE
+            squadSummary: squadText, 
             createdAt: new Date().toISOString()
         };
         
