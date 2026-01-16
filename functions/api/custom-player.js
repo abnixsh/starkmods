@@ -1,109 +1,40 @@
-// functions/api/custom-player.js
+// functions/api/custom-team.js
 
 export async function onRequestPost(context) {
   try {
     const { request, env } = context;
-    const body = await request.json().catch(() => ({}));
+    const body = await request.json();
 
-    // 1. Validate Inputs
-    if (!body.userId || !body.email || !body.playerName) {
-      return jsonResponse({ error: 'Missing required fields' }, 400);
-    }
+    const {
+      userId, email, userName,
+      teamName, squadSummary, // <--- THIS TEXT BLOCK IS KEY
+      jerseyBase64, logoBase64
+    } = body;
 
-    // 2. BOT CONFIG (Hardcoded as requested)
-    // We try 'env' first, but fall back to your hardcoded string if env is missing.
-    const BOT_TOKEN = env.TG_BOT_TOKEN || '8155057782:AAGyehmgDEQL1XYsEoiisiputUqj0kIbios';
-    const CHAT_ID   = env.TG_CHAT_ID   || '6879169726';
+    const BOT_TOKEN = env.TG_BOT_TOKEN || 'YOUR_TOKEN';
+    const CHAT_ID = env.TG_CHAT_ID || 'YOUR_CHAT_ID';
 
-    // 3. Format Message
-    const gameName = (body.gameId || 'RC25').toUpperCase();
-    
-    let skillDetails = '';
-    // Batting Skills
-    if (['batsman', 'keeper', 'all-rounder'].includes(body.playerType)) {
-      skillDetails += `
-🏏 <b>Batting:</b> ${body.batsmanType || '-'}
-   • Timing: ${body.timing || '-'} | Aggro: ${body.aggression || '-'} | Tech: ${body.technique || '-'}`;
-    }
-    // Bowling Skills
-    if (['bowler', 'all-rounder'].includes(body.playerType)) {
-      skillDetails += `
-⚾ <b>Bowling:</b> ${body.bowlerType || '-'} (${body.bowlingAction || '-'})
-   • Skill: ${body.bowlingSkill || '-'}`;
-    }
-
+    // DIRECTLY PRINT THE TEXT FROM WEBSITE
     const message = `
-🎨 <b>NEW CUSTOM PLAYER REQUEST</b>
+🆕 <b>NEW TEAM REQUEST</b>
 -----------------------------
-👤 <b>User:</b> ${body.userName || 'Unknown'} 
-📧 <b>Email:</b> ${body.email}
-🆔 <b>User ID:</b> <code>${body.userId}</code>
+👤 <b>User:</b> ${userName}
+📧 <b>Email:</b> ${email}
 -----------------------------
-🎮 <b>Game:</b> ${gameName}
-🏟 <b>Team:</b> ${body.teamName}
-⭐ <b>Player:</b> ${body.playerName}
-🎽 <b>Jersey:</b> #${body.jerseyNumber}
+🏏 <b>Team:</b> ${teamName}
 -----------------------------
-🎭 <b>Type:</b> ${body.playerType}
-🖐 <b>Hand:</b> ${body.battingHand} Bat / ${body.bowlingHand} Bowl
-${skillDetails}
+${squadSummary}
 -----------------------------
-🙂 <b>Face:</b> ${body.useCustomFace ? 'Custom (See File)' : (body.faceId ? 'Face ' + body.faceId : 'Default')}
 `;
 
-    // 4. Send Text Message
-    const textResp = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: CHAT_ID,
-        text: message,
-        parse_mode: 'HTML'
-      })
+      body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'HTML' })
     });
 
-    if (!textResp.ok) {
-      const err = await textResp.json();
-      console.error("Telegram Text Error:", err);
-      // Don't crash here, try sending image even if text fails (rare)
-    }
+    // Send Images logic here...
 
-    // 5. Send Face Image (if exists)
-    if (body.useCustomFace && body.customFaceBase64) {
-      try {
-        const imageBlob = base64ToBlob(body.customFaceBase64, body.customFaceMime);
-        const formData = new FormData();
-        formData.append('chat_id', CHAT_ID);
-        formData.append('document', imageBlob, 'custom_face.png');
-
-        await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
-          method: 'POST',
-          body: formData
-        });
-      } catch (imgErr) {
-        console.error('Image processing failed:', imgErr);
-      }
-    }
-
-    return jsonResponse({ success: true }, 200);
-
-  } catch (err) {
-    console.error('API Error:', err);
-    return jsonResponse({ error: err.message }, 500);
-  }
-}
-
-function jsonResponse(obj, status) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { 'Content-Type': 'application/json' }
-  });
-}
-
-function base64ToBlob(base64, type = 'image/png') {
-  const bin = atob(base64.replace(/^data:image\/\w+;base64,/, ""));
-  const len = bin.length;
-  const arr = new Uint8Array(len);
-  for (let i = 0; i < len; i++) arr[i] = bin.charCodeAt(i);
-  return new Blob([arr], { type });
+    return new Response(JSON.stringify({ success: true }));
+  } catch (e) { return new Response(JSON.stringify({ error: e.message }), { status: 500 }); }
 }
