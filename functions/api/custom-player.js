@@ -1,4 +1,4 @@
-// functions/api/custom-team.js
+// functions/api/custom-player.js
 
 export async function onRequestPost(context) {
   try {
@@ -7,24 +7,21 @@ export async function onRequestPost(context) {
 
     const {
       userId, email, userName,
-      teamName, squadSummary, // <--- THIS TEXT BLOCK IS KEY
-      jerseyBase64, logoBase64
+      playerName, playerSummary, // <--- THIS TEXT BLOCK IS KEY
+      customFaceBase64
     } = body;
 
-     // BOT CONFIG
-    const BOT_TOKEN = env.TG_BOT_TOKEN || '8155057782:AAGyehmgDEQL1XYsEoiisiputUqj0kIbios';
-    const CHAT_ID   = env.TG_CHAT_ID   || '6879169726';
+    const BOT_TOKEN = env.TG_BOT_TOKEN || 'YOUR_TOKEN';
+    const CHAT_ID = env.TG_CHAT_ID || 'YOUR_CHAT_ID';
 
-    // DIRECTLY PRINT THE TEXT FROM WEBSITE
     const message = `
-🆕 <b>NEW TEAM REQUEST</b>
+🆕 <b>NEW PLAYER REQUEST</b>
 -----------------------------
 👤 <b>User:</b> ${userName}
-📧 <b>Email:</b> ${email}
 -----------------------------
-🏏 <b>Team:</b> ${teamName}
+⭐ <b>Player:</b> ${playerName}
 -----------------------------
-${squadSummary}
+${playerSummary}
 -----------------------------
 `;
 
@@ -34,7 +31,7 @@ ${squadSummary}
       body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'HTML' })
     });
 
-    // Send Images logic here...
+    // Send Face Image logic here...
 
     return new Response(JSON.stringify({ success: true }));
   } catch (e) { return new Response(JSON.stringify({ error: e.message }), { status: 500 }); }
