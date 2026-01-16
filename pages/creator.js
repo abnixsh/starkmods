@@ -1,8 +1,8 @@
 // pages/creator.js
 
-// ==========================================
-// 1. CONFIGURATION & DATA
-// ==========================================
+/* =========================================
+   1. CONFIGURATION & DATA
+   ========================================= */
 
 const CREATOR_PLANS = {
   P100: { code: 'P100', name: 'Starter', priceINR: 100, maxRequests: 20, periodDays: 30 },
@@ -10,7 +10,7 @@ const CREATOR_PLANS = {
   P1000: { code: 'P1000', name: 'Elite', priceINR: 1000, maxRequests: null, periodDays: 60 }
 };
 
-const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; // Put your actual link
+const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; 
 
 const BOWLING_ACTIONS = {
   fast: ['Shaheen Afridi', 'Adam Milne', 'Mark Wood', 'Pat Cummins', 'Haris Rauf', 'Mitchell Starc', 'Jasprit Bumrah', 'Jofra Archer', 'Kagiso Rabada', 'Lasith Malinga'],
@@ -18,12 +18,22 @@ const BOWLING_ACTIONS = {
   spin: ['Glenn Maxwell', 'Ravindra Jadeja', 'Axar Patel', 'Keshav Maharaj', 'Maheesh Theekshana', 'Shadab Khan', 'Kuldeep Yadav', 'Ish Sodhi', 'Yuzvendra Chahal', 'Wanindu Hasaranga', 'Shane Warne', 'Adam Zampa']
 };
 
+// Data for Custom Player Dropdown
 const TEAMS_DATA = {
-  International: ["India", "Australia", "England", "Pakistan", "New Zealand", "South Africa", "West Indies", "Sri Lanka", "Bangladesh", "Afghanistan"],
-  IPL: ["CSK", "Mumbai Indians", "RCB", "KKR", "SRH", "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Lucknow Super Giants", "Gujarat Titans"],
-  PSL: ["Islamabad United", "Karachi Kings", "Lahore Qalandars", "Multan Sultans", "Peshawar Zalmi", "Quetta Gladiators"],
-  BBL: ["Adelaide Strikers", "Brisbane Heat", "Hobart Hurricanes", "Melbourne Renegades", "Melbourne Stars", "Perth Scorchers", "Sydney Sixers", "Sydney Thunder"],
-  Legends: ["India Legends", "World Giants", "Asia Lions"]
+  International: ["India", "Australia", "England", "West Indies", "Pakistan", "New Zealand", "Sri Lanka", "South Africa", "Bangladesh", "Afghanistan", "Scotland", "Namibia", "Netherlands", "PNG", "UAE", "USA", "Japan"],
+  Masters: ["India Legends", "Australia Legends", "England Legends", "Zimbabwe Legends", "Pakistan Legends", "NZ Legends", "West Indies Legends", "South Africa Legends"],
+  Leagues: {
+    IPL: ["CSK", "Mumbai Indians", "RCB", "KKR", "SRH", "Rajasthan Royals", "Delhi Capitals", "Punjab Kings", "Lucknow Super Giants", "Gujarat Titans"],
+    PSL: ["Islamabad United", "Karachi Kings", "Lahore Qalandars", "Multan Sultans", "Peshawar Zalmi", "Quetta Gladiators"],
+    BBL: ["Adelaide Strikers", "Brisbane Heat", "Hobart Hurricanes", "Melbourne Renegades", "Melbourne Stars", "Perth Scorchers", "Sydney Sixers", "Sydney Thunder"],
+    BPL: ["Comilla Victorians", "Rangpur Riders", "Sylhet Strikers", "Fortune Barishal", "Dhaka Dominators", "Chattogram Challengers", "Khulna Tigers"],
+    CPL: ["Barbados Royals", "Guyana Amazon Warriors", "Jamaica Tallawahs", "St Kitts & Nevis Patriots", "Saint Lucia Kings", "Trinbago Knight Riders"],
+    SA20: ["Durban's Super Giants", "Joburg Super Kings", "MI Cape Town", "Paarl Royals", "Pretoria Capitals", "Sunrisers Eastern Cape"],
+    ILT20: ["Abu Dhabi Knight Riders", "Desert Vipers", "Dubai Capitals", "Gulf Giants", "MI Emirates", "Sharjah Warriors"],
+    MLC: ["L.A. Knight Riders", "MI New York", "San Francisco Unicorns", "Seattle Orcas", "Texas Super Kings", "Washington Freedom"],
+    TheHundred: ["Birmingham Phoenix", "London Spirit", "Manchester Originals", "Northern Superchargers", "Oval Invincibles", "Southern Brave", "Trent Rockets", "Welsh Fire"],
+    IFL: ["India Invincibles", "Australia Avengers", "England Eagles", "NewZeland Nightmares", "Pakistan Panthers", "South Africa SuperNovas", "WestIndies Warriors"]
+  }
 };
 
 // --- GLOBAL STATE ---
@@ -31,15 +41,20 @@ window.creatorSub = null;
 window.currentPlayerGame = 'rc25';
 window.currentJerseyGame = 'rc25';
 window.teamBuilder = null;
-window.tempCustomFaceBase64 = null; // Stores Single Player custom face
+window.tempCustomFaceBase64 = null;
 
 function resetTeamBuilder() {
-  window.teamBuilder = { mode: 'new', teamName: '', teamShortName: '', players: [] };
+  window.teamBuilder = { 
+      mode: 'new', 
+      teamName: '', 
+      teamShortName: '', 
+      players: [] 
+  };
 }
 
-// ==========================================
-// 2. MAIN ROUTER & MENU
-// ==========================================
+/* =========================================
+   2. MAIN ROUTER & MENU
+   ========================================= */
 
 function CreatorPage() {
   const path = window.location.pathname;
@@ -109,31 +124,46 @@ function CreatorMenuUI() {
     </div>`;
 }
 
-// ==========================================
-// 3. UI HELPER FUNCTIONS
-// ==========================================
+/* =========================================
+   3. UI HELPER FUNCTIONS
+   ========================================= */
 
 // --- Team Selector (Collapsible) ---
+// Note: Only used for Custom Player now. Custom Team uses Manual Input.
 function renderTeamSelectorHTML(idPrefix) {
+  // Flattens the TEAMS_DATA object to handle nested "Leagues" object
+  const categories = Object.keys(TEAMS_DATA);
+  
+  let dropdownContent = '';
+  
+  categories.forEach(cat => {
+      if(Array.isArray(TEAMS_DATA[cat])) {
+          // Simple Category (International, Masters)
+          dropdownContent += `
+            <div class="border-b border-slate-100 dark:border-slate-700 last:border-0">
+                <div class="px-4 py-2 bg-slate-50 dark:bg-slate-700/50 text-[10px] font-bold uppercase text-slate-500 sticky top-0">${cat}</div>
+                ${TEAMS_DATA[cat].map(t => `<div onclick="window.selectTeam('${idPrefix}', '${t}')" class="px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer transition">${t}</div>`).join('')}
+            </div>`;
+      } else {
+          // Nested (Leagues -> IPL, PSL etc)
+          Object.keys(TEAMS_DATA[cat]).forEach(subCat => {
+              dropdownContent += `
+                <div class="border-b border-slate-100 dark:border-slate-700 last:border-0">
+                    <div class="px-4 py-2 bg-slate-50 dark:bg-slate-700/50 text-[10px] font-bold uppercase text-slate-500 sticky top-0">${subCat}</div>
+                    ${TEAMS_DATA[cat][subCat].map(t => `<div onclick="window.selectTeam('${idPrefix}', '${t}')" class="px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer transition">${t}</div>`).join('')}
+                </div>`;
+          });
+      }
+  });
+
   return `
     <div class="relative group">
       <input id="${idPrefix}-team" type="text" readonly placeholder="Select Team" 
              class="form-input w-full cursor-pointer bg-white/50 dark:bg-black/20"
              onclick="document.getElementById('${idPrefix}-team-dropdown').classList.toggle('hidden')">
       <span class="material-icons absolute right-3 top-3 text-slate-400 pointer-events-none">arrow_drop_down</span>
-      
       <div id="${idPrefix}-team-dropdown" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 mt-2 max-h-60 overflow-y-auto">
-        ${Object.keys(TEAMS_DATA).map(category => `
-          <div class="border-b border-slate-100 dark:border-slate-700 last:border-0">
-            <div class="px-4 py-2 bg-slate-50 dark:bg-slate-700/50 text-[10px] font-bold uppercase text-slate-500 sticky top-0">${category}</div>
-            ${TEAMS_DATA[category].map(t => `
-              <div onclick="window.selectTeam('${idPrefix}', '${t}')" 
-                   class="px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-blue-50 dark:hover:bg-slate-700 cursor-pointer transition">
-                ${t}
-              </div>
-            `).join('')}
-          </div>
-        `).join('')}
+        ${dropdownContent}
       </div>
     </div>`;
 }
@@ -194,9 +224,9 @@ window.handleCustomFaceUpload = async function(prefix, input) {
     }
 };
 
-// ==========================================
-// 4. CUSTOM PLAYER PAGE
-// ==========================================
+/* =========================================
+   4. CUSTOM PLAYER PAGE
+   ========================================= */
 
 function CreatorPlayerPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
@@ -234,7 +264,10 @@ function CreatorPlayerPage() {
               <div>
                   <label class="block text-xs font-bold mb-2 text-blue-600 uppercase">Role</label>
                   <select id="cp-type" class="form-input w-full font-bold" onchange="window.updateBowlingOptions('cp')">
-                    <option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">All Rounder</option><option value="keeper">Wicket Keeper</option>
+                    <option value="batsman">Batsman</option>
+                    <option value="bowler">Bowler</option>
+                    <option value="all-rounder">All Rounder</option>
+                    <option value="keeper">Wicket Keeper</option>
                   </select>
               </div>
               <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face</label>${renderFaceSelectorHTML('cp')}</div>
@@ -255,21 +288,21 @@ function CreatorPlayerPage() {
               <h3 class="text-xs font-black uppercase text-green-500 mb-4 flex items-center gap-1"><span class="material-icons text-sm">sports_baseball</span> Bowling Skill</h3>
               <div class="grid grid-cols-2 gap-4 mb-4">
                   <div><label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Style</label><select id="cp-bowl-type" class="form-input w-full text-xs" onchange="window.updateBowlingActions('cp')"><option value="fast">Fast</option><option value="medium">Medium</option><option value="spin">Spin</option></select></div>
-                  <div><label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Action</label><select id="cp-bowl-action" class="form-input w-full text-xs font-bold"></select></div>
+                  <div><label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">Action</label><select id="cp-bowl-action" class="form-input w-full text-xs font-bold text-slate-700 dark:text-white"></select></div>
               </div>
               <div class="space-y-4">${slider('cp-bowl-move', 'Movement', 'green')}${slider('cp-bowl-skill', 'Accuracy', 'orange')}</div>
           </div>
 
           <div><label class="block text-[10px] font-bold mb-1 text-slate-400 uppercase">Jersey Number</label><input id="cp-jersey" type="number" class="form-input w-full text-xs" placeholder="18"></div>
-          <button type="submit" class="btn w-full py-4 shadow-lg text-sm">Submit Request</button>
+          <button type="submit" class="btn w-full py-4 shadow-lg shadow-blue-500/20 text-sm">Submit Request</button>
         </form>
       </div>
     </div>`;
 }
 
-/* ==========================================
-   5. CUSTOM TEAM PAGE (FIXED "ADD BUTTON")
-   ========================================== */
+/* =========================================
+   5. CUSTOM TEAM PAGE (FIXED & MOBILE OPTIMIZED)
+   ========================================= */
 
 function CreatorTeamPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
@@ -292,7 +325,7 @@ function CreatorTeamPage() {
       <div class="app-card p-6 mb-6">
         <h2 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4 border-b border-slate-100 dark:border-slate-700 pb-2">Step 1: Details</h2>
         <div class="grid sm:grid-cols-2 gap-5 mb-4">
-           <div><label class="block text-xs font-bold mb-2 text-slate-500">Team Name</label>${renderTeamSelectorHTML('ct')}</div>
+           <div><label class="block text-xs font-bold mb-2 text-slate-500">Team Name</label><input id="ct-team-name" type="text" class="form-input w-full" placeholder="e.g. Stark XI"></div>
            <div><label class="block text-xs font-bold mb-2 text-slate-500">Short Name</label><input id="ct-team-short" type="text" maxlength="3" class="form-input w-full uppercase" placeholder="STK"></div>
         </div>
         <div class="grid sm:grid-cols-2 gap-4">
@@ -316,12 +349,12 @@ function CreatorTeamPage() {
           
           <div class="grid grid-cols-2 gap-3 mb-3">
               <div><label class="text-[9px] font-bold uppercase text-slate-400">Face</label>${renderFaceSelectorHTML('tp')}</div>
-              <div><label class="text-[9px] font-bold uppercase text-slate-400">Style</label><select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Bat: Bal</option><option value="radical">Bat: Rad</option><option value="brute">Bat: Bru</option><option value="defensive">Bat: Def</option></select></div>
+              <div><label class="text-[9px] font-bold uppercase text-slate-400">Bat Style</label><select id="tp-bat-type" class="form-input w-full text-xs"><option value="balanced">Bal</option><option value="radical">Rad</option><option value="brute">Bru</option><option value="defensive">Def</option></select></div>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
-              <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
-              <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
+              <select id="tp-bat-hand" class="form-input w-full text-xs"><option value="right">Bat R</option><option value="left">Bat L</option></select>
+              <select id="tp-bowl-hand" class="form-input w-full text-xs"><option value="right">Bowl R</option><option value="left">Bowl L</option></select>
           </div>
 
           <div class="grid sm:grid-cols-2 gap-4 mb-3 bg-white/50 dark:bg-black/20 p-3 rounded-lg border border-slate-200 dark:border-slate-600">
@@ -416,16 +449,18 @@ window.buyCreatorPlan = function(code) {
 };
 
 // ==========================================
-// 8. LOGIC & SUBMISSION (FLAT DATA FIX)
+// 8. LOGIC & SUBMISSION
 // ==========================================
 
-// File Upload
+// File Upload with Error Handling
 async function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
     if(!file) { reject(new Error("No file selected")); return; }
+    if(file.size > 2 * 1024 * 1024) { reject(new Error("File too large (Max 2MB)")); return; }
+    
     const reader = new FileReader();
     reader.onload = () => { if(reader.result) resolve(reader.result.split(',')[1]); else reject(new Error("Empty file")); };
-    reader.onerror = () => reject(new Error("File error"));
+    reader.onerror = () => reject(new Error("File read failed (Corrupted/Protected)"));
     reader.readAsDataURL(file);
   });
 }
@@ -475,19 +510,19 @@ window.addTeamPlayer = function () {
       bowlHand: document.getElementById('tp-bowl-hand').value,
       batStyle: document.getElementById('tp-bat-type').value,
       
-      // Sliders
+      // Sliders (Flat keys for bot)
       batTiming: document.getElementById('tp-timing').value,
       batAggression: document.getElementById('tp-aggression').value,
       batTechnique: document.getElementById('tp-technique').value,
       
-      // Bowling (Flat)
+      // Bowling (Flat keys)
       bowlStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'N/A',
       bowlAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A',
       bowlMovement: isBowler ? document.getElementById('tp-bowl-move').value : 'N/A',
       bowlSkill: isBowler ? document.getElementById('tp-bowl-skill').value : 'N/A'
   };
   
-  // Only store actual b64 if needed, but for list display we don't need it
+  // Only store actual b64 if needed
   if(customFaceB64) p.fullCustomFaceB64 = customFaceB64;
 
   window.teamBuilder.players.push(p);
@@ -543,7 +578,6 @@ window.submitCustomPlayer = async function (evt) {
         batHand: document.getElementById('cp-bat-hand').value,
         bowlHand: document.getElementById('cp-bowl-hand').value,
         
-        // FLATTENED FOR BOT
         battingStyle: document.getElementById('cp-bat-type').value,
         battingTiming: document.getElementById('cp-timing').value,
         battingAggression: document.getElementById('cp-aggression').value,
