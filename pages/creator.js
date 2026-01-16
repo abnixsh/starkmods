@@ -124,10 +124,10 @@ function CreatorMenuUI() {
 }
 
 /* =========================================
-   3. UI HELPER FUNCTIONS
+   3. UI HELPER COMPONENTS
    ========================================= */
 
-// --- TEAM SELECTOR (DROPDOWN) ---
+// --- TEAM SELECTOR ---
 function renderTeamSelectorHTML(idPrefix) {
   const categories = Object.keys(TEAMS_DATA);
   let dropdownContent = '';
@@ -167,15 +167,15 @@ window.selectTeam = function(prefix, team) {
   document.getElementById(`${prefix}-team-dropdown`).classList.add('hidden');
 };
 
-// --- FACE SELECTOR (VISUAL + UPLOAD) ---
+// --- FACE SELECTOR ---
 function renderFaceSelectorHTML(idPrefix) {
   return `
     <div class="bg-white/50 dark:bg-black/20 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
       <div class="flex items-center gap-2 mb-3">
          <label class="text-[10px] font-bold text-slate-500 uppercase flex-1">Face Type</label>
          <div class="flex bg-slate-200 dark:bg-slate-700 rounded-lg p-0.5">
-            <button type="button" onclick="window.switchFaceTab('${idPrefix}', 'preset')" id="${idPrefix}-btn-preset" class="px-4 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition">Preset</button>
-            <button type="button" onclick="window.switchFaceTab('${idPrefix}', 'custom')" id="${idPrefix}-btn-custom" class="px-4 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition">Custom</button>
+            <button type="button" onclick="window.switchFaceTab('${idPrefix}', 'preset')" id="${idPrefix}-btn-preset" class="px-3 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition">Preset</button>
+            <button type="button" onclick="window.switchFaceTab('${idPrefix}', 'custom')" id="${idPrefix}-btn-custom" class="px-3 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition">Custom</button>
          </div>
       </div>
 
@@ -185,7 +185,7 @@ function renderFaceSelectorHTML(idPrefix) {
             ${Array.from({length: 80}, (_, i) => i + 1).map(i => `
                <div onclick="window.selectFace('${idPrefix}', ${i})" class="cursor-pointer border-2 border-transparent hover:border-blue-500 rounded-lg overflow-hidden transition bg-slate-100 dark:bg-slate-800 relative">
                   <img src="assets/faces/face_${i}.png" class="w-full aspect-square object-cover" onerror="this.src='https://placehold.co/50?text=${i}'">
-                  <div class="absolute bottom-0 right-0 bg-black/60 text-white text-[8px] px-1">${i}</div>
+                  <div class="absolute bottom-0 right-0 bg-black/60 text-white text-[8px] px-1 font-bold">${i}</div>
                </div>
             `).join('')}
          </div>
@@ -205,20 +205,20 @@ function renderFaceSelectorHTML(idPrefix) {
 }
 
 window.switchFaceTab = function(prefix, tab) {
-    const presetBtn = document.getElementById(`${prefix}-btn-preset`);
-    const customBtn = document.getElementById(`${prefix}-btn-custom`);
     const presetView = document.getElementById(`${prefix}-view-preset`);
     const customView = document.getElementById(`${prefix}-view-custom`);
     const displayInput = document.getElementById(`${prefix}-face-display`);
+    const presetBtn = document.getElementById(`${prefix}-btn-preset`);
+    const customBtn = document.getElementById(`${prefix}-btn-custom`);
 
     if(tab === 'preset') {
-        presetBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition";
-        customBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
+        presetBtn.className = "px-3 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition";
+        customBtn.className = "px-3 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
         presetView.classList.remove('hidden'); customView.classList.add('hidden');
         displayInput.dataset.isCustom = "false";
     } else {
-        customBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition";
-        presetBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
+        customBtn.className = "px-3 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition";
+        presetBtn.className = "px-3 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
         customView.classList.remove('hidden'); presetView.classList.add('hidden');
         displayInput.dataset.isCustom = "true";
         displayInput.value = "Custom Upload"; 
@@ -301,10 +301,7 @@ function CreatorPlayerPage() {
                      </div>
                   </div>
               </div>
-              <div>
-                  <label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face</label>
-                  ${renderFaceSelectorHTML('cp')}
-              </div>
+              <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face Selection</label>${renderFaceSelectorHTML('cp')}</div>
           </div>
 
           <div class="bg-white/50 dark:bg-black/20 p-5 rounded-2xl border border-white/20 dark:border-white/5 backdrop-blur-md">
@@ -330,7 +327,7 @@ function CreatorPlayerPage() {
 }
 
 /* =========================================
-   5. CUSTOM TEAM PAGE (FIXED & MOBILE OPTIMIZED)
+   5. CUSTOM TEAM PAGE
    ========================================= */
 
 function CreatorTeamPage() {
@@ -341,7 +338,7 @@ function CreatorTeamPage() {
   const sliderCompact = (id, label, color) => `
     <div class="mb-3">
        <div class="flex justify-between mb-1"><span class="text-[9px] font-bold w-12 text-slate-500 uppercase">${label}</span> <span id="val-${id}" class="text-[9px] font-bold text-${color}-600">70</span></div>
-       <input id="${id}" type="range" min="1" max="100" value="70" oninput="document.getElementById('val-${id}').innerText = this.value" class="w-full h-3 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-${color}-500">
+       <input id="${id}" type="range" min="1" max="100" value="70" oninput="document.getElementById('val-${id}').innerText = this.value" class="w-full h-2 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-${color}-500">
     </div>`;
 
   return `
@@ -377,8 +374,8 @@ function CreatorTeamPage() {
           </div>
           
           <div class="grid grid-cols-2 gap-3 mb-4">
-              <select id="tp-bat-hand" class="form-input w-full text-xs h-10"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
-              <select id="tp-bowl-hand" class="form-input w-full text-xs h-10"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
+              <select id="tp-bat-hand" class="form-input w-full text-xs h-9"><option value="right">Bat Right</option><option value="left">Bat Left</option></select>
+              <select id="tp-bowl-hand" class="form-input w-full text-xs h-9"><option value="right">Bowl Right</option><option value="left">Bowl Left</option></select>
           </div>
           
           <div class="mb-4">
@@ -423,7 +420,7 @@ function CreatorTeamPage() {
 }
 
 // ==========================================
-// 6. JERSEY, HISTORY & PLANS
+// 6. JERSEY & HISTORY PAGES
 // ==========================================
 
 function CreatorJerseyPage() {
@@ -447,7 +444,6 @@ function CreatorJerseyPage() {
 function CreatorHistoryPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/'), 50); return ''; }
   if (window.historyUnsubscribe) window.historyUnsubscribe();
-  
   setTimeout(() => {
     const container = document.getElementById('creator-history');
     if(!container) return;
@@ -512,7 +508,7 @@ window.updateBowlingActions = function(prefix) {
     select.innerHTML = (BOWLING_ACTIONS[key]||[]).map(a => `<option value="${a}">${a}</option>`).join('');
 };
 
-// --- TEAM BUILDER ADD PLAYER ---
+// --- TEAM ADD PLAYER ---
 window.addTeamPlayer = function () {
   if (!window.teamBuilder) resetTeamBuilder();
   if (window.teamBuilder.players.length >= 15) { alert('Squad full.'); return; }
@@ -523,67 +519,48 @@ window.addTeamPlayer = function () {
   
   if (!name) { alert('Enter Player Name'); return; }
 
+  // Face Validation
   const faceDisplay = document.getElementById('tp-face-display');
   const customFaceB64 = document.getElementById('tp-face-file').dataset.tempB64 || null;
-  
   if (!faceDisplay.value && !customFaceB64) {
       alert("Please select a Face or Upload Custom Face.");
       return;
   }
 
-  // DOUBLE KEY OBJECT FOR BOT COMPATIBILITY
+  // --- FLOODING DATA KEYS (SENDING EVERYTHING) ---
   const p = {
-      name: name,
-      playerName: name,
-      role: role,
-      playerType: role,
-      jersey: document.getElementById('tp-jersey').value || '0',
-      jerseyNumber: document.getElementById('tp-jersey').value || '0',
+      // Identity
+      name: name, playerName: name,
+      role: role, playerType: role,
+      jersey: document.getElementById('tp-jersey').value || '0', jerseyNumber: document.getElementById('tp-jersey').value || '0',
       
       // Face
       face: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId ? "Face " + faceDisplay.dataset.faceId : "Random"),
       faceID: faceDisplay.dataset.isCustom === "true" ? "Custom" : (faceDisplay.dataset.faceId || "Random"),
       customFace: customFaceB64 ? "Yes" : "No",
       
-      // Hands (Duplicate Keys)
-      batHand: document.getElementById('tp-bat-hand').value,
-      battingHand: document.getElementById('tp-bat-hand').value, // DUPLICATE
+      // Hands
+      batHand: document.getElementById('tp-bat-hand').value, battingHand: document.getElementById('tp-bat-hand').value,
+      bowlHand: document.getElementById('tp-bowl-hand').value, bowlingHand: document.getElementById('tp-bowl-hand').value,
       
-      bowlHand: document.getElementById('tp-bowl-hand').value,
-      bowlingHand: document.getElementById('tp-bowl-hand').value, // DUPLICATE
+      // Batting
+      batStyle: document.getElementById('tp-bat-type').value, battingStyle: document.getElementById('tp-bat-type').value,
+      batTiming: document.getElementById('tp-timing').value, battingTiming: document.getElementById('tp-timing').value,
+      batAggression: document.getElementById('tp-aggression').value, battingAggression: document.getElementById('tp-aggression').value,
+      batTechnique: document.getElementById('tp-technique').value, battingTechnique: document.getElementById('tp-technique').value,
       
-      // Batting (Duplicate Keys)
-      batStyle: document.getElementById('tp-bat-type').value,
-      battingStyle: document.getElementById('tp-bat-type').value, // DUPLICATE
-      
-      batTiming: document.getElementById('tp-timing').value,
-      battingTiming: document.getElementById('tp-timing').value, // DUPLICATE
-      
-      batAggression: document.getElementById('tp-aggression').value,
-      battingAggression: document.getElementById('tp-aggression').value, // DUPLICATE
-      
-      batTechnique: document.getElementById('tp-technique').value,
-      battingTechnique: document.getElementById('tp-technique').value, // DUPLICATE
-      
-      // Bowling (Duplicate Keys)
-      bowlStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'N/A',
-      bowlingStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'N/A', // DUPLICATE
-      
-      bowlAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A',
-      bowlingAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A', // DUPLICATE
-      
-      bowlMovement: isBowler ? document.getElementById('tp-bowl-move').value : 'N/A',
-      bowlingMovement: isBowler ? document.getElementById('tp-bowl-move').value : 'N/A', // DUPLICATE
-      
-      bowlSkill: isBowler ? document.getElementById('tp-bowl-skill').value : 'N/A',
-      bowlingSkill: isBowler ? document.getElementById('tp-bowl-skill').value : 'N/A' // DUPLICATE
+      // Bowling
+      bowlStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'N/A', bowlingStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'N/A',
+      bowlAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A', bowlingAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A',
+      bowlMovement: isBowler ? document.getElementById('tp-bowl-move').value : 'N/A', bowlingMovement: isBowler ? document.getElementById('tp-bowl-move').value : 'N/A',
+      bowlSkill: isBowler ? document.getElementById('tp-bowl-skill').value : 'N/A', bowlingSkill: isBowler ? document.getElementById('tp-bowl-skill').value : 'N/A'
   };
   
   if(customFaceB64) p.fullCustomFaceB64 = customFaceB64;
 
   window.teamBuilder.players.push(p);
   
-  // Reset Form
+  // Clear inputs
   document.getElementById('tp-name').value = '';
   document.getElementById('tp-face-display').value = '';
   delete document.getElementById('tp-face-file').dataset.tempB64;
@@ -637,6 +614,7 @@ window.submitCustomTeam = async function() {
         
         const jB = await readFileAsBase64(jFile); 
         const lB = await readFileAsBase64(lFile);
+        
         const squadText = generateBotSummary(window.teamBuilder.players);
         
         const data = {
@@ -671,7 +649,7 @@ window.submitCustomPlayer = async function (evt) {
       const p = {
           name: document.getElementById('cp-name').value,
           role: document.getElementById('cp-type').value,
-          face: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId ? "Face " + faceDisplay.dataset.faceId : "Random"),
+          face: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId ? "Preset " + faceDisplay.dataset.faceId : "Random"),
           jersey: document.getElementById('cp-jersey').value,
           batHand: document.getElementById('cp-bat-hand').value,
           bowlHand: document.getElementById('cp-bowl-hand').value,
@@ -679,8 +657,8 @@ window.submitCustomPlayer = async function (evt) {
           batTiming: document.getElementById('cp-timing').value,
           batAggression: document.getElementById('cp-aggression').value,
           batTechnique: document.getElementById('cp-technique').value,
-          bowlStyle: isBowler ? document.getElementById('cp-bowl-type').value : 'N/A',
-          bowlAction: isBowler ? document.getElementById('cp-bowl-action').value : 'N/A',
+          bowlStyle: isBowler ? document.getElementById('cp-bowl-type').value : 'None',
+          bowlAction: isBowler ? document.getElementById('cp-bowl-action').value : 'None',
           bowlMovement: isBowler ? document.getElementById('cp-bowl-move').value : '0',
           bowlSkill: isBowler ? document.getElementById('cp-bowl-skill').value : '0'
       };
@@ -700,17 +678,19 @@ window.submitCustomPlayer = async function (evt) {
         playerSummary: summary, 
         customFaceBase64: faceDisplay.dataset.isCustom === "true" ? window.tempCustomFaceBase64 : null,
         
-        // --- DOUBLE KEYS FOR BOT SAFETY ---
-        playerType: p.role,
-        jerseyNumber: p.jersey,
-        battingHand: p.batHand,
-        bowlingHand: p.bowlHand,
-        battingStyle: p.batStyle,
-        battingTiming: p.batTiming,
-        battingAggression: p.batAggression,
-        battingTechnique: p.batTechnique,
-        bowlingStyle: p.bowlStyle,
-        bowlingAction: p.bowlAction
+        // --- DATA FLOODING (3-4 Keys per item) ---
+        playerType: p.role, role: p.role,
+        jerseyNumber: p.jersey, jersey: p.jersey,
+        battingHand: p.batHand, batHand: p.batHand,
+        bowlingHand: p.bowlHand, bowlHand: p.bowlHand,
+        battingStyle: p.batStyle, batStyle: p.batStyle, style: p.batStyle,
+        battingTiming: p.batTiming, batTiming: p.batTiming, timing: p.batTiming,
+        battingAggression: p.batAggression, batAggression: p.batAggression, aggression: p.batAggression,
+        battingTechnique: p.batTechnique, batTechnique: p.batTechnique, technique: p.batTechnique,
+        bowlingStyle: p.bowlStyle, bowlStyle: p.bowlStyle,
+        bowlingAction: p.bowlAction, bowlAction: p.bowlAction, action: p.bowlAction,
+        bowlingMovement: p.bowlMovement, bowlMovement: p.bowlMovement, movement: p.bowlMovement,
+        bowlingSkill: p.bowlSkill, bowlSkill: p.bowlSkill, skill: p.bowlSkill
       };
 
       await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
