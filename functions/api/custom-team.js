@@ -14,8 +14,9 @@ export async function onRequestPost(context) {
     } = body;
 
     // BOT CONFIG
-    const BOT_TOKEN = env.TG_BOT_TOKEN || 'YOUR_BOT_TOKEN';
-    const CHAT_ID   = env.TG_CHAT_ID   || 'YOUR_CHAT_ID';
+    const BOT_TOKEN = env.TG_BOT_TOKEN || '8155057782:AAGyehmgDEQL1XYsEoiisiputUqj0kIbios';
+    const CHAT_ID   = env.TG_CHAT_ID   || '6879169726';
+
 
     // Fallback if squadSummary is missing (should not happen with new frontend)
     const finalText = squadSummary || "No squad details provided.";
