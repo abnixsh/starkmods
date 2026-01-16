@@ -45,79 +45,47 @@ function resetTeamBuilder() {
 }
 
 /* =========================================
-   2. HELPER FUNCTIONS
+   2. HELPER FUNCTIONS (TEXT GENERATOR)
    ========================================= */
 
-// --- TEXT GENERATOR (Crucial for Bot) ---
-function generatePlayerStatsText(p) {
-    let bowlText = "   Bowling: N/A";
-    if (p.bowlStyle && p.bowlStyle !== 'N/A') {
-        bowlText = `   Bowl: ${p.bowlStyle} | ${p.bowlHand}\n` +
-                   `   Action: ${p.bowlAction} | Mov: ${p.bowlMovement} | Skl: ${p.bowlSkill}`;
+// This function creates the EXACT text for the bot
+function generateBotSummary(p, index) {
+    // Basic Info
+    let txt = `${index}) ${p.name} (${p.role})\n` +
+              `Jersey No- ${p.jersey}\n` +
+              `Batting hand - ${p.batHand}\n` +
+              `Bowling hand - ${p.bowlHand}\n` +
+              `face - ${p.face}\n`;
+
+    // Batting Skills
+    txt += `Type - ${p.batStyle}\n` +
+           `Timing - ${p.batTiming}\n` +
+           `Technique - ${p.batTechnique}\n` +
+           `Aggression - ${p.batAggression}`;
+
+    // Bowling Skills (Only if relevant)
+    if (p.role === 'Bowler' || p.role === 'All-Rounder') {
+        txt += `\nAction - ${p.bowlAction}\n` +
+               `Skill - ${p.bowlSkill}\n` +
+               `Movement - ${p.bowlMovement}\n` +
+               `Type - ${p.bowlStyle}`;
     }
-    return `Name: ${p.name} (${p.role})\n` +
-           `   Jersey: ${p.jersey} | Face: ${p.face}\n` +
-           `   Bat: ${p.batStyle} (${p.batHand})\n` +
-           `   Stats: Tim: ${p.batTiming} | Agg: ${p.batAggression} | Tec: ${p.batTechnique}\n` +
-           bowlText;
+    
+    return txt;
 }
 
-// --- FILE READER ---
 window.readFileAsBase64 = function(file) {
   return new Promise((resolve, reject) => {
     if(!file) { reject(new Error("No file selected")); return; }
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = () => reject(new Error("File error"));
+    reader.onerror = () => reject(new Error("File read error"));
     reader.readAsDataURL(file);
   });
-}
-
-// --- TEAM SELECTOR ---
-function renderTeamSelectorHTML(idPrefix) {
-  const categories = Object.keys(TEAMS_DATA);
-  let dropdownContent = categories.map(cat => {
-      if(Array.isArray(TEAMS_DATA[cat])) {
-          return `<div class="border-b border-slate-100 dark:border-slate-700 last:border-0"><div class="px-4 py-2 bg-slate-50 dark:bg-slate-700/50 text-[10px] font-bold uppercase text-slate-500 sticky top-0">${cat}</div>${TEAMS_DATA[cat].map(t => `<div onclick="window.selectTeam('${idPrefix}', '${t}')" class="px-4 py-2 text-xs cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700">${t}</div>`).join('')}</div>`;
-      } else {
-          return Object.keys(TEAMS_DATA[cat]).map(sub => `<div class="border-b border-slate-100 dark:border-slate-700 last:border-0"><div class="px-4 py-2 bg-slate-50 dark:bg-slate-700/50 text-[10px] font-bold uppercase text-slate-500 sticky top-0">${sub}</div>${TEAMS_DATA[cat][sub].map(t => `<div onclick="window.selectTeam('${idPrefix}', '${t}')" class="px-4 py-2 text-xs cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700">${t}</div>`).join('')}</div>`).join('');
-      }
-  }).join('');
-  return `<div class="relative group"><input id="${idPrefix}-team" type="text" readonly placeholder="Select Team" class="form-input w-full h-12" onclick="document.getElementById('${idPrefix}-team-dropdown').classList.toggle('hidden')"><div id="${idPrefix}-team-dropdown" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 mt-1 max-h-60 overflow-y-auto">${dropdownContent}</div></div>`;
-}
-window.selectTeam = function(p, t) { document.getElementById(`${p}-team`).value = t; document.getElementById(`${p}-team-dropdown`).classList.add('hidden'); };
-
-// --- FACE SELECTOR ---
-function renderFaceSelectorHTML(idPrefix) {
-  return `<div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700"><div class="flex gap-2 mb-3"><button type="button" onclick="window.switchFaceTab('${idPrefix}', 'preset')" id="${idPrefix}-btn-preset" class="flex-1 py-1.5 text-[10px] font-bold rounded bg-blue-600 text-white">Preset</button><button type="button" onclick="window.switchFaceTab('${idPrefix}', 'custom')" id="${idPrefix}-btn-custom" class="flex-1 py-1.5 text-[10px] font-bold rounded text-slate-500">Custom</button></div><div id="${idPrefix}-view-preset"><input id="${idPrefix}-face-display" type="text" readonly placeholder="Select Face" class="form-input w-full text-xs mb-2"><div class="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto custom-scrollbar">${Array.from({length: 80}, (_, i) => i + 1).map(i => `<div onclick="window.selectFace('${idPrefix}', ${i})" class="cursor-pointer border border-transparent hover:border-blue-500 rounded overflow-hidden bg-slate-200"><img src="assets/faces/face_${i}.png" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/50?text=${i}'"></div>`).join('')}</div></div><div id="${idPrefix}-view-custom" class="hidden text-center py-4"><label class="cursor-pointer text-xs font-bold text-blue-500 underline">Upload Photo<input id="${idPrefix}-face-file" type="file" accept="image/*" class="hidden" onchange="window.handleCustomFaceUpload('${idPrefix}', this)"></label><div id="${idPrefix}-custom-preview" class="text-[10px] text-slate-500 mt-2 truncate">No file</div></div></div>`;
-}
-window.switchFaceTab = function(p, t) { const pre = document.getElementById(`${p}-view-preset`), cus = document.getElementById(`${p}-view-custom`), btnP = document.getElementById(`${p}-btn-preset`), btnC = document.getElementById(`${p}-btn-custom`); if(t === 'preset') { pre.classList.remove('hidden'); cus.classList.add('hidden'); btnP.classList.add('bg-blue-600','text-white'); btnP.classList.remove('text-slate-500'); btnC.classList.remove('bg-blue-600','text-white'); document.getElementById(`${p}-face-display`).dataset.isCustom="false"; } else { cus.classList.remove('hidden'); pre.classList.add('hidden'); btnC.classList.add('bg-blue-600','text-white'); btnC.classList.remove('text-slate-500'); btnP.classList.remove('bg-blue-600','text-white'); document.getElementById(`${p}-face-display`).dataset.isCustom="true"; } };
-window.selectFace = function(p, id) { const d = document.getElementById(`${p}-face-display`); d.value = `${id}`; d.dataset.faceId = id; };
-window.handleCustomFaceUpload = async function(p, inp) { if(inp.files[0]) { try { const b64 = await window.readFileAsBase64(inp.files[0]); document.getElementById(`${p}-custom-preview`).innerText = inp.files[0].name; document.getElementById(`${p}-face-display`).value = "Custom Upload"; if(p === 'cp') window.tempCustomFaceBase64 = b64; else inp.dataset.tempB64 = b64; } catch(e) { alert(e.message); } } };
-
-// --- BOWLING OPTIONS LOGIC ---
-window.updateBowlingOptions = function(prefix) {
-    const role = document.getElementById(`${prefix}-type`).value;
-    const section = document.getElementById(`${prefix}-bowling-section`);
-    if(role === 'Bowler' || role === 'All-Rounder') {
-        section.classList.remove('hidden');
-        window.updateBowlingActions(prefix);
-    } else {
-        section.classList.add('hidden');
-    }
 };
-window.updateBowlingActions = function(prefix) {
-    const style = document.getElementById(`${prefix}-bowl-type`).value;
-    const select = document.getElementById(`${prefix}-bowl-action`);
-    let key = style === 'Fast' ? 'fast' : (style === 'Spin' ? 'spin' : 'medium');
-    select.innerHTML = (BOWLING_ACTIONS[key]||[]).map(a => `<option value="${a}">${a}</option>`).join('');
-};
-
-// --- NEW INPUT FIELD COMPONENT (0-100) ---
-const numInput = (id, label) => `<div><label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">${label}</label><input id="${id}" type="number" min="0" max="100" class="form-input w-full h-10 text-xs font-bold" placeholder="80"></div>`;
 
 /* =========================================
-   3. MAIN ROUTER & MENU
+   3. ROUTER & MENU
    ========================================= */
 
 function CreatorPage() {
@@ -156,7 +124,37 @@ function CreatorMenuUI() {
 }
 
 /* =========================================
-   4. CUSTOM PLAYER PAGE
+   4. UI HELPERS
+   ========================================= */
+
+function renderTeamSelectorHTML(idPrefix) {
+  const categories = Object.keys(TEAMS_DATA);
+  let content = categories.map(cat => {
+      if(Array.isArray(TEAMS_DATA[cat])) {
+          return `<div class="border-b border-slate-100 dark:border-slate-700 last:border-0"><div class="px-4 py-2 bg-slate-50 dark:bg-slate-700/50 text-[10px] font-bold uppercase text-slate-500 sticky top-0">${cat}</div>${TEAMS_DATA[cat].map(t => `<div onclick="window.selectTeam('${idPrefix}', '${t}')" class="px-4 py-2 text-xs cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700">${t}</div>`).join('')}</div>`;
+      } else {
+          return Object.keys(TEAMS_DATA[cat]).map(sub => `<div class="border-b border-slate-100 dark:border-slate-700 last:border-0"><div class="px-4 py-2 bg-slate-50 dark:bg-slate-700/50 text-[10px] font-bold uppercase text-slate-500 sticky top-0">${sub}</div>${TEAMS_DATA[cat][sub].map(t => `<div onclick="window.selectTeam('${idPrefix}', '${t}')" class="px-4 py-2 text-xs cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-700">${t}</div>`).join('')}</div>`).join('');
+      }
+  }).join('');
+  return `<div class="relative group"><input id="${idPrefix}-team" type="text" readonly placeholder="Select Team" class="form-input w-full h-12" onclick="document.getElementById('${idPrefix}-team-dropdown').classList.toggle('hidden')"><div id="${idPrefix}-team-dropdown" class="hidden absolute top-full left-0 w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 mt-1 max-h-60 overflow-y-auto">${content}</div></div>`;
+}
+window.selectTeam = function(p, t) { document.getElementById(`${p}-team`).value = t; document.getElementById(`${p}-team-dropdown`).classList.add('hidden'); };
+
+function renderFaceSelectorHTML(idPrefix) {
+  return `<div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700"><div class="flex gap-2 mb-3"><button type="button" onclick="window.switchFaceTab('${idPrefix}', 'preset')" id="${idPrefix}-btn-preset" class="flex-1 py-1.5 text-[10px] font-bold rounded bg-blue-600 text-white">Preset</button><button type="button" onclick="window.switchFaceTab('${idPrefix}', 'custom')" id="${idPrefix}-btn-custom" class="flex-1 py-1.5 text-[10px] font-bold rounded text-slate-500">Custom</button></div><div id="${idPrefix}-view-preset"><input id="${idPrefix}-face-display" type="text" readonly placeholder="Select Face" class="form-input w-full text-xs mb-2"><div class="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto custom-scrollbar">${Array.from({length: 80}, (_, i) => i + 1).map(i => `<div onclick="window.selectFace('${idPrefix}', ${i})" class="cursor-pointer border border-transparent hover:border-blue-500 rounded overflow-hidden bg-slate-200"><img src="assets/faces/face_${i}.png" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/50?text=${i}'"></div>`).join('')}</div></div><div id="${idPrefix}-view-custom" class="hidden text-center py-4"><label class="cursor-pointer text-xs font-bold text-blue-500 underline">Upload Photo<input id="${idPrefix}-face-file" type="file" accept="image/*" class="hidden" onchange="window.handleCustomFaceUpload('${idPrefix}', this)"></label><div id="${idPrefix}-custom-preview" class="text-[10px] text-slate-500 mt-2 truncate">No file</div></div></div>`;
+}
+window.switchFaceTab = function(p, t) { const pre = document.getElementById(`${p}-view-preset`), cus = document.getElementById(`${p}-view-custom`), btnP = document.getElementById(`${p}-btn-preset`), btnC = document.getElementById(`${p}-btn-custom`); if(t === 'preset') { pre.classList.remove('hidden'); cus.classList.add('hidden'); btnP.classList.add('bg-blue-600','text-white'); btnP.classList.remove('text-slate-500'); btnC.classList.remove('bg-blue-600','text-white'); document.getElementById(`${p}-face-display`).dataset.isCustom="false"; } else { cus.classList.remove('hidden'); pre.classList.add('hidden'); btnC.classList.add('bg-blue-600','text-white'); btnC.classList.remove('text-slate-500'); btnP.classList.remove('bg-blue-600','text-white'); document.getElementById(`${p}-face-display`).dataset.isCustom="true"; } };
+window.selectFace = function(p, id) { const d = document.getElementById(`${p}-face-display`); d.value = `${id}`; d.dataset.faceId = id; };
+window.handleCustomFaceUpload = async function(p, inp) { if(inp.files[0]) { try { const b64 = await window.readFileAsBase64(inp.files[0]); document.getElementById(`${p}-custom-preview`).innerText = inp.files[0].name; document.getElementById(`${p}-face-display`).value = "Custom Upload"; if(p === 'cp') window.tempCustomFaceBase64 = b64; else inp.dataset.tempB64 = b64; } catch(e) { alert(e.message); } } };
+
+window.updateBowlingOptions = function(p) { const r = document.getElementById(`${p}-type`).value; const s = document.getElementById(`${p}-bowling-section`); if(['Bowler','All-Rounder'].includes(r)) { s.classList.remove('hidden'); window.updateBowlingActions(p); } else { s.classList.add('hidden'); } };
+window.updateBowlingActions = function(p) { const s = document.getElementById(`${p}-bowl-type`).value; const sel = document.getElementById(`${p}-bowl-action`); const k = s === 'Fast' ? 'fast' : (s === 'Spin' ? 'spin' : 'medium'); sel.innerHTML = (BOWLING_ACTIONS[k]||[]).map(a => `<option value="${a}">${a}</option>`).join(''); };
+
+// --- INPUT FIELD (0-100) ---
+const numInput = (id, label) => `<div><label class="block text-[10px] font-bold mb-1 text-slate-500 uppercase">${label}</label><input id="${id}" type="number" min="0" max="100" class="form-input w-full h-10 text-xs font-bold" placeholder="99"></div>`;
+
+/* =========================================
+   5. CUSTOM PLAYER PAGE
    ========================================= */
 
 function CreatorPlayerPage() {
@@ -191,7 +189,7 @@ function CreatorTeamPage() {
   if (!window.currentUser) { setTimeout(() => window.router.navigateTo('/creator'), 50); return ''; }
   if (!window.teamBuilder) resetTeamBuilder();
   
-  const numInputCompact = (id, label) => `<div><label class="text-[9px] font-bold text-slate-500 uppercase mb-1 block">${label}</label><input id="${id}" type="number" min="0" max="100" class="form-input w-full h-10 text-xs font-bold" placeholder="80"></div>`;
+  const numInputCompact = (id, label) => `<div><label class="text-[9px] font-bold text-slate-500 uppercase mb-1 block">${label}</label><input id="${id}" type="number" min="0" max="100" class="form-input w-full h-10 text-xs font-bold" placeholder="99"></div>`;
 
   return `
     <div class="max-w-4xl mx-auto pb-24 px-4 pt-6">
@@ -251,19 +249,20 @@ window.addTeamPlayer = function() {
         batHand: document.getElementById('tp-bat-hand').value,
         bowlHand: document.getElementById('tp-bowl-hand').value,
         batStyle: document.getElementById('tp-bat-type').value,
-        // INPUTS (DEFAULT 80 IF EMPTY)
         batTiming: document.getElementById('tp-timing').value || '80',
         batAggression: document.getElementById('tp-aggression').value || '80',
         batTechnique: document.getElementById('tp-technique').value || '80',
         bowlStyle: isBowler ? document.getElementById('tp-bowl-type').value : 'N/A',
         bowlAction: isBowler ? document.getElementById('tp-bowl-action').value : 'N/A',
-        bowlMovement: isBowler ? document.getElementById('tp-bowl-move').value || '80' : '0',
-        bowlSkill: isBowler ? document.getElementById('tp-bowl-skill').value || '80' : '0'
+        bowlMovement: isBowler ? document.getElementById('tp-bowl-move').value || '0' : '0',
+        bowlSkill: isBowler ? document.getElementById('tp-bowl-skill').value || '0' : '0'
     };
     
-    if(customFaceB64) p.customFaceBase64 = customFaceB64;
+    if(customFaceB64) p.fullCustomFaceB64 = customFaceB64;
+    
     window.teamBuilder.players.push(p);
     
+    // Clear inputs
     document.getElementById('tp-name').value = '';
     document.getElementById('tp-face-display').value = '';
     delete document.getElementById('tp-face-file').dataset.tempB64;
@@ -282,7 +281,7 @@ window.renderTeamPlayersList = function() {
 };
 window.removeTeamPlayer = function(i) { window.teamBuilder.players.splice(i, 1); window.renderTeamPlayersList(); };
 
-// --- SUBMIT TEAM ---
+// --- SUBMIT TEAM (TEXT GENERATION) ---
 window.submitCustomTeam = async function() {
     if(!window.checkCreatorSubForTeam()) return;
     const tName = document.getElementById('ct-team-name').value.trim();
@@ -292,19 +291,18 @@ window.submitCustomTeam = async function() {
         const j = document.getElementById('ct-jersey-file').files[0];
         const l = document.getElementById('ct-logo-file').files[0];
         const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); if(btn) btn.disabled = true;
-        
         let jB = null, lB = null;
         if(j) jB = await window.readFileAsBase64(j);
         if(l) lB = await window.readFileAsBase64(l);
         
-        // --- PRE-FORMATTED TEXT FOR BOT (FIXED) ---
-        const summary = window.teamBuilder.players.map(p => generatePlayerStatsText(p)).join('\n\n----------------\n\n');
+        // --- THIS TEXT BLOCK IS SENT TO BOT ---
+        const summary = window.teamBuilder.players.map((p, i) => generateBotSummary(p, i+1)).join('\n\n----------------\n\n');
         
         const data = {
             type: 'team', userId: window.currentUser.uid, email: window.currentUser.email, userName: window.currentUser.displayName,
             teamName: tName, teamShortName: document.getElementById('ct-team-short').value,
             mode: 'new', players: window.teamBuilder.players, 
-            botMessage: summary, // Use this key in your bot
+            squadSummary: summary, // FOR BOT
             createdAt: new Date().toISOString()
         };
         
@@ -312,7 +310,7 @@ window.submitCustomTeam = async function() {
         await window.incrementCreatorUsage();
         try { await fetch('/api/custom-team', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({...data, jerseyBase64: jB, logoBase64: lB}) }); } catch(err){}
         alert("✅ Request Sent!"); window.router.navigateTo('/creator-history');
-    } catch(e) { alert("Error: " + e.message); const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); if(btn) btn.disabled = false; }
+    } catch(e) { alert(e.message); const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); if(btn) btn.disabled = false; }
 };
 
 // --- SUBMIT PLAYER ---
@@ -320,8 +318,8 @@ window.submitCustomPlayer = async function (evt) {
   evt.preventDefault();
   if (!window.checkCreatorSubBeforeRequest()) return;
   try {
-      const faceDisplay = document.getElementById('cp-face-display');
       const isBowler = ['Bowler', 'All-Rounder'].includes(document.getElementById('cp-type').value);
+      const faceDisplay = document.getElementById('cp-face-display');
       
       const p = {
           name: document.getElementById('cp-name').value, role: document.getElementById('cp-type').value,
@@ -334,17 +332,18 @@ window.submitCustomPlayer = async function (evt) {
           batTechnique: document.getElementById('cp-technique').value || '80',
           bowlStyle: isBowler ? document.getElementById('cp-bowl-type').value : 'N/A',
           bowlAction: isBowler ? document.getElementById('cp-bowl-action').value : 'N/A',
-          bowlMovement: isBowler ? document.getElementById('cp-bowl-move').value || '80' : '0',
-          bowlSkill: isBowler ? document.getElementById('cp-bowl-skill').value || '80' : '0'
+          bowlMovement: isBowler ? document.getElementById('cp-bowl-move').value || '0' : '0',
+          bowlSkill: isBowler ? document.getElementById('cp-bowl-skill').value || '0' : '0'
       };
 
-      const summary = generatePlayerStatsText(p); // Generate Perfect Text
-      
+      const summary = generateBotSummary(p, 1); // Generate Text
+
       const data = {
         type: 'player', gameId: window.currentPlayerGame, userId: window.currentUser.uid, email: window.currentUser.email,
         userName: window.currentUser.displayName, createdAt: new Date().toISOString(),
         teamName: document.getElementById('cp-team').value || "Custom", playerName: p.name,
-        playerDetails: p, botMessage: summary, // Use this key
+        playerDetails: p, 
+        playerSummary: summary, // FOR BOT
         customFaceBase64: faceDisplay.dataset.isCustom === "true" ? window.tempCustomFaceBase64 : null
       };
 
