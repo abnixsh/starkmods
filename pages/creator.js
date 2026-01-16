@@ -10,6 +10,8 @@ const CREATOR_PLANS = {
   P1000: { code: 'P1000', name: 'Elite', priceINR: 1000, maxRequests: null, periodDays: 60 }
 };
 
+const JERSEY_TESTER_LINK = 'https://www.mediafire.com/'; 
+
 const BOWLING_ACTIONS = {
   fast: ['Shaheen Afridi', 'Adam Milne', 'Mark Wood', 'Pat Cummins', 'Haris Rauf', 'Mitchell Starc', 'Jasprit Bumrah', 'Jofra Archer', 'Kagiso Rabada', 'Lasith Malinga'],
   medium: ['Arshdeep Singh', 'Hardik Pandya', 'Paul Collingwood', 'Bhuvneshwar Kumar', 'Shane Watson'],
@@ -41,7 +43,12 @@ window.teamBuilder = null;
 window.tempCustomFaceBase64 = null;
 
 function resetTeamBuilder() {
-  window.teamBuilder = { mode: 'new', teamName: '', teamShortName: '', players: [] };
+  window.teamBuilder = { 
+      mode: 'new', 
+      teamName: '', 
+      teamShortName: '', 
+      players: [] 
+  };
 }
 
 /* =========================================
@@ -120,7 +127,7 @@ function CreatorMenuUI() {
    3. UI HELPER COMPONENTS
    ========================================= */
 
-// --- TEAM SELECTOR (CUSTOM PLAYER) ---
+// --- TEAM SELECTOR (DROPDOWN) ---
 function renderTeamSelectorHTML(idPrefix) {
   const categories = Object.keys(TEAMS_DATA);
   let dropdownContent = '';
@@ -174,13 +181,13 @@ window.switchFaceTab = function(prefix, tab) {
     const customBtn = document.getElementById(`${prefix}-btn-custom`);
 
     if(tab === 'preset') {
-        presetBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition";
-        customBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
+        presetBtn.className = "px-3 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition";
+        customBtn.className = "px-3 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
         presetView.classList.remove('hidden'); customView.classList.add('hidden');
         displayInput.dataset.isCustom = "false";
     } else {
-        customBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition";
-        presetBtn.className = "px-4 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
+        customBtn.className = "px-3 py-1.5 text-[10px] font-bold rounded-md bg-white dark:bg-slate-600 shadow-sm text-black dark:text-white transition";
+        presetBtn.className = "px-3 py-1.5 text-[10px] font-bold rounded-md text-slate-500 transition";
         customView.classList.remove('hidden'); presetView.classList.add('hidden');
         displayInput.dataset.isCustom = "true";
         displayInput.value = "Custom Upload"; 
@@ -189,7 +196,7 @@ window.switchFaceTab = function(prefix, tab) {
 
 window.selectFace = function(prefix, id) {
     const disp = document.getElementById(`${prefix}-face-display`);
-    disp.value = `${id}`; disp.dataset.faceId = id; 
+    disp.value = `ID: ${id}`; disp.dataset.faceId = id; 
 };
 
 window.handleCustomFaceUpload = async function(prefix, input) {
@@ -231,7 +238,7 @@ function CreatorPlayerPage() {
               <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Player Name</label><input id="cp-name" type="text" class="form-input w-full h-12" placeholder="Enter Name"></div>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div><label class="block text-xs font-bold mb-2 text-blue-600 uppercase">Role</label><select id="cp-type" class="form-input w-full font-bold h-12" onchange="window.updateBowlingOptions('cp')"><option value="batsman">Batsman</option><option value="bowler">Bowler</option><option value="all-rounder">All Rounder</option><option value="keeper">Wicket Keeper</option></select><div class="mt-6"><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Hands</label><div class="flex gap-3"><select id="cp-bat-hand" class="form-input w-full text-xs h-10"><option value="Right">Bat Right</option><option value="Left">Bat Left</option></select><select id="cp-bowl-hand" class="form-input w-full text-xs h-10"><option value="Right">Bowl Right</option><option value="Left">Bowl Left</option></select></div></div></div>
+              <div><label class="block text-xs font-bold mb-2 text-blue-600 uppercase">Role</label><select id="cp-type" class="form-input w-full font-bold h-12" onchange="window.updateBowlingOptions('cp')"><option value="Batsman">Batsman</option><option value="Bowler">Bowler</option><option value="All-Rounder">All Rounder</option><option value="Keeper">Wicket Keeper</option></select><div class="mt-6"><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Hands</label><div class="flex gap-3"><select id="cp-bat-hand" class="form-input w-full text-xs h-10"><option value="Right">Bat Right</option><option value="Left">Bat Left</option></select><select id="cp-bowl-hand" class="form-input w-full text-xs h-10"><option value="Right">Bowl Right</option><option value="Left">Bowl Left</option></select></div></div></div>
               <div><label class="block text-xs font-bold mb-2 text-slate-500 uppercase">Face</label>${renderFaceSelectorHTML('cp')}</div>
           </div>
           <div class="bg-white/50 dark:bg-black/20 p-5 rounded-2xl border border-white/20 dark:border-white/5 backdrop-blur-md">
@@ -252,7 +259,7 @@ function CreatorPlayerPage() {
 }
 
 /* =========================================
-   5. CUSTOM TEAM PAGE (FULL MOBILE POPUP)
+   5. CUSTOM TEAM PAGE (SCROLLABLE MODAL)
    ========================================= */
 
 function CreatorTeamPage() {
@@ -278,60 +285,32 @@ function CreatorTeamPage() {
       <button onclick="window.submitCustomTeam()" class="btn w-full py-4 shadow-xl shadow-purple-500/20 text-sm font-black tracking-wide bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-2xl">SUBMIT TEAM REQUEST</button>
     </div>
 
-    <div id="player-modal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 hidden flex flex-col justify-end sm:justify-center animate-fade-in overflow-y-auto">
-       <div class="bg-white dark:bg-slate-900 w-full max-w-lg mx-auto min-h-[85vh] sm:min-h-0 sm:rounded-3xl p-6 relative shadow-2xl rounded-t-3xl">
-          <button onclick="window.closePlayerModal()" class="absolute top-4 right-4 bg-slate-100 dark:bg-slate-800 p-2 rounded-full text-slate-500 hover:bg-red-100 hover:text-red-500 transition"><span class="material-icons">close</span></button>
-          <h3 class="text-xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-2"><span class="material-icons text-blue-600">person_add</span> Add Player</h3>
+    <div id="player-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+       <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="window.closePlayerModal()"></div>
+       <div class="relative bg-white dark:bg-slate-900 w-full max-w-lg rounded-3xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden">
           
-          <div class="space-y-5 pb-10">
-             <div class="grid grid-cols-2 gap-4">
-                <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Name</label><input id="tp-name" type="text" class="form-input w-full font-bold h-12" placeholder="Player Name"></div>
-                <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Jersey</label><input id="tp-jersey" type="number" class="form-input w-full h-12" placeholder="No."></div>
-             </div>
-             
-             <div>
-                <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Role</label>
-                <select id="tp-type" class="form-input w-full font-bold h-12" onchange="window.updateBowlingOptions('tp')">
-                    <option value="Batsman">Batsman</option>
-                    <option value="Bowler">Bowler</option>
-                    <option value="All-Rounder">All-Rounder</option>
-                    <option value="Keeper">Wicket Keeper</option>
-                </select>
-             </div>
+          <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 z-10">
+             <h3 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2"><span class="material-icons text-blue-600">person_add</span> Add Player</h3>
+             <button onclick="window.closePlayerModal()" class="bg-slate-100 dark:bg-slate-800 p-2 rounded-full text-slate-500"><span class="material-icons">close</span></button>
+          </div>
 
-             <div class="grid grid-cols-2 gap-4">
-                <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Bat Hand</label><select id="tp-bat-hand" class="form-input w-full text-xs h-10"><option value="Right">Right</option><option value="Left">Left</option></select></div>
-                <div><label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Bowl Hand</label><select id="tp-bowl-hand" class="form-input w-full text-xs h-10"><option value="Right">Right</option><option value="Left">Left</option></select></div>
-             </div>
-
-             <div>
-                <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Face ID (Required)</label>
-                ${renderFaceSelectorHTML('tp')}
-             </div>
-
+          <div class="p-5 overflow-y-auto custom-scrollbar space-y-5">
+             <div class="grid grid-cols-2 gap-4"><input id="tp-name" type="text" class="form-input w-full font-bold h-12" placeholder="Player Name"><input id="tp-jersey" type="number" class="form-input w-full h-12" placeholder="Jersey No."></div>
+             <select id="tp-type" class="form-input w-full font-bold h-12" onchange="window.updateBowlingOptions('tp')"><option value="Batsman">Batsman</option><option value="Bowler">Bowler</option><option value="All-Rounder">All-Rounder</option><option value="Keeper">Wicket Keeper</option></select>
+             <div class="grid grid-cols-2 gap-4"><select id="tp-bat-hand" class="form-input w-full text-xs h-10"><option value="Right">Bat Right</option><option value="Left">Bat Left</option></select><select id="tp-bowl-hand" class="form-input w-full text-xs h-10"><option value="Right">Bowl Right</option><option value="Left">Bowl Left</option></select></div>
+             <div><label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block">Face</label>${renderFaceSelectorHTML('tp')}</div>
              <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-                <div class="flex justify-between mb-4 items-center">
-                   <span class="text-xs font-black text-blue-600 uppercase flex items-center gap-1"><span class="material-icons text-sm">sports_cricket</span> Batting</span>
-                   <select id="tp-bat-type" class="text-[10px] bg-white dark:bg-slate-600 rounded-lg px-2 py-1.5 font-bold"><option value="Balanced">Balanced</option><option value="Radical">Radical</option><option value="Brute">Brute</option><option value="Defensive">Defensive</option></select>
-                </div>
-                ${sliderCompact('tp-timing', 'Timing', 'blue')}
-                ${sliderCompact('tp-aggression', 'Aggression', 'red')}
-                ${sliderCompact('tp-technique', 'Technique', 'purple')}
+                <div class="flex justify-between mb-4 items-center"><span class="text-xs font-black text-blue-600 uppercase flex items-center gap-1"><span class="material-icons text-sm">sports_cricket</span> Batting</span><select id="tp-bat-type" class="text-[10px] bg-white dark:bg-slate-600 rounded-lg px-2 py-1.5 font-bold"><option value="Balanced">Balanced</option><option value="Radical">Radical</option><option value="Brute">Brute</option><option value="Defensive">Defensive</option></select></div>
+                ${sliderCompact('tp-timing', 'Time', 'blue')}${sliderCompact('tp-aggression', 'Aggr', 'red')}${sliderCompact('tp-technique', 'Tech', 'purple')}
              </div>
-
              <div id="tp-bowling-section" class="hidden bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-                <div class="flex justify-between mb-4 items-center">
-                   <span class="text-xs font-black text-green-600 uppercase flex items-center gap-1"><span class="material-icons text-sm">sports_baseball</span> Bowling</span>
-                   <div class="flex gap-2">
-                      <select id="tp-bowl-type" class="text-[10px] bg-white dark:bg-slate-600 rounded-lg px-2 py-1.5 font-bold w-16" onchange="window.updateBowlingActions('tp')"><option value="Fast">Fast</option><option value="Medium">Med</option><option value="Spin">Spin</option></select>
-                      <select id="tp-bowl-action" class="text-[10px] bg-white dark:bg-slate-600 rounded-lg px-2 py-1.5 font-bold w-20"></select>
-                   </div>
-                </div>
-                ${sliderCompact('tp-bowl-move', 'Movement', 'green')}
-                ${sliderCompact('tp-bowl-skill', 'Skill', 'orange')}
+                <div class="flex justify-between mb-4 items-center"><span class="text-xs font-black text-green-600 uppercase flex items-center gap-1"><span class="material-icons text-sm">sports_baseball</span> Bowling</span><div class="flex gap-2"><select id="tp-bowl-type" class="text-[10px] bg-white dark:bg-slate-600 rounded-lg px-2 py-1.5 font-bold w-16" onchange="window.updateBowlingActions('tp')"><option value="Fast">Fast</option><option value="Medium">Med</option><option value="Spin">Spin</option></select><select id="tp-bowl-action" class="text-[10px] bg-white dark:bg-slate-600 rounded-lg px-2 py-1.5 font-bold w-20"></select></div></div>
+                ${sliderCompact('tp-bowl-move', 'Movement', 'green')}${sliderCompact('tp-bowl-skill', 'Skill', 'orange')}
              </div>
+          </div>
 
-             <button onclick="window.addTeamPlayer()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-600/30 text-lg tracking-wide">Add Player</button>
+          <div class="p-4 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 z-10">
+             <button onclick="window.addTeamPlayer()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-600/30 text-lg tracking-wide">Confirm Player</button>
           </div>
        </div>
     </div>`;
@@ -390,7 +369,6 @@ window.buyCreatorPlan = function(code) {
 async function readFileAsBase64(file) {
   return new Promise((resolve, reject) => {
     if(!file) { reject(new Error("No file selected")); return; }
-    if(file.size > 2 * 1024 * 1024) { reject(new Error("File too large (Max 2MB)")); return; }
     const reader = new FileReader();
     reader.onload = () => { if(reader.result) resolve(reader.result.split(',')[1]); else reject(new Error("Empty file")); };
     reader.onerror = () => reject(new Error("File error"));
@@ -434,16 +412,17 @@ window.addTeamPlayer = function () {
   const customFaceB64 = document.getElementById('tp-face-file').dataset.tempB64 || null;
   if (!faceDisplay.value && !customFaceB64) { alert("Select Face"); return; }
 
+  // --- DATA OBJECT ---
   const p = {
       name: name,
       role: role,
       jersey: document.getElementById('tp-jersey').value || '0',
-      face: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId || "Random"),
+      face: faceDisplay.dataset.isCustom === "true" ? "Custom" : (faceDisplay.dataset.faceId ? "Face " + faceDisplay.dataset.faceId : "Random"),
       
       batHand: document.getElementById('tp-bat-hand').value,
       bowlHand: document.getElementById('tp-bowl-hand').value,
-      
       batStyle: document.getElementById('tp-bat-type').value,
+      
       batTiming: document.getElementById('tp-timing').value,
       batAggression: document.getElementById('tp-aggression').value,
       batTechnique: document.getElementById('tp-technique').value,
@@ -457,11 +436,13 @@ window.addTeamPlayer = function () {
   if(customFaceB64) p.fullCustomFaceB64 = customFaceB64;
   window.teamBuilder.players.push(p);
   
-  // Clear
+  // Clear & Close
   document.getElementById('tp-name').value = '';
   document.getElementById('tp-face-display').value = '';
   delete document.getElementById('tp-face-file').dataset.tempB64;
+  document.getElementById('tp-bowling-section').classList.add('hidden');
   window.closePlayerModal();
+  
   window.renderTeamPlayersList();
 };
 
@@ -497,6 +478,7 @@ window.submitCustomTeam = async function() {
     if(!window.checkCreatorSubForTeam()) return;
     const tName = document.getElementById('ct-team-name').value.trim();
     if(!tName || !window.teamBuilder.players.length) { alert("Missing Data"); return; }
+    
     try {
         const jFile = document.getElementById('ct-jersey-file').files[0]; 
         const lFile = document.getElementById('ct-logo-file').files[0];
@@ -504,7 +486,8 @@ window.submitCustomTeam = async function() {
         let jB = null, lB = null;
         if(jFile) jB = await readFileAsBase64(jFile); if(lFile) lB = await readFileAsBase64(lFile);
         
-        const summary = generateBotSummary(window.teamBuilder.players); // Text Block
+        // BOT TEXT BLOCK
+        const summary = generateBotSummary(window.teamBuilder.players);
         
         const data = {
             type: 'team', userId: window.currentUser.uid, email: window.currentUser.email, userName: window.currentUser.displayName,
@@ -518,7 +501,7 @@ window.submitCustomTeam = async function() {
         await window.incrementCreatorUsage();
         try { await fetch('/api/custom-team', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ ...data, jerseyBase64: jB, logoBase64: lB }) }); } catch(err){}
         alert("✅ Request Sent!"); window.router.navigateTo('/creator-history');
-    } catch(e) { alert("Error: " + e.message); }
+    } catch(e) { alert("Error: " + e.message); const btn = document.querySelector('button[onclick="window.submitCustomTeam()"]'); if(btn) btn.disabled = false; }
 };
 
 // --- SUBMIT PLAYER ---
@@ -532,7 +515,7 @@ window.submitCustomPlayer = async function (evt) {
       const p = {
           name: document.getElementById('cp-name').value,
           role: document.getElementById('cp-type').value,
-          face: faceDisplay.dataset.isCustom === "true" ? "Custom Upload" : (faceDisplay.dataset.faceId || "Random"),
+          face: faceDisplay.dataset.isCustom === "true" ? "Custom" : (faceDisplay.dataset.faceId ? "Face " + faceDisplay.dataset.faceId : "Random"),
           jersey: document.getElementById('cp-jersey').value,
           batHand: document.getElementById('cp-bat-hand').value,
           bowlHand: document.getElementById('cp-bowl-hand').value,
@@ -546,14 +529,27 @@ window.submitCustomPlayer = async function (evt) {
           bowlSkill: isBowler ? document.getElementById('cp-bowl-skill').value : '0'
       };
 
+      // BOT TEXT BLOCK
       const summary = `1) ${p.name} (${p.role})\nJersey No- ${p.jersey}\nBatting hand - ${p.batHand}\nBowling hand - ${p.bowlHand}\nface - ${p.face}\nType - ${p.batStyle}\nTiming - ${p.batTiming}\nTechnique - ${p.batTechnique}\nAggression - ${p.batAggression}` + (p.bowlStyle !== 'N/A' ? `\nAction - ${p.bowlAction}\nSkill - ${p.bowlSkill}\nMovement - ${p.bowlMovement}\nType - ${p.bowlStyle}` : '');
 
       const data = {
         type: 'player', gameId: window.currentPlayerGame, userId: window.currentUser.uid, email: window.currentUser.email,
         userName: window.currentUser.displayName, createdAt: new Date().toISOString(),
         teamName: document.getElementById('cp-team').value || "Custom", playerName: p.name,
-        playerSummary: summary, description: summary, // FOR BOT
+        playerDetails: p, playerSummary: summary, description: summary, // FOR BOT
         customFaceBase64: faceDisplay.dataset.isCustom === "true" ? window.tempCustomFaceBase64 : null,
+        
+        // Data Flood
+        playerType: p.role, role: p.role, jerseyNumber: p.jersey, jersey: p.jersey,
+        battingHand: p.batHand, batHand: p.batHand, bowlingHand: p.bowlHand, bowlHand: p.bowlHand,
+        battingStyle: p.batStyle, batStyle: p.batStyle, style: p.batStyle,
+        battingTiming: p.batTiming, batTiming: p.batTiming, timing: p.batTiming,
+        battingAggression: p.batAggression, batAggression: p.batAggression, aggression: p.batAggression,
+        battingTechnique: p.batTechnique, batTechnique: p.batTechnique, technique: p.batTechnique,
+        bowlingStyle: p.bowlStyle, bowlStyle: p.bowlStyle,
+        bowlingAction: p.bowlAction, bowlAction: p.bowlAction, action: p.bowlAction,
+        bowlingMovement: p.bowlMovement, bowlMovement: p.bowlMovement, movement: p.bowlMovement,
+        bowlingSkill: p.bowlSkill, bowlSkill: p.bowlSkill, skill: p.bowlSkill
       };
 
       await db.collection('modRequests').add({ ...data, status: 'pending', timestamp: firebase.firestore.FieldValue.serverTimestamp() });
