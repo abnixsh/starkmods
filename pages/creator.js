@@ -4,7 +4,7 @@
    1. CONFIGURATION & DATA
    ========================================= */
 
-const ADMIN_CONTACT_LINK = "https://t.me/TheAbhiStark"; // Your Telegram Username Link
+const ADMIN_CONTACT_LINK = "https://t.me/abnix5"; // Your Telegram Username Link
 
 const CREATOR_PLANS = {
   P100: { code: 'P100', name: 'Starter', priceINR: 100, maxRequests: 20, periodDays: 30 },
