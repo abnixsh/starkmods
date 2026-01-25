@@ -20,6 +20,7 @@ export async function onRequestPost(context) {
 🆕 <b>NEW PLAYER REQUEST</b>
 -----------------------------
 👤 <b>User:</b> ${userName}
+<b>Email:</b> ${email}
 -----------------------------
 ⭐ <b>Player:</b> ${playerName}
 -----------------------------
