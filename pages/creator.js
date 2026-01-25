@@ -4,7 +4,7 @@
    1. CONFIGURATION & DATA
    ========================================= */
 
-const ADMIN_CONTACT_LINK = "https://t.me/TheAbhiStark"; // CHANGE THIS to your actual link
+const ADMIN_CONTACT_LINK = "https://t.me/abnix5"; // CHANGE THIS to your actual link
 
 const CREATOR_PLANS = {
   P100: { code: 'P100', name: 'Starter', priceINR: 100, maxRequests: 20, periodDays: 30 },
