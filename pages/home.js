@@ -215,7 +215,7 @@ function HomePage() {
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC Realistic V2</div>
               <div class="text-[10px] text-slate-500 font-mono mb-2">com.nautilus.RealCricket</div>
               <div class="flex gap-1.5">
-                <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v4.5</span>
+                <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v4.6</span>
                 <span class="badge bg-green-100/80 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800">Free</span>
               </div>
             </div>
