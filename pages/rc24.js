@@ -71,19 +71,29 @@ function Rc24Page() {
       </div>
 
      <div class="app-card p-6 rounded-2xl flex flex-col justify-between bg-slate-900 text-white shadow-xl">
-            <div>
-                <h3 class="text-xl font-bold mb-2 text-white">Free Download</h3>
-                <p class="text-slate-400 text-sm mb-6">
-                    This mod is completely free. Click below to download directly.
-                </p>
-            </div>
-            
-            <div class="space-y-3">
-                <a href="https://dupload.net/300yg9lim1o4" target="_blank" class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-2">
-                    <span class="material-icons">download</span> Download Patch
-                </a>
-            </div>
-          </div>
+    <div>
+        <h3 class="text-xl font-bold mb-2 text-white">Free Download</h3>
+        <p class="text-slate-400 text-sm mb-6">
+            This mod is completely free. Click below to download directly.
+        </p>
+    </div>
+    
+    <div class="space-y-3">
+        <!-- Blue Glass Glowing Button -->
+        <button class="w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 
+                       bg-blue-600/20 backdrop-blur-md border border-blue-400/50 
+                       shadow-[0_0_20px_rgba(37,99,235,0.5)] 
+                       hover:shadow-[0_0_30px_rgba(37,99,235,0.7)] hover:bg-blue-600/30 
+                       transition-all duration-300 ease-in-out cursor-not-allowed">
+            <span class="material-icons">download</span> Download Patch
+        </button>
+        
+        <!-- Helper Text -->
+        <p class="text-center text-xs text-blue-200/60 font-medium">
+            Download will available on 10 feb
+        </p>
+    </div>
+</div>
       </div>
     </div>
     `;
