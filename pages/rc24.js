@@ -15,11 +15,11 @@ function Rc24Page() {
            class="w-20 h-20 rounded-2xl shadow-lg"
            onerror="this.src='https://placehold.co/80?text=RC24'">
       <div>
-        <h1 class="text-3xl font-bold">Real Cricket Realistic V2</h1>
+        <h1 class="text-3xl font-bold">Real Cricket Realistic V3</h1>
         <div class="flex gap-2 mt-2">
           <span class="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">v4.6</span>
           <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs font-bold rounded">Free</span>
-          <span class="px-2 py-0.5 bg-blue-100 dark:bg-red-900 text-blue-700 dark:text-blue-300 text-xs font-bold rounded">Anti-ban</span>
+          <span class="badge bg-purple-600 text-white border border-purple-700 dark:bg-purple-500 dark:border-purple-400">T20 WC 2026</span>
         </div>
       </div>
     </div>
@@ -62,11 +62,11 @@ function Rc24Page() {
       <div class="app-card p-6 rounded-2xl">
         <h3 class="text-xl font-bold mb-4">Mod Features</h3>
         <ul class="space-y-3 text-slate-600 dark:text-slate-300">
+          <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic T20 WC 2026 Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic ODI Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic IPL Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic TEST Jerseys</span></li>
           <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic T20 Jerseys</span></li>
-          <li class="flex items-start gap-3"><span class="material-icons text-green-500 mt-1">check_circle</span><span>Realistic PSL Jerseys</span></li>
         </ul>
       </div>
 
