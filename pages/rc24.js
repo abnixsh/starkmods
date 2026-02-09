@@ -70,26 +70,43 @@ function Rc24Page() {
         </ul>
       </div>
 
-     <div class="app-card p-6 rounded-2xl flex flex-col justify-between bg-slate-900 text-white shadow-xl">
+    <!-- Card Container: Adapts to White in Light mode, Dark Slate in Dark mode -->
+<div class="app-card p-6 rounded-2xl flex flex-col justify-between shadow-xl 
+            bg-white text-slate-900 
+            dark:bg-slate-900 dark:text-white">
+            
     <div>
-        <h3 class="text-xl font-bold mb-2 text-white">Free Download</h3>
-        <p class="text-slate-400 text-sm mb-6">
+        <!-- Heading: Dark text in light mode, White in dark mode -->
+        <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white">
+            Free Download
+        </h3>
+        
+        <!-- Description: Grey text adapted for visibility -->
+        <p class="text-slate-600 dark:text-slate-400 text-sm mb-6">
             This mod is completely free. Click below to download directly.
         </p>
     </div>
     
     <div class="space-y-3">
-        <!-- Blue Glass Glowing Button -->
+        <!-- Button:
+             - bg-blue-600: Solid blue for visibility in Light Mode
+             - dark:bg-blue-600/20: Transparent glass in Dark Mode
+             - text-white: Always white
+             - Shadow: Blue glow added
+        -->
         <button class="w-full py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 
-                       bg-blue-600/20 backdrop-blur-md border border-blue-400/50 
-                       shadow-[0_0_20px_rgba(37,99,235,0.5)] 
-                       hover:shadow-[0_0_30px_rgba(37,99,235,0.7)] hover:bg-blue-600/30 
+                       bg-blue-600 border border-blue-400/50
+                       dark:bg-blue-600/20 dark:backdrop-blur-md 
+                       shadow-[0_0_15px_rgba(37,99,235,0.6)] 
+                       hover:shadow-[0_0_25px_rgba(37,99,235,0.8)] 
+                       hover:bg-blue-500 dark:hover:bg-blue-600/40
                        transition-all duration-300 ease-in-out cursor-not-allowed">
             <span class="material-icons">download</span> Download Patch
         </button>
         
-        <!-- Helper Text -->
-        <p class="text-center text-xs text-blue-200/60 font-medium">
+        <!-- Helper Text: Dark grey in light mode, Light blueish-grey in dark mode -->
+        <p class="text-center text-xs font-medium 
+                  text-slate-500 dark:text-blue-200/60">
             Download will available on 10 feb
         </p>
     </div>
