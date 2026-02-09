@@ -212,10 +212,11 @@ function HomePage() {
           <div class="app-card-header flex gap-4 mb-4">
             <img src="assets/icons/icon_rc24.png" class="h-16 w-16 rounded-[1rem] shadow-lg object-cover ring-2 ring-white/50 dark:ring-white/10" onerror="this.src='https://placehold.co/64?text=RC24'" />
             <div>
-              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC Realistic V2</div>
+              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC Realistic V3</div>
               <div class="text-[10px] text-slate-500 font-mono mb-2">com.nautilus.RealCricket</div>
               <div class="flex gap-1.5">
                 <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v4.6</span>
+                <span class="badge bg-purple-600 text-white border border-purple-700 dark:bg-purple-500 dark:border-purple-400">T20 WC 2026</span>
                 <span class="badge bg-green-100/80 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800">Free</span>
               </div>
             </div>
@@ -227,7 +228,7 @@ function HomePage() {
           </div>
 
           <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed px-1">
-            Realistic patch with enhanced textures, realistic stadiums, and updated player faces.
+            New T20 World Cup 2026 Jerseys, Realistic patch with enhanced textures, realistic stadiums, and updated player faces.
           </p>
 
           <button onclick="window.router.navigateTo('/rc24')" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3.5 rounded-2xl font-bold shadow-lg shadow-blue-500/20 transition transform active:scale-[0.98] flex items-center justify-center gap-2 group">
