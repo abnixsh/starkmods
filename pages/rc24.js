@@ -107,7 +107,7 @@ function Rc24Page() {
         <!-- Helper Text: Dark grey in light mode, Light blueish-grey in dark mode -->
         <p class="text-center text-xs font-medium 
                   text-slate-500 dark:text-blue-200/60">
-            Download will available on 10 feb
+            Download will available very soon!
         </p>
     </div>
 </div>
