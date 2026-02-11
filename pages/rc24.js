@@ -1,5 +1,5 @@
 function Rc24Page() {
-  // Styles for custom animations and scrollbar hiding
+  // Styles for custom animations and carousel behavior
   const styles = `
     <style>
       @keyframes fadeInUp {
@@ -14,11 +14,49 @@ function Rc24Page() {
       .delay-200 { animation-delay: 0.2s; }
       .delay-300 { animation-delay: 0.3s; }
       
-      /* Hide scrollbar for carousel but allow functionality */
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      /* Essential for carousel movement */
+      .screenshot-carousel-track {
+        display: flex;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+      }
     </style>
   `;
+
+  // --- CAROUSEL LOGIC START ---
+  setTimeout(() => {
+    const track = document.querySelector('.screenshot-carousel-track');
+    const slides = document.querySelectorAll('.screenshot-carousel-slide');
+    const nextBtn = document.querySelector('.next');
+    const prevBtn = document.querySelector('.prev');
+    let index = 0;
+
+    if (track && slides.length > 0) {
+      const updateCarousel = () => {
+        track.style.transform = `translateX(-${index * 100}%)`;
+      };
+
+      nextBtn?.addEventListener('click', () => {
+        index = (index + 1) % slides.length;
+        updateCarousel();
+      });
+
+      prevBtn?.addEventListener('click', () => {
+        index = (index - 1 + slides.length) % slides.length;
+        updateCarousel();
+      });
+      
+      // Swipe Support
+      let touchStartX = 0;
+      track.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX, {passive: true});
+      track.addEventListener('touchend', e => {
+        const touchEndX = e.changedTouches[0].clientX;
+        if (touchStartX - touchEndX > 50) nextBtn.click(); // Swipe Left
+        if (touchEndX - touchStartX > 50) prevBtn.click(); // Swipe Right
+      }, {passive: true});
+    }
+  }, 100);
+  // --- CAROUSEL LOGIC END ---
 
   return `
   ${styles}
@@ -56,14 +94,14 @@ function Rc24Page() {
     <div class="animate-entry delay-200 mb-10">
       <div class="flex items-center justify-between mb-4 px-1">
         <h3 class="font-bold text-lg text-slate-800 dark:text-slate-200">Preview</h3>
-        <span class="text-xs text-slate-400 font-medium">Swipe to view</span>
+        <span class="text-xs text-slate-400 font-medium italic">Swipe or use arrows</span>
       </div>
       
       <div class="relative group rounded-2xl overflow-hidden shadow-2xl ring-1 ring-slate-900/5 dark:ring-white/10 bg-slate-900 aspect-video">
-        <div class="screenshot-carousel-track h-full flex transition-transform duration-500 ease-out cursor-grab active:cursor-grabbing">
+        <div class="screenshot-carousel-track h-full">
           <div class="screenshot-carousel-slide min-w-full h-full relative">
             <img src="assets/img/img_rc24_1.jpg" class="w-full h-full object-cover" loading="lazy" alt="Gameplay 1" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 pointer-events-none"></div>
           </div>
           <div class="screenshot-carousel-slide min-w-full h-full relative">
             <img src="assets/img/img_rc24_2.jpg" class="w-full h-full object-cover" loading="lazy" alt="Gameplay 2" />
@@ -76,20 +114,17 @@ function Rc24Page() {
           </div>
         </div>
 
-        <button class="screenshot-carousel-nav prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
+        <button class="screenshot-carousel-nav prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
           <span class="material-icons">chevron_left</span>
         </button>
-        <button class="screenshot-carousel-nav next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
+        <button class="screenshot-carousel-nav next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
           <span class="material-icons">chevron_right</span>
         </button>
-
-        <div class="screenshot-carousel-indicators absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
       </div>
     </div>
 
     <div class="grid md:grid-cols-2 gap-6 animate-entry delay-300">
-        
-      <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm">
         <h3 class="text-xl font-bold mb-6 text-slate-800 dark:text-white flex items-center gap-2">
           <span class="material-icons text-blue-500">auto_awesome</span> Mod Features
         </h3>
@@ -104,7 +139,6 @@ function Rc24Page() {
 
       <div class="relative overflow-hidden p-1 rounded-3xl bg-gradient-to-br from-blue-500/10 via-slate-100 to-slate-50 dark:from-blue-500/20 dark:via-slate-800 dark:to-slate-900 shadow-xl">
         <div class="h-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-[20px] p-6 flex flex-col justify-between border border-white/50 dark:border-slate-700/50">
-            
             <div>
                 <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white">Download Patch</h3>
                 <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-8">
@@ -118,10 +152,8 @@ function Rc24Page() {
                                cursor-not-allowed transition-all duration-300">
                     <span class="material-icons text-xl animate-spin-slow">hourglass_empty</span>
                     <span>Download Locked</span>
-                    
                     <div class="absolute bottom-0 left-0 h-1 bg-blue-500/30 w-3/4 rounded-b-xl"></div>
                 </button>
-                
                 <div class="flex items-center justify-center gap-2 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 py-2 rounded-lg">
                     <span class="material-icons text-[16px]">info</span>
                     Links available soon!
@@ -129,18 +161,23 @@ function Rc24Page() {
             </div>
         </div>
       </div>
-
     </div>
   </div>
   `;
 }
 
-// Helper to create cleaner list items
 function createFeatureItem(text) {
   return `
     <li class="flex items-start gap-3 group">
       <div class="mt-0.5 min-w-[24px] h-6 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
         <span class="material-icons text-green-600 dark:text-green-400 text-[14px]">check</span>
+      </div>
+      <span class="text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-sm font-medium pt-0.5">${text}</span>
+    </li>
+  `;
+}
+
+window.Rc24Page = Rc24Page;
       </div>
       <span class="text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-sm font-medium pt-0.5">${text}</span>
     </li>
