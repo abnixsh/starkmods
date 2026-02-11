@@ -16,8 +16,50 @@ function Rc20Page() {
       
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      /* Ensure track is ready for JS movement */
+      .screenshot-carousel-track {
+        display: flex;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+      }
     </style>
   `;
+
+  // --- CAROUSEL LOGIC START ---
+  setTimeout(() => {
+    const track = document.querySelector('.screenshot-carousel-track');
+    const slides = document.querySelectorAll('.screenshot-carousel-slide');
+    const nextBtn = document.querySelector('.next');
+    const prevBtn = document.querySelector('.prev');
+    let index = 0;
+
+    if (track && slides.length > 0) {
+      const updateCarousel = () => {
+        track.style.transform = `translateX(-${index * 100}%)`;
+      };
+
+      nextBtn?.addEventListener('click', () => {
+        index = (index + 1) % slides.length;
+        updateCarousel();
+      });
+
+      prevBtn?.addEventListener('click', () => {
+        index = (index - 1 + slides.length) % slides.length;
+        updateCarousel();
+      });
+      
+      // Basic Touch Swipe support
+      let touchStartX = 0;
+      track.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
+      track.addEventListener('touchend', e => {
+        const touchEndX = e.changedTouches[0].clientX;
+        if (touchStartX - touchEndX > 50) nextBtn.click(); // Swipe Left
+        if (touchEndX - touchStartX > 50) prevBtn.click(); // Swipe Right
+      });
+    }
+  }, 100);
+  // --- CAROUSEL LOGIC END ---
 
   return `
   ${styles}
@@ -55,40 +97,37 @@ function Rc20Page() {
     <div class="animate-entry delay-200 mb-10">
       <div class="flex items-center justify-between mb-4 px-1">
         <h3 class="font-bold text-lg text-slate-800 dark:text-slate-200">Gameplay Preview</h3>
-        <span class="text-xs text-slate-400 font-medium">Swipe to view</span>
+        <span class="text-xs text-slate-400 font-medium italic">Swipe or use arrows</span>
       </div>
       
       <div class="relative group rounded-2xl overflow-hidden shadow-2xl ring-1 ring-slate-900/5 dark:ring-white/10 bg-slate-900 aspect-video">
-        <div class="screenshot-carousel-track h-full flex transition-transform duration-500 ease-out cursor-grab active:cursor-grabbing">
+        <div class="screenshot-carousel-track h-full">
           <div class="screenshot-carousel-slide min-w-full h-full relative">
             <img src="assets/img/img_rc20_1.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 1" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-50 pointer-events-none"></div>
           </div>
-          <div class="screenshot-carousel-slide min-w-full h-full">
+          <div class="screenshot-carousel-slide min-w-full h-full relative">
             <img src="assets/img/img_rc20_2.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 2" />
           </div>
-          <div class="screenshot-carousel-slide min-w-full h-full">
+          <div class="screenshot-carousel-slide min-w-full h-full relative">
             <img src="assets/img/img_rc20_3.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 3" />
           </div>
-          <div class="screenshot-carousel-slide min-w-full h-full">
+          <div class="screenshot-carousel-slide min-w-full h-full relative">
             <img src="assets/img/img_rc20_4.jpg" class="w-full h-full object-cover" loading="lazy" alt="Screenshot 4" />
           </div>
         </div>
 
-        <button class="screenshot-carousel-nav prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
+        <button class="screenshot-carousel-nav prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
           <span class="material-icons">chevron_left</span>
         </button>
-        <button class="screenshot-carousel-nav next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
+        <button class="screenshot-carousel-nav next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
           <span class="material-icons">chevron_right</span>
         </button>
-
-        <div class="screenshot-carousel-indicators absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
       </div>
     </div>
 
     <div class="grid md:grid-cols-2 gap-6 animate-entry delay-300">
-        
-      <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow duration-300 h-full">
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm">
         <h3 class="text-xl font-bold mb-6 text-slate-800 dark:text-white flex items-center gap-2">
           <span class="material-icons text-purple-500">settings_suggest</span> Mod Features
         </h3>
@@ -106,7 +145,6 @@ function Rc20Page() {
       </div>
 
       <div class="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col justify-between h-full relative overflow-hidden">
-        
         <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
         <div>
@@ -117,9 +155,8 @@ function Rc20Page() {
         </div>
         
         <div class="space-y-4 relative z-10">
-          
           <button onclick="window.addToCart('rc20', '1month')" 
-                  class="w-full group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-blue-500 dark:hover:border-blue-500 p-4 rounded-xl transition-all duration-300 flex items-center justify-between shadow-sm hover:shadow-md">
+                  class="w-full group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-blue-500 p-4 rounded-xl transition-all duration-300 flex items-center justify-between shadow-sm">
             <div class="flex flex-col items-start">
                 <span class="font-bold text-slate-700 dark:text-slate-200 text-sm">1 Month Access</span>
                 <span class="text-xs text-slate-400">Standard License</span>
@@ -129,10 +166,7 @@ function Rc20Page() {
 
           <button onclick="window.addToCart('rc20', 'lifetime')" 
                   class="w-full relative overflow-hidden p-4 rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-300 group transform hover:-translate-y-1">
-            
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 transition-opacity"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
             <div class="relative flex items-center justify-between text-white">
                 <div class="flex flex-col items-start">
                     <div class="flex items-center gap-1">
@@ -144,10 +178,6 @@ function Rc20Page() {
                 <span class="text-xl font-bold">₹1000</span>
             </div>
           </button>
-          
-          <p class="text-center text-[10px] text-slate-400 mt-2 flex items-center justify-center gap-1">
-            <span class="material-icons text-[12px]">lock</span> Secure payment via UPI/Card
-          </p>
         </div>
       </div>
     </div>
@@ -155,7 +185,6 @@ function Rc20Page() {
   `;
 }
 
-// Helper for clean list items
 function createFeatureItem(text) {
   return `
     <li class="flex items-start gap-3 group">
