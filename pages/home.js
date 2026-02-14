@@ -275,8 +275,8 @@ function HomePage() {
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">WCC3 Mod Menu</div>
               <div class="text-[10px] text-slate-500 font-mono mb-2">ViP Injector Safe</div>
               <div class="flex gap-1.5">
-                <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v3.2</span>
-                <span class="badge bg-amber-100/80 text-amber-800 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">Premium</span>
+                 <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v3.2.3</span>
+               <span class="badge bg-amber-400 text-black border border-amber-500 px-3 py-1 rounded-full text-xs font-bold">PREMIUM</span>
               </div>
             </div>
           </div>
