@@ -181,7 +181,7 @@ function HomePage() {
             <img src="assets/icons/icon_rc25.jpg" class="h-16 w-16 rounded-[1rem] shadow-lg object-cover ring-2 ring-white/50 dark:ring-white/10" onerror="this.src='https://placehold.co/64?text=RC25'" />
             <div>
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC25 Fan-Made</div>
-              <div class="text-[10px] text-slate-500 font-mono mb-2">com.nautilus.RC3D</div>
+              <div class="text-[10px] text-slate-500 font-mono mb-2">Patch Update of RC20</div>
               <div class="flex gap-1.5">
                 <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v7+</span>
                 <span class="badge bg-green-100/80 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800">Free</span>
@@ -213,7 +213,7 @@ function HomePage() {
             <img src="assets/icons/icon_rc24.png" class="h-16 w-16 rounded-[1rem] shadow-lg object-cover ring-2 ring-white/50 dark:ring-white/10" onerror="this.src='https://placehold.co/64?text=RC24'" />
             <div>
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC Realistic V3</div>
-              <div class="text-[10px] text-slate-500 font-mono mb-2">com.nautilus.RealCricket</div>
+              <div class="text-[10px] text-slate-500 font-mono mb-2">Patch makes game better</div>
               <div class="flex gap-1.5">
                 <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v4.6</span>
                 <span class="badge bg-purple-600 text-white border border-purple-700 dark:bg-purple-500 dark:border-purple-400">T20 WC 2026</span>
@@ -243,7 +243,7 @@ function HomePage() {
             <img src="assets/icons/icon_rc20.jpg" class="h-16 w-16 rounded-[1rem] shadow-lg object-cover ring-2 ring-white/50 dark:ring-white/10" onerror="this.src='https://placehold.co/64?text=RC20'" />
             <div>
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC20 Mod Menu</div>
-              <div class="text-[10px] text-slate-500 font-mono mb-2">com.nautilus.RC3D</div>
+              <div class="text-[10px] text-slate-500 font-mono mb-2">VIP Cheats</div>
               <div class="flex gap-1.5">
                 <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v6.1</span>
                 <span class="badge bg-amber-100/80 text-amber-800 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">Premium</span>
@@ -272,7 +272,7 @@ function HomePage() {
             <img src="assets/icons/icon_wcc3.png" class="h-16 w-16 rounded-[1rem] shadow-lg object-cover ring-2 ring-white/50 dark:ring-white/10" onerror="this.src='https://placehold.co/64?text=WCC3'" />
             <div>
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">WCC3 Mod Menu</div>
-              <div class="text-[10px] text-slate-500 font-mono mb-2">com.nextwave.wcc3</div>
+              <div class="text-[10px] text-slate-500 font-mono mb-2">ViP Injector Safe</div>
               <div class="flex gap-1.5">
                 <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v3.2</span>
                 <span class="badge bg-amber-100/80 text-amber-800 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">Premium</span>
