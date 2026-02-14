@@ -97,7 +97,7 @@ function HomePage() {
               <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-700 dark:text-slate-200">
-              Update v7.0 Live
+              Update v7+ Live
             </span>
           </div>
 
@@ -183,8 +183,9 @@ function HomePage() {
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC25 Fan-Made</div>
               <div class="text-[10px] text-slate-500 font-mono mb-2">Patch Update of RC20</div>
               <div class="flex gap-1.5">
-                <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v7+</span>
-                <span class="badge bg-green-100/80 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800">Free</span>
+                <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v7+</span>
+                <span class="badge bg-sky-500 text-white border border-sky-600 px-3 py-1 rounded-full text-xs font-medium">Free</span>
+                <span class="badge bg-orange-500 text-white border border-orange-600 px-3 py-1 rounded-full text-xs font-medium">New Update</span>
               </div>
             </div>
           </div>
@@ -215,9 +216,9 @@ function HomePage() {
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC Realistic V3</div>
               <div class="text-[10px] text-slate-500 font-mono mb-2">Patch makes game better</div>
               <div class="flex gap-1.5">
-                <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v4.6</span>
+                <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v4.6</span>
                 <span class="badge bg-purple-600 text-white border border-purple-700 dark:bg-purple-500 dark:border-purple-400">T20 WC 2026</span>
-                <span class="badge bg-green-100/80 text-green-700 border border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800">Free</span>
+                <span class="badge bg-sky-500 text-white border border-sky-600 px-3 py-1 rounded-full text-xs font-medium">Free</span>
               </div>
             </div>
           </div>
@@ -245,8 +246,8 @@ function HomePage() {
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC20 Mod Menu</div>
               <div class="text-[10px] text-slate-500 font-mono mb-2">VIP Cheats</div>
               <div class="flex gap-1.5">
-                <span class="badge bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">v6.1</span>
-                <span class="badge bg-amber-100/80 text-amber-800 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">Premium</span>
+                <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v6.1</span>
+                <span class="badge bg-amber-400 text-black border border-amber-500 px-3 py-1 rounded-full text-xs font-bold">PREMIUM</span>
               </div>
             </div>
           </div>
