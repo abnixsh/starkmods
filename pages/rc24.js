@@ -127,40 +127,23 @@ function Rc24Page() {
         </ul>
       </div>
 
-      <div class="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col justify-between relative overflow-hidden">
-        <div>
-          <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Premium Plans</h3>
-          <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-8">
-            Enjoy Real Cricket with latest t20wc jerseys, sponsers, enhanced graphics
-          </p>
+     <div class="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col justify-between relative overflow-hidden">
+    <div>
+      <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Download Real Cricket</h3>
+      <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-8">
+        Get the latest version with updated T20WC jerseys, sponsors, and enhanced graphics directly to your device.
+      </p>
+    </div>
+    
+    <div class="space-y-4 relative z-10">
+      <button onclick="window.startDownload('wcc3')" 
+              class="w-full relative overflow-hidden p-4 rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-300 group transform hover:-translate-y-1 flex items-center justify-center">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600"></div>
+        <div class="relative flex items-center justify-center gap-2 text-white">
+            <span class="material-icons text-white">download</span>
+            <span class="text-xl font-bold">Download Now</span>
         </div>
-        
-        <div class="space-y-4 relative z-10">
-          <button onclick="window.addToCart('wcc3', '1month')" 
-                  class="w-full group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-blue-500 p-4 rounded-xl transition-all duration-300 flex items-center justify-between shadow-sm">
-            <div class="flex flex-col items-start">
-                <span class="font-bold text-slate-700 dark:text-slate-200 text-sm">Monthly VIP</span>
-                <span class="text-xs text-slate-400">Full Access</span>
-            </div>
-            <span class="text-lg font-bold text-slate-900 dark:text-white">₹250</span>
-          </button>
-
-          <button onclick="window.addToCart('wcc3', 'lifetime')" 
-                  class="w-full relative overflow-hidden p-4 rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-300 group transform hover:-translate-y-1">
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600"></div>
-            <div class="relative flex items-center justify-between text-white">
-                <div class="flex flex-col items-start">
-                    <div class="flex items-center gap-1">
-                        <span class="material-icons text-sm text-yellow-300">workspace_premium</span>
-                        <span class="font-bold text-sm">Lifetime VIP</span>
-                    </div>
-                    <span class="text-xs text-blue-100 opacity-90">Best Value • Forever</span>
-                </div>
-                <span class="text-xl font-bold">₹800</span>
-            </div>
-          </button>
-        </div>
-      </div>
+      </button>
     </div>
   </div>
   `;
