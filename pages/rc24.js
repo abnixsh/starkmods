@@ -49,12 +49,11 @@ function Rc24Page() {
   ${styles}
   <div class="max-w-4xl mx-auto px-4 pt-6 pb-24">
       
-    <div class="mb-8 animate-entry">
-      <a href="/" class="group inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors duration-300" data-link>
-        <span class="material-icons text-sm transition-transform duration-300 group-hover:-translate-x-1">arrow_back</span>
-        <span class="font-medium">Back to Home</span>
-      </a>
-    </div>
+    <nav class="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 mb-6 bg-white/40 dark:bg-black/20 backdrop-blur-md py-2 px-4 rounded-full w-fit border border-white/20">
+      <a href="/" class="hover:text-blue-600 transition flex items-center gap-1"><span class="material-icons text-sm">home</span> Home</a>
+      <span class="material-icons text-[10px] opacity-50">chevron_right</span>
+      <span class="text-slate-900 dark:text-white">RC Patch</span>
+    </nav>
 
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-10 animate-entry delay-100">
       <div class="relative group">
