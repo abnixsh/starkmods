@@ -1,5 +1,5 @@
-function Rc24Page() {
-  // Styles for custom animations and scrollbar hiding
+function rc24Page() {
+  // Styles for animations and carousel behavior
   const styles = `
     <style>
       @keyframes fadeInUp {
@@ -14,11 +14,36 @@ function Rc24Page() {
       .delay-200 { animation-delay: 0.2s; }
       .delay-300 { animation-delay: 0.3s; }
       
-      /* Hide scrollbar for carousel but allow functionality */
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      .screenshot-carousel-track {
+        display: flex;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+      }
     </style>
   `;
+
+  // Carousel Logic (Executes after the HTML is rendered)
+  setTimeout(() => {
+    const track = document.querySelector('.screenshot-carousel-track');
+    const slides = document.querySelectorAll('.screenshot-carousel-slide');
+    const nextBtn = document.querySelector('.next');
+    const prevBtn = document.querySelector('.prev');
+    let index = 0;
+
+    const updateCarousel = () => {
+      track.style.transform = `translateX(-${index * 100}%)`;
+    };
+
+    nextBtn?.addEventListener('click', () => {
+      index = (index + 1) % slides.length;
+      updateCarousel();
+    });
+
+    prevBtn?.addEventListener('click', () => {
+      index = (index - 1 + slides.length) % slides.length;
+      updateCarousel();
+    });
+  }, 100);
 
   return `
   ${styles}
@@ -33,21 +58,23 @@ function Rc24Page() {
 
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-10 animate-entry delay-100">
       <div class="relative group">
-        <div class="absolute inset-0 bg-blue-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+        <div class="absolute inset-0 bg-yellow-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
         <img src="assets/icons/icon_rc24.png"
              class="relative w-24 h-24 rounded-2xl shadow-xl z-10 transform transition-transform duration-500 group-hover:scale-105"
-             onerror="this.src='https://placehold.co/96?text=RC24'">
+             onerror="this.src='https://placehold.co/96?text=rc24'">
       </div>
       
       <div>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Real Cricket Realistic V3
+          WCC3 VIP Mod Menu
         </h1>
         <div class="flex flex-wrap gap-2 mt-3">
           <span class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs font-bold rounded-full border border-blue-100 dark:border-blue-800">v4.6</span>
-          <span class="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold rounded-full border border-green-100 dark:border-green-800">Free</span>
-          <span class="px-3 py-1 bg-purple-600 text-white text-xs font-bold rounded-full shadow-[0_2px_10px_rgba(147,51,234,0.3)]">
-            T20 WC 2026
+          <span class="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
+            <span class="material-icons text-[12px]">security</span> Anti-ban
+          </span>
+          <span class="px-3 py-1 bg-gradient-to-r from-yellow-400 to-amber-600 text-black text-xs font-black rounded-full shadow-md flex items-center gap-1">
+            <span class="material-icons text-[14px]">stars</span> FREE
           </span>
         </div>
       </div>
@@ -55,96 +82,100 @@ function Rc24Page() {
 
     <div class="animate-entry delay-200 mb-10">
       <div class="flex items-center justify-between mb-4 px-1">
-        <h3 class="font-bold text-lg text-slate-800 dark:text-slate-200">Preview</h3>
-        <span class="text-xs text-slate-400 font-medium">Swipe to view</span>
+        <h3 class="font-bold text-lg text-slate-800 dark:text-slate-200">Gameplay Preview</h3>
+        <span class="text-xs text-slate-400 font-medium">Click arrows to navigate</span>
       </div>
       
-      <div class="relative group rounded-2xl overflow-hidden shadow-2xl ring-1 ring-slate-900/5 dark:ring-white/10 bg-slate-900 aspect-video">
-        <div class="screenshot-carousel-track h-full flex transition-transform duration-500 ease-out cursor-grab active:cursor-grabbing">
+      <div class="relative group rounded-2xl overflow-hidden shadow-2xl ring-1 ring-slate-900/10 dark:ring-white/10 bg-slate-900 aspect-video">
+        <div class="screenshot-carousel-track h-full">
           <div class="screenshot-carousel-slide min-w-full h-full relative">
-            <img src="assets/img/img_rc24_1.jpg" class="w-full h-full object-cover" loading="lazy" alt="Gameplay 1" />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+            <img src="assets/img/img_rc24_1.jpg" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="screenshot-carousel-slide min-w-full h-full relative">
-            <img src="assets/img/img_rc24_2.jpg" class="w-full h-full object-cover" loading="lazy" alt="Gameplay 2" />
+          <div class="screenshot-carousel-slide min-w-full h-full">
+            <img src="assets/img/img_rc24_2.jpg" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="screenshot-carousel-slide min-w-full h-full relative">
-            <img src="assets/img/img_rc24_3.jpg" class="w-full h-full object-cover" loading="lazy" alt="Gameplay 3" />
+          <div class="screenshot-carousel-slide min-w-full h-full">
+            <img src="assets/img/img_rc24_3.jpg" class="w-full h-full object-cover" loading="lazy" />
           </div>
-          <div class="screenshot-carousel-slide min-w-full h-full relative">
-            <img src="assets/img/img_rc24_4.jpg" class="w-full h-full object-cover" loading="lazy" alt="Gameplay 4" />
+          <div class="screenshot-carousel-slide min-w-full h-full">
+            <img src="assets/img/img_rc24_4.jpg" class="w-full h-full object-cover" loading="lazy" />
           </div>
         </div>
 
-        <button class="screenshot-carousel-nav prev absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
+        <button class="screenshot-carousel-nav prev absolute left-4 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md border border-white/20 hover:bg-black/60 text-white p-3 rounded-full cursor-pointer z-20 transition-all opacity-0 group-hover:opacity-100">
           <span class="material-icons">chevron_left</span>
         </button>
-        <button class="screenshot-carousel-nav next absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 text-white p-3 rounded-full cursor-pointer z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-90 hover:scale-100">
+        <button class="screenshot-carousel-nav next absolute right-4 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md border border-white/20 hover:bg-black/60 text-white p-3 rounded-full cursor-pointer z-20 transition-all opacity-0 group-hover:opacity-100">
           <span class="material-icons">chevron_right</span>
         </button>
-
-        <div class="screenshot-carousel-indicators absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
       </div>
     </div>
 
     <div class="grid md:grid-cols-2 gap-6 animate-entry delay-300">
         
-      <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div class="p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
         <h3 class="text-xl font-bold mb-6 text-slate-800 dark:text-white flex items-center gap-2">
-          <span class="material-icons text-blue-500">auto_awesome</span> Mod Features
+          <span class="material-icons text-amber-500">verified</span> VIP Features
         </h3>
-        <ul class="space-y-4">
-          ${createFeatureItem('Realistic T20 WC 2026 Jerseys')}
-          ${createFeatureItem('Realistic ODI & Test Kits')}
-          ${createFeatureItem('Updated Squads & Rosters')}
-          ${createFeatureItem('Enhanced Stadium Textures')}
-          ${createFeatureItem('New Broadcast Graphics')}
+        <ul class="grid grid-cols-1 gap-y-3">
+          ${createFeatureItem('T20 WORLD CUP 2026 Jerseys')}
+          ${createFeatureItem('Latest Test Jerseys')}
+          ${createFeatureItem('Latest T20 Jerseys')}
+          ${createFeatureItem('Latest ODI Jerseys')}
+          ${createFeatureItem('Latest BBL Jerseys')}
+         
         </ul>
       </div>
 
-      <div class="relative overflow-hidden p-1 rounded-3xl bg-gradient-to-br from-blue-500/10 via-slate-100 to-slate-50 dark:from-blue-500/20 dark:via-slate-800 dark:to-slate-900 shadow-xl">
-        <div class="h-full bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-[20px] p-6 flex flex-col justify-between border border-white/50 dark:border-slate-700/50">
-            
-            <div>
-                <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white">Download Patch</h3>
-                <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-8">
-                    Get the latest realistic graphics patch. Installation instructions are included in the zip file.
-                </p>
+      <div class="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col justify-between relative overflow-hidden">
+        <div>
+          <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Premium Plans</h3>
+          <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-8">
+            Enjoy Real Cricket with latest t20wc jerseys, sponsers, enhanced graphics
+          </p>
+        </div>
+        
+        <div class="space-y-4 relative z-10">
+          <button onclick="window.addToCart('wcc3', '1month')" 
+                  class="w-full group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:border-blue-500 p-4 rounded-xl transition-all duration-300 flex items-center justify-between shadow-sm">
+            <div class="flex flex-col items-start">
+                <span class="font-bold text-slate-700 dark:text-slate-200 text-sm">Monthly VIP</span>
+                <span class="text-xs text-slate-400">Full Access</span>
             </div>
-            
-            <div class="space-y-4">
-                <button disabled class="group w-full relative py-4 rounded-xl font-bold text-slate-400 dark:text-slate-500 flex items-center justify-center gap-3 
-                               bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700
-                               cursor-not-allowed transition-all duration-300">
-                    <span class="material-icons text-xl animate-spin-slow">hourglass_empty</span>
-                    <span>Download Locked</span>
-                    
-                    <div class="absolute bottom-0 left-0 h-1 bg-blue-500/30 w-3/4 rounded-b-xl"></div>
-                </button>
-                
-                <div class="flex items-center justify-center gap-2 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 py-2 rounded-lg">
-                    <span class="material-icons text-[16px]">info</span>
-                    Links available soon!
+            <span class="text-lg font-bold text-slate-900 dark:text-white">₹250</span>
+          </button>
+
+          <button onclick="window.addToCart('wcc3', 'lifetime')" 
+                  class="w-full relative overflow-hidden p-4 rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-300 group transform hover:-translate-y-1">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600"></div>
+            <div class="relative flex items-center justify-between text-white">
+                <div class="flex flex-col items-start">
+                    <div class="flex items-center gap-1">
+                        <span class="material-icons text-sm text-yellow-300">workspace_premium</span>
+                        <span class="font-bold text-sm">Lifetime VIP</span>
+                    </div>
+                    <span class="text-xs text-blue-100 opacity-90">Best Value • Forever</span>
                 </div>
+                <span class="text-xl font-bold">₹800</span>
             </div>
+          </button>
         </div>
       </div>
-
     </div>
   </div>
   `;
 }
 
-// Helper to create cleaner list items
+// Helper for checkmarks
 function createFeatureItem(text) {
   return `
     <li class="flex items-start gap-3 group">
-      <div class="mt-0.5 min-w-[24px] h-6 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
-        <span class="material-icons text-green-600 dark:text-green-400 text-[14px]">check</span>
+      <div class="mt-0.5 min-w-[20px] h-5 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+        <span class="material-icons text-green-600 dark:text-green-400 text-[12px]">check</span>
       </div>
-      <span class="text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-sm font-medium pt-0.5">${text}</span>
+      <span class="text-slate-600 dark:text-slate-300 text-sm font-medium pt-0.5 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">${text}</span>
     </li>
   `;
 }
 
-window.Rc24Page = Rc24Page;
+window.rc24Page = rc24Page;
