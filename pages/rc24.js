@@ -69,6 +69,7 @@ function Rc24Page() {
           RC Realistic V3
         </h1>
         <div class="flex flex-wrap gap-2 mt-3">
+        <span class="badge bg-purple-600 text-white border border-purple-700 dark:bg-purple-500 dark:border-purple-400">T20 WC 2026</span>
           <span class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs font-bold rounded-full border border-blue-100 dark:border-blue-800">v4.6</span>
           <span class="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
             <span class="material-icons text-[12px]">security</span> Anti-ban
