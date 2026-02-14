@@ -84,11 +84,10 @@ function Rc20Page() {
           RC20 Mod Menu
         </h1>
         <div class="flex flex-wrap gap-2 mt-3">
-          <span class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs font-bold rounded-full border border-blue-100 dark:border-blue-800">v6.1</span>
-          <span class="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold rounded-full border border-green-100 dark:border-green-800">No Root</span>
-          <span class="px-3 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-300 text-xs font-bold rounded-full border border-red-100 dark:border-red-800 flex items-center gap-1">
-            <span class="material-icons text-[12px]">shield</span> Anti-ban
-          </span>
+         <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v6.1</span>
+          <span class="badge bg-sky-500 text-white border border-sky-600 px-3 py-1 rounded-full text-xs font-medium">Non Root</span>
+          <span class="badge bg-amber-400 text-black border border-amber-500 px-3 py-1 rounded-full text-xs font-bold">PREMIUM</span>
+            <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">Anti-Ban</span>
         </div>
       </div>
     </div>
