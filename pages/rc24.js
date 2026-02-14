@@ -130,21 +130,21 @@ function Rc24Page() {
 
      <div class="p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col justify-between relative overflow-hidden">
     <div>
-      <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Download Real Cricket</h3>
+      <h3 class="text-xl font-bold mb-3 text-slate-900 dark:text-white">Download Real Cricket New Patch</h3>
       <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-8">
         Get the latest version with updated T20WC jerseys, sponsors, and enhanced graphics directly to your device.
       </p>
     </div>
     
     <div class="space-y-4 relative z-10">
-      <button onclick="window.startDownload('wcc3')" 
-              class="w-full relative overflow-hidden p-4 rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-300 group transform hover:-translate-y-1 flex items-center justify-center">
+      <a href="https://dupload.net/4578qs5o0vlg" target="_blank" rel="noopener noreferrer"
+         class="w-full block relative overflow-hidden p-4 rounded-full shadow-lg hover:shadow-blue-500/25 transition-all duration-300 group transform hover:-translate-y-1">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600"></div>
         <div class="relative flex items-center justify-center gap-2 text-white">
             <span class="material-icons text-white">download</span>
             <span class="text-xl font-bold">Download Now</span>
         </div>
-      </button>
+      </a>
     </div>
   </div>
   `;
