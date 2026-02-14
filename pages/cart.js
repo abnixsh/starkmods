@@ -63,6 +63,3 @@ Function CartPage() {
 
 // register for router
 window.CartPage = CartPage;
-
-
-Make this also smooth and better design
