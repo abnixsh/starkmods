@@ -68,13 +68,13 @@ function Wcc3Page() {
           WCC3 VIP Mod Menu
         </h1>
         <div class="flex flex-wrap gap-2 mt-3">
-          <span class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs font-bold rounded-full border border-blue-100 dark:border-blue-800">v3.2.3</span>
-          <span class="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold rounded-full border border-green-100 dark:border-green-800">No Root</span>
+          <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v3.2.3</span>
+          <span class="badge bg-sky-500 text-white border border-sky-600 px-3 py-1 rounded-full text-xs font-medium">Non Root</span>
           <span class="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
-            <span class="material-icons text-[12px]">security</span> Anti-ban
+         Anti-ban
           </span>
           <span class="px-3 py-1 bg-gradient-to-r from-yellow-400 to-amber-600 text-black text-xs font-black rounded-full shadow-md flex items-center gap-1">
-            <span class="material-icons text-[14px]">stars</span> VIP
+          VIP
           </span>
         </div>
       </div>
