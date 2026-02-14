@@ -193,9 +193,6 @@ function HomePage() {
           <div class="app-card-screenshots mb-5 rounded-2xl overflow-hidden bg-black h-40 relative group cursor-pointer shadow-inner" onclick="window.router.navigateTo('/rc25')">
              <img src="assets/img/img_rc25_1.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110 opacity-90 group-hover:opacity-100" onerror="this.src='https://placehold.co/320x180?text=RC25'">
              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-             <div class="absolute bottom-3 left-3 bg-white/20 backdrop-blur-md border border-white/20 px-2 py-1 rounded-lg text-[10px] text-white font-bold flex items-center gap-1 shadow-lg">
-               <span class="material-icons text-[10px]">visibility</span> Preview
-             </div>
           </div>
 
           <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed px-1">
