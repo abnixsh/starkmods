@@ -1,4 +1,4 @@
-function rc24Page() {
+function Rc24Page() {
   // Styles for animations and carousel behavior
   const styles = `
     <style>
@@ -178,4 +178,4 @@ function createFeatureItem(text) {
   `;
 }
 
-window.rc24Page = rc24Page;
+window.Rc24Page = Rc24Page;
