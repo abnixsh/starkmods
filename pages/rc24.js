@@ -66,7 +66,7 @@ function Rc24Page() {
       
       <div>
         <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          WCC3 VIP Mod Menu
+          RC Realistic V3
         </h1>
         <div class="flex flex-wrap gap-2 mt-3">
           <span class="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-xs font-bold rounded-full border border-blue-100 dark:border-blue-800">v4.6</span>
