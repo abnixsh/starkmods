@@ -5,7 +5,7 @@ const INR_PER_USD = 90;
 const COMMISSION_RATE = 0.10; // 10%
 const STANDARD_LINKS = {
   'rc24': 'https:/t.me/imsergiomoreio',
-  'rc20': 'https:/t.me/imsergiomoreio',
+  'rc20': 'https://github.com/abnixsh/starkmods/releases/download/cr20v6.1/RC20.VIP.v6.1.Mod.apk',
   'wcc3': 'https:/t.me/imsergiomoreio',
 };
 
