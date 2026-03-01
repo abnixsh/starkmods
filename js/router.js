@@ -8,7 +8,7 @@ class Router {
     this.addRoute('/', 'home');
     this.addRoute('/cart', 'cart');
     this.addRoute('/checkout', 'checkout');
-
+ this.addRoute('/order-details', 'orderDetails');
     this.addRoute('/rc20', 'rc20');
     this.addRoute('/rc24', 'rc24');
     this.addRoute('/rcswipe', 'rcswipe');
@@ -269,6 +269,7 @@ class Router {
       'cart': 'CartPage',
       'checkout': 'CheckoutPage',
       'profile': 'ProfilePage',
+      'orderDetails': 'OrderDetailsPage', 
       'admin': 'AdminPage',        // fallback if special case not used
       'contact': 'ContactPage',
       'terms': 'TermsPage',
