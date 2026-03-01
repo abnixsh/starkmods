@@ -30,7 +30,7 @@
       isShort: true,
       vPhoneLink: VPHONE_LINK,
       // WCC3 Mod Link: Will use Admin Panel link first. If empty, uses this placeholder.
-      modLink: '#', 
+      modLink: 'https://github.com/abnixsh/starkmods/releases/download/wcc3/WCC3.VIP.v3.2.3.apk', 
       steps: [
         '<b>Step 1:</b> Download <b>VPhoneGaGa</b> from the Play Store button below.',
         '<b>Step 2:</b> Download the <b>WCC3 Mod</b> from the blue button.',
