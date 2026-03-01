@@ -182,11 +182,24 @@ function HomePage() {
             <div>
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC25 Fan-Made</div>
               <div class="text-[10px] text-slate-500 font-mono mb-2">Patch Update of RC20</div>
-              <div class="flex gap-1.5">
-                <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v7+</span>
-                <span class="badge bg-sky-500 text-white border border-sky-600 px-3 py-1 rounded-full text-xs font-medium">Free</span>
-                <span class="badge bg-orange-500 text-white border border-orange-600 px-3 py-1 rounded-full text-xs font-medium">New Update</span>
-              </div>
+             <div class="flex flex-wrap items-center gap-2 mt-2">
+
+  <!-- Badge 1: Version -->
+  <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-red-800 text-white border border-red-900 shadow-sm whitespace-nowrap">
+    v7+
+  </span>
+
+  <!-- Badge 2: Free -->
+  <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-sky-500 text-white border border-sky-600 shadow-sm whitespace-nowrap">
+    Free
+  </span>
+
+  <!-- Badge 3: New Update -->
+  <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-orange-500 text-white border border-orange-600 shadow-sm whitespace-nowrap">
+    New Update
+  </span>
+
+</div>
             </div>
           </div>
 
@@ -212,11 +225,24 @@ function HomePage() {
             <div>
               <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC Realistic V3</div>
               <div class="text-[10px] text-slate-500 font-mono mb-2">Patch makes game better</div>
-              <div class="flex gap-1.5">
-                <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v4.6</span>
-                <span class="badge bg-purple-600 text-white border border-purple-700 dark:bg-purple-500 dark:border-purple-400">T20 WC 2026</span>
-                <span class="badge bg-sky-500 text-white border border-sky-600 px-3 py-1 rounded-full text-xs font-medium">Free</span>
-              </div>
+              <div class="flex flex-wrap items-center gap-2">
+  
+  <!-- Badge 1: Version -->
+  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-red-800 text-white border border-red-900 shadow-sm whitespace-nowrap">
+    v4.6
+  </span>
+
+  <!-- Badge 2: Tournament -->
+  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-purple-600 dark:bg-purple-500 text-white border border-purple-700 dark:border-purple-400 shadow-sm whitespace-nowrap">
+    T20 WC 2026
+  </span>
+
+  <!-- Badge 3: Free -->
+  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-sky-500 text-white border border-sky-600 shadow-sm whitespace-nowrap">
+    Free
+  </span>
+
+</div>
             </div>
           </div>
 
