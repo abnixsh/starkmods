@@ -162,14 +162,19 @@
       if (!isSub) {
         downloadsHTML = `
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-            <!-- 1. VPhoneGaGa Card -->
+                       <!-- 1. VPhoneGaGa Card (UPDATED ICON) -->
             <a href="${config.vPhoneLink}" target="_blank"
                class="group relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-lg hover:shadow-xl transition-all active:scale-[0.98]">
                <div class="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent"></div>
                <div class="relative z-10 flex items-center gap-4">
-                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/30 text-white">
-                     <span class="material-icons text-2xl">android</span>
+                  <!-- NEW ICON CODE START -->
+                  <div class="w-12 h-12 rounded-2xl bg-white shadow-lg shadow-slate-200/50 overflow-hidden flex-shrink-0 border border-slate-100 dark:border-slate-700">
+                     <img src="assets/icons/vphoneos.jpg" 
+                          class="w-full h-full object-cover" 
+                          onerror="this.src='https://placehold.co/48?text=VP'">
                   </div>
+                  <!-- NEW ICON CODE END -->
+                  
                   <div>
                      <div class="text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wider mb-0.5">Required App</div>
                      <div class="text-lg font-black text-slate-900 dark:text-white">VPhoneGaGa</div>
@@ -180,7 +185,6 @@
                   <span class="material-icons text-slate-300">arrow_forward_ios</span>
                </div>
             </a>
-
             <!-- 2. Mod Injector Card -->
             <a href="${finalModLink}" target="_blank"
                class="group relative overflow-hidden rounded-3xl bg-blue-600 p-5 shadow-xl shadow-blue-600/30 transition-all active:scale-[0.98]">
