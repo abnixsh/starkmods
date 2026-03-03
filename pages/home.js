@@ -58,7 +58,7 @@ function HomePage() {
     if (!isAdmin && isHidden(id)) return '';
     const extraClasses = isHidden(id) ? 'opacity-50 grayscale' : '';
     
-    // iOS Glass Card Class
+    // iOS Glass Card Class for Grid Items
     return `
       <article class="app-card ios-glass-card group p-5 hover:-translate-y-1 transition-all duration-300 ${extraClasses}"
                data-card-id="${id}">
@@ -74,7 +74,6 @@ function HomePage() {
     const s = document.createElement('style');
     s.id = 'stark-hero-v3';
     s.textContent = `
-      /* Import the specific script font that matches your image */
       @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -129,14 +128,15 @@ function HomePage() {
 
       /* iOS Button Style */
       .ios-btn {
-        background: rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(4px);
-        border: 1px solid rgba(0,0,0,0.05);
+        background: rgba(255, 255, 255, 0.5); /* Slightly more opaque for visibility on plain bg */
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.5);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
       }
       .dark .ios-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255,255,255,0.05);
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(255,255,255,0.1);
       }
       .ios-btn:active {
         transform: scale(0.96);
@@ -159,17 +159,17 @@ function HomePage() {
   return `
   <div class="max-w-6xl mx-auto pb-24 animate-fade-in relative px-3 sm:px-6 pt-6">
 
-    <!-- ===== HERO SECTION ===== -->
-    <section class="ios-glass-panel mb-8 text-center p-8 sm:p-12 shadow-2xl isolate overflow-visible">
+    <!-- ===== HERO SECTION (No Background Card) ===== -->
+    <section class="mb-4 text-center py-10 px-4 isolate relative">
        
        <!-- Floating particles -->
-       <div class="stark-particle w-2 h-2 bg-blue-400 top-10 left-10 rounded-full blur-[1px] absolute opacity-50"></div>
-       <div class="stark-particle w-3 h-3 bg-purple-400 bottom-10 right-10 rounded-full blur-[2px] absolute opacity-50"></div>
+       <div class="stark-particle w-2 h-2 bg-blue-400 top-0 left-10 rounded-full blur-[1px] absolute opacity-50"></div>
+       <div class="stark-particle w-3 h-3 bg-purple-400 bottom-0 right-10 rounded-full blur-[2px] absolute opacity-50"></div>
 
        <div class="relative z-10 flex flex-col items-center">
           
           <!-- Live Badge -->
-          <div class="stark-in inline-flex items-center gap-2 py-1.5 px-3 rounded-full bg-white/50 dark:bg-black/30 backdrop-blur-md border border-white/20 shadow-sm mb-2">
+          <div class="stark-in inline-flex items-center gap-2 py-1.5 px-3 rounded-full bg-white/40 dark:bg-black/20 backdrop-blur-md border border-white/20 shadow-sm mb-2">
             <span class="relative flex h-2 w-2">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
@@ -179,7 +179,7 @@ function HomePage() {
             </span>
           </div>
 
-          <!-- TITLE: Solid Color, No Animation, Script Font -->
+          <!-- TITLE: Solid Color, No Animation, Script Font, No Background -->
           <h1 class="stark-in stark-script-font text-6xl sm:text-8xl text-slate-800 dark:text-white select-none leading-none pb-2 pt-2 drop-shadow-sm" style="animation-delay: 0.1s">
             Stark Mods
           </h1>
@@ -222,7 +222,7 @@ function HomePage() {
        </div>
     </section>
 
-    <!-- ===== STATS ===== -->
+    <!-- ===== STATS (Kept Glass Panel) ===== -->
     <div class="grid grid-cols-4 gap-3 mb-8 px-1">
        <div class="ios-glass-panel p-3 text-center flex flex-col items-center justify-center">
           <div class="text-xl sm:text-2xl font-black text-blue-600">5+</div>
@@ -242,7 +242,7 @@ function HomePage() {
        </div>
     </div>
 
-    <!-- ===== SEARCH BAR ===== -->
+    <!-- ===== SEARCH BAR (Kept Glass Panel) ===== -->
     <div class="sticky top-20 z-40 mb-8 mx-auto max-w-4xl">
       <div class="ios-glass-panel flex items-center p-1.5 ring-1 ring-black/5">
          <div class="relative flex-1 group pl-2">
@@ -264,7 +264,7 @@ function HomePage() {
       </div>
     </div>
 
-    <!-- ===== MODS GRID (Glass Cards) ===== -->
+    <!-- ===== MODS GRID (Kept Glass Cards) ===== -->
     <section class="grid md:grid-cols-3 gap-6" id="mods-grid">
 
       ${renderCard('rc25', `
