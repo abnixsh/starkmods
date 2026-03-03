@@ -70,9 +70,9 @@ function HomePage() {
   };
 
   // Inject styles once
-  if (!document.getElementById('stark-hero-v5')) {
+  if (!document.getElementById('stark-hero-v4')) {
     const s = document.createElement('style');
-    s.id = 'stark-hero-v5';
+    s.id = 'stark-hero-v4';
     s.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
@@ -81,11 +81,10 @@ function HomePage() {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       }
 
-      /* The Calligraphy Font matching your image */
+      /* The Script Font Class */
       .stark-script-font {
         font-family: 'Great Vibes', cursive;
-        font-weight: 400 !important; /* Force non-bold */
-        font-style: normal;
+        font-weight: 400; /* Not bold */
       }
 
       /* --- iOS GLASS MORPHISM CSS --- */
@@ -159,7 +158,7 @@ function HomePage() {
         transform: scale(0.95);
       }
 
-      /* --- SVG ANIMATION --- */
+      /* --- ANIMATIONS (Restored) --- */
       .stark-stroke-path {
         stroke-dasharray: 1500;
         stroke-dashoffset: 1500;
@@ -174,7 +173,36 @@ function HomePage() {
         100% { stroke-dashoffset: 0; }
       }
 
-      /* Entrance Animation */
+      .stark-title-reveal {
+        opacity: 0;
+        animation: starkTitleIn 1s ease forwards;
+        animation-delay: 2.2s;
+      }
+      @keyframes starkTitleIn {
+        0% { opacity: 0; transform: scale(0.96); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+
+      .stark-shimmer {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+      }
+      .stark-shimmer::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+        animation: starkShimmer 4s ease-in-out infinite;
+        animation-delay: 3.5s;
+        pointer-events: none;
+      }
+      @keyframes starkShimmer {
+        0% { left: -100%; }
+        50% { left: 150%; }
+        100% { left: 150%; }
+      }
+      
       .stark-in { 
         opacity: 0; 
         transform: translateY(16px); 
@@ -187,7 +215,7 @@ function HomePage() {
     document.head.appendChild(s);
   }
 
-  // Generate SVG path for "Stark Mods" handwriting effect
+  // Generate SVG path for "Stark Mods" handwriting effect (Restored)
   const svgHandwriting = `
     <svg viewBox="0 0 500 100" class="w-full max-w-md mx-auto h-20 sm:h-28 overflow-visible" aria-hidden="true">
       <defs>
@@ -233,16 +261,17 @@ function HomePage() {
             </span>
           </div>
 
-          <!-- SVG Handwriting Animation -->
+          <!-- SVG Handwriting Animation (Restored) -->
           <div class="mb-2 transform scale-90 sm:scale-100">
             ${svgHandwriting}
           </div>
 
-          <!-- TITLE: Solid Color, No Animation, Great Vibes Font -->
-          <!-- Using text-slate-800 for dark grey (close to black) and white for dark mode -->
-          <h1 class="stark-in stark-script-font text-7xl sm:text-8xl text-slate-800 dark:text-white select-none leading-none pb-4 -mt-4 drop-shadow-sm" style="animation-delay: 0.1s">
-            Stark Mods
-          </h1>
+          <!-- TITLE: Great Vibes Font + Gradient + Shimmer (Restored Style) -->
+          <div class="stark-shimmer -mt-4">
+            <h1 class="stark-title-reveal stark-script-font text-6xl sm:text-8xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent select-none leading-tight pb-4">
+              Stark Mods
+            </h1>
+          </div>
           
           <!-- Tagline -->
           <p class="stark-in text-sm sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-xl mx-auto leading-relaxed font-medium mt-2" style="animation-delay: 3s">
