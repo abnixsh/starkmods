@@ -47,7 +47,7 @@ function HomePage() {
       <div class="flex justify-between items-center mb-2">
         ${hiddenNote}
         <button onclick="window.toggleHomeCard('${id}')"
-                class="ml-auto text-slate-500 hover:text-red-500 text-[10px] flex items-center gap-1 bg-white/50 px-2 py-1 rounded-full backdrop-blur-sm transition shadow-sm border border-slate-200/50">
+                class="ml-auto text-slate-500 hover:text-red-500 text-[10px] flex items-center gap-1 bg-white/50 px-2 py-1 rounded-full transition shadow-sm border border-slate-200/50">
           <span class="material-icons text-xs">${icon}</span>
           <span class="uppercase font-bold">${label}</span>
         </button>
@@ -68,99 +68,180 @@ function HomePage() {
       </article>`;
   };
 
-  // Inject hero animation styles once
-  if (!document.getElementById('stark-hero-styles')) {
+  // Inject styles once
+  if (!document.getElementById('stark-hero-v2')) {
     const s = document.createElement('style');
-    s.id = 'stark-hero-styles';
+    s.id = 'stark-hero-v2';
     s.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
-      .stark-cursive {
-        font-family: 'Dancing Script', cursive;
+      .stark-title-font {
+        font-family: 'Pacifico', cursive;
       }
 
-      /* GPU-accelerated write animation using transform only */
-      @keyframes starkWrite {
-        0% {
-          opacity: 0;
-          transform: translate3d(0, 20px, 0) scale(0.9);
-          filter: blur(8px);
-        }
-        40% {
-          opacity: 1;
-          filter: blur(0px);
-        }
-        100% {
-          opacity: 1;
-          transform: translate3d(0, 0, 0) scale(1);
-          filter: blur(0px);
-        }
+      /* SVG handwriting stroke animation */
+      .stark-stroke-path {
+        stroke-dasharray: 1500;
+        stroke-dashoffset: 1500;
+        animation: starkDraw 3s ease forwards;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      @keyframes starkDraw {
+        0% { stroke-dashoffset: 1500; }
+        100% { stroke-dashoffset: 0; }
       }
 
-      /* Smooth glow pulse — no layout thrash */
-      @keyframes starkGlow {
-        0%, 100% {
-          text-shadow: 0 0 20px rgba(99,102,241,0.2);
-        }
-        50% {
-          text-shadow: 0 0 40px rgba(99,102,241,0.35), 0 0 80px rgba(168,85,247,0.15);
-        }
+      /* Title gradient fill fades in after stroke */
+      .stark-title-reveal {
+        opacity: 0;
+        animation: starkTitleIn 1s ease forwards;
+        animation-delay: 2.2s;
+      }
+      @keyframes starkTitleIn {
+        0% { opacity: 0; transform: scale(0.96); }
+        100% { opacity: 1; transform: scale(1); }
       }
 
-      @keyframes starkFadeUp {
-        to {
-          opacity: 1;
-          transform: translate3d(0, 0, 0);
-        }
+      /* Underline draws in */
+      .stark-underline {
+        width: 0;
+        animation: starkLineIn 0.8s ease forwards;
+        animation-delay: 2.8s;
+      }
+      @keyframes starkLineIn {
+        to { width: 120px; }
       }
 
-      @keyframes starkDot {
-        0%, 100% { opacity: 0.5; }
+      /* Staggered fade-in */
+      .stark-in {
+        opacity: 0;
+        transform: translateY(16px);
+        animation: starkElIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      @keyframes starkElIn {
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Floating particles */
+      .stark-particle {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0;
+        animation: starkFloat 6s ease-in-out infinite;
+        pointer-events: none;
+      }
+      @keyframes starkFloat {
+        0% { opacity: 0; transform: translateY(0) scale(0); }
+        20% { opacity: 0.6; transform: translateY(-20px) scale(1); }
+        80% { opacity: 0.3; transform: translateY(-80px) scale(0.8); }
+        100% { opacity: 0; transform: translateY(-120px) scale(0); }
+      }
+
+      /* Cursor blink after writing */
+      .stark-cursor {
+        display: inline-block;
+        width: 3px;
+        height: 1em;
+        background: currentColor;
+        margin-left: 4px;
+        opacity: 0;
+        animation: starkCursorBlink 1s step-end infinite;
+        animation-delay: 2.2s;
+        vertical-align: text-bottom;
+      }
+      @keyframes starkCursorBlink {
+        0%, 100% { opacity: 0; }
         50% { opacity: 1; }
       }
 
-      .stark-hello {
-        animation: starkWrite 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        opacity: 0;
-        will-change: transform, opacity;
+      /* Shimmer sweep on title */
+      .stark-shimmer {
+        position: relative;
+        overflow: hidden;
       }
-
-      .stark-hello-done {
-        animation: starkGlow 4s ease-in-out 2s infinite;
+      .stark-shimmer::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: starkShimmer 4s ease-in-out infinite;
+        animation-delay: 3.5s;
+        pointer-events: none;
       }
-
-      .stark-fade {
-        opacity: 0;
-        transform: translate3d(0, 12px, 0);
-        animation: starkFadeUp 0.7s ease forwards;
-        will-change: transform, opacity;
+      @keyframes starkShimmer {
+        0% { left: -100%; }
+        50% { left: 150%; }
+        100% { left: 150%; }
       }
     `;
     document.head.appendChild(s);
-
-    // Add the glow class after initial animation completes
-    setTimeout(() => {
-      const el = document.querySelector('.stark-hello');
-      if (el) el.classList.add('stark-hello-done');
-    }, 2000);
   }
+
+  // Generate SVG path for "Stark Mods" handwriting effect
+  const svgHandwriting = `
+    <svg viewBox="0 0 500 100" class="w-full max-w-md mx-auto h-20 sm:h-28 overflow-visible" aria-hidden="true">
+      <defs>
+        <linearGradient id="starkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#3b82f6"/>
+          <stop offset="40%" style="stop-color:#8b5cf6"/>
+          <stop offset="70%" style="stop-color:#ec4899"/>
+          <stop offset="100%" style="stop-color:#f59e0b"/>
+        </linearGradient>
+      </defs>
+      <!-- S -->
+      <path class="stark-stroke-path" stroke="url(#starkGrad)"
+            d="M30,65 C30,45 15,40 15,55 C15,70 45,75 45,55 C45,40 25,35 25,50" style="animation-delay:0s"/>
+      <!-- t -->
+      <path class="stark-stroke-path" stroke="url(#starkGrad)"
+            d="M55,30 L55,75 M45,45 L65,45" style="animation-delay:0.3s"/>
+      <!-- a -->
+      <path class="stark-stroke-path" stroke="url(#starkGrad)"
+            d="M85,50 C75,45 65,50 70,60 C75,70 85,70 85,60 L85,75" style="animation-delay:0.6s"/>
+      <!-- r -->
+      <path class="stark-stroke-path" stroke="url(#starkGrad)"
+            d="M95,50 L95,75 M95,55 C100,45 115,45 115,55" style="animation-delay:0.9s"/>
+      <!-- k -->
+      <path class="stark-stroke-path" stroke="url(#starkGrad)"
+            d="M125,30 L125,75 M140,50 L125,60 L142,75" style="animation-delay:1.2s"/>
+      <!-- space + M -->
+      <path class="stark-stroke-path" stroke="url(#starkGrad)"
+            d="M175,75 L175,40 L195,65 L215,40 L215,75" style="animation-delay:1.5s"/>
+      <!-- o -->
+      <path class="stark-stroke-path" stroke="url(#starkGrad)"
+            d="M235,60 C235,48 250,48 250,60 C250,72 235,72 235,60" style="animation-delay:1.8s"/>
+      <!-- d -->
+      <path class="stark-stroke-path" stroke="url(#starkGrad)"
+            d="M270,60 C260,50 255,55 258,63 C261,71 270,72 270,60 L270,30 L270,75" style="animation-delay:2.0s"/>
+      <!-- s -->
+      <path class="stark-stroke-path" stroke="url(#starkGrad)"
+            d="M285,55 C285,48 278,48 278,53 C278,58 290,58 290,63 C290,70 280,70 280,65" style="animation-delay:2.2s"/>
+    </svg>
+  `;
 
   return `
   <div class="max-w-6xl mx-auto pb-24 animate-fade-in relative px-3 sm:px-6">
 
-    <!-- ===== HERO SECTION ===== -->
+    <!-- ===== HERO ===== -->
     <section class="relative rounded-[2rem] p-6 sm:p-12 mb-8 text-center overflow-hidden border border-white/30 dark:border-slate-700/50 shadow-2xl isolate">
        
        <div class="absolute inset-0 bg-white/60 dark:bg-slate-900/60 -z-10"></div>
-       <div class="absolute -top-32 -left-32 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -z-20"></div>
-       <div class="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -z-20"></div>
+       
+       <!-- Floating particles -->
+       <div class="stark-particle w-2 h-2 bg-blue-400 top-1/4 left-1/4" style="animation-delay:0s"></div>
+       <div class="stark-particle w-1.5 h-1.5 bg-purple-400 top-1/3 right-1/4" style="animation-delay:1.5s"></div>
+       <div class="stark-particle w-2 h-2 bg-pink-400 bottom-1/4 left-1/3" style="animation-delay:3s"></div>
+       <div class="stark-particle w-1 h-1 bg-amber-400 top-1/2 right-1/3" style="animation-delay:4.5s"></div>
+       <div class="stark-particle w-1.5 h-1.5 bg-indigo-400 bottom-1/3 right-1/5" style="animation-delay:2s"></div>
 
        <div class="relative z-10 flex flex-col items-center">
           
-          <!-- Live badge -->
-          <div class="stark-fade inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/40 dark:bg-black/30 border border-white/30 dark:border-slate-600/30 mb-6 shadow-sm" style="animation-delay:0.2s">
+          <!-- Live Badge -->
+          <div class="stark-in inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/40 dark:bg-black/30 border border-white/30 dark:border-slate-600/30 mb-6 shadow-sm" style="animation-delay:0.1s">
             <span class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full rounded-full bg-green-400" style="animation:starkDot 2s infinite"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
             <span class="text-[10px] font-bold uppercase tracking-widest text-slate-700 dark:text-slate-200">
@@ -168,18 +249,30 @@ function HomePage() {
             </span>
           </div>
 
-          <!-- Cursive Hello-Style Title -->
-          <h1 class="stark-hello stark-cursive text-7xl sm:text-9xl font-bold bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400 bg-clip-text text-transparent pb-2 select-none leading-tight">
-            Stark Mods
-          </h1>
+          <!-- SVG Handwriting Animation -->
+          <div class="mb-2">
+            ${svgHandwriting}
+          </div>
+
+          <!-- Real Title (fades in after SVG draws) -->
+          <div class="stark-shimmer">
+            <h1 class="stark-title-reveal stark-title-font text-5xl sm:text-7xl bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent select-none leading-tight">
+              Stark Mods<span class="stark-cursor text-purple-500"></span>
+            </h1>
+          </div>
+
+          <!-- Decorative underline -->
+          <div class="flex justify-center mt-2 mb-4">
+            <div class="stark-underline h-[3px] rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+          </div>
           
-          <!-- Subtitle -->
-          <p class="stark-fade text-sm sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-xl mx-auto leading-relaxed font-medium opacity-90" style="animation-delay:0.8s">
+          <!-- Tagline -->
+          <p class="stark-in text-sm sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-xl mx-auto leading-relaxed font-medium" style="animation-delay:3s">
             Premium, Secure & Anti-Ban Mod Menus.<br class="hidden sm:block"> Unlock the ultimate gaming experience.
           </p>
           
           <!-- Action Buttons -->
-          <div class="stark-fade grid grid-cols-3 gap-3 w-full sm:w-auto" style="animation-delay:1s">
+          <div class="stark-in grid grid-cols-3 gap-3 w-full sm:w-auto" style="animation-delay:3.2s">
              <button onclick="document.getElementById('search-mods').focus()" 
                      class="btn bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 text-white dark:text-black py-3.5 rounded-2xl font-bold shadow-lg transition transform active:scale-95 flex flex-col sm:flex-row items-center justify-center gap-1 sm:px-8">
                <span class="material-icons text-lg sm:text-base">search</span> 
@@ -203,7 +296,7 @@ function HomePage() {
        </div>
     </section>
 
-    <!-- ===== STATS ===== -->
+    <!-- ===== STATS (same as original) ===== -->
     <div class="grid grid-cols-4 gap-3 mb-8 px-1">
        <div class="bg-white/60 dark:bg-slate-800/60 p-3 rounded-2xl border border-white/40 dark:border-slate-700/50 text-center shadow-sm cursor-default">
           <div class="text-lg sm:text-2xl font-black text-blue-600">5+</div>
@@ -223,19 +316,16 @@ function HomePage() {
        </div>
     </div>
 
-    <!-- ===== SEARCH BAR ===== -->
+    <!-- ===== SEARCH (same as original) ===== -->
     <div class="sticky top-20 z-30 mb-8 mx-auto max-w-4xl">
       <div class="flex gap-2 p-2 rounded-[1.5rem] bg-white/70 dark:bg-slate-900/70 border border-white/40 dark:border-slate-700/50 shadow-lg ring-1 ring-black/5">
-         
          <div class="relative flex-1 group">
             <span class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition">search</span>
             <input type="text" id="search-mods" onkeyup="window.filterMods()" 
                    placeholder="Search..."
                    class="w-full pl-12 pr-4 py-3 bg-transparent border-none outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 font-medium">
          </div>
-         
          <div class="relative border-l border-slate-200 dark:border-slate-700 my-1"></div>
-
          <select id="filter-category" onchange="window.filterMods()" 
                  class="px-4 py-2 bg-transparent border-none outline-none text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition appearance-none">
             <option value="all">All</option>
@@ -245,7 +335,7 @@ function HomePage() {
       </div>
     </div>
 
-    <!-- ===== MODS GRID ===== -->
+    <!-- ===== MODS GRID (same as original) ===== -->
     <section class="grid md:grid-cols-3 gap-6" id="mods-grid">
 
       ${renderCard('rc25', `
@@ -262,16 +352,13 @@ function HomePage() {
               </div>
             </div>
           </div>
-
           <div class="app-card-screenshots mb-5 rounded-2xl overflow-hidden bg-black h-40 relative group cursor-pointer shadow-inner" onclick="window.router.navigateTo('/rc25')">
              <img src="assets/img/img_rc25_1.jpg" loading="lazy" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300" onerror="this.src='https://placehold.co/320x180?text=RC25'">
              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
           </div>
-
           <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed px-1">
             The ultimate RC25 Patch. Enhanced graphics, updated squads, and optimized gameplay for Real Cricket fans.
           </p>
-
           <button onclick="window.router.navigateTo('/rc25')" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3.5 rounded-2xl font-bold shadow-lg shadow-blue-500/20 transition transform active:scale-[0.98] flex items-center justify-center gap-2 group">
             <span>Download</span> <span class="material-icons text-xs transition-transform group-hover:translate-x-1">arrow_forward</span>
           </button>
@@ -292,16 +379,13 @@ function HomePage() {
               </div>
             </div>
           </div>
-
           <div class="app-card-screenshots mb-5 rounded-2xl overflow-hidden bg-black h-40 relative group cursor-pointer shadow-inner" onclick="window.router.navigateTo('/rc24')">
              <img src="assets/img/img_rc24_1.jpg" loading="lazy" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300" onerror="this.src='https://placehold.co/320x180?text=RC24'">
              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
           </div>
-
           <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed px-1">
             New T20 World Cup 2026 Jerseys, Realistic patch with enhanced textures, realistic stadiums, and updated player faces.
           </p>
-
           <button onclick="window.router.navigateTo('/rc24')" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3.5 rounded-2xl font-bold shadow-lg shadow-blue-500/20 transition transform active:scale-[0.98] flex items-center justify-center gap-2 group">
             <span>Download</span> <span class="material-icons text-xs transition-transform group-hover:translate-x-1">arrow_forward</span>
           </button>
@@ -321,16 +405,13 @@ function HomePage() {
               </div>
             </div>
           </div>
-
           <div class="app-card-screenshots mb-5 rounded-2xl overflow-hidden bg-black h-40 relative group cursor-pointer shadow-inner" onclick="window.router.navigateTo('/rc20')">
              <img src="assets/img/img_rc20_1.jpg" loading="lazy" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300" onerror="this.src='https://placehold.co/320x180?text=RC20'">
              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
           </div>
-
           <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed px-1">
             VIP Mod Menu. Features include Timing Hack, Unlimited Coins/Tickets, All Tournaments Unlocked.
           </p>
-
           <button onclick="window.router.navigateTo('/rc20')" class="w-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 dark:text-black text-white py-3.5 rounded-2xl font-bold shadow-lg transition transform active:scale-[0.98] flex items-center justify-center gap-2 group">
             <span>View Details</span> <span class="material-icons text-xs transition-transform group-hover:translate-x-1">visibility</span>
           </button>
@@ -350,16 +431,13 @@ function HomePage() {
               </div>
             </div>
           </div>
-
           <div class="app-card-screenshots mb-5 rounded-2xl overflow-hidden bg-black h-40 relative group cursor-pointer shadow-inner" onclick="window.router.navigateTo('/wcc3')">
              <img src="assets/img/img_wcc3_1.jpg" loading="lazy" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-300" onerror="this.src='https://placehold.co/320x180?text=WCC3'">
              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
           </div>
-
           <p class="text-xs text-slate-600 dark:text-slate-300 mb-6 flex-1 leading-relaxed px-1">
             VIP Mod Menu with Career Mode Unlock, Unlimited Platinum, NPL Auction & more.
           </p>
-
           <button onclick="window.router.navigateTo('/wcc3')" class="w-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-200 dark:text-black text-white py-3.5 rounded-2xl font-bold shadow-lg transition transform active:scale-[0.98] flex items-center justify-center gap-2 group">
             <span>View Details</span> <span class="material-icons text-xs transition-transform group-hover:translate-x-1">visibility</span>
           </button>
@@ -372,23 +450,20 @@ function HomePage() {
 }
 
 // ----------------------
-// SEARCH & FILTER
+// SEARCH & FILTER (same as original)
 // ----------------------
 window.filterMods = function() {
    const query = document.getElementById('search-mods').value.toLowerCase();
    const filter = document.getElementById('filter-category').value;
    const cards = document.querySelectorAll('.app-card');
-
    let foundCount = 0;
 
    cards.forEach(card => {
       const text = card.innerText.toLowerCase();
       const isFree = text.includes('free');
       const isPremium = text.includes('premium') || text.includes('paid');
-      
       let matchesSearch = text.includes(query);
       let matchesFilter = true;
-
       if (filter === 'free' && !isFree) matchesFilter = false;
       if (filter === 'premium' && !isPremium) matchesFilter = false;
 
@@ -414,8 +489,7 @@ window.filterMods = function() {
                 <span class="material-icons text-4xl mb-2 text-slate-300">search_off</span>
                 <p class="font-bold text-lg">No mods found</p>
                 <p class="text-sm">Try searching for "RC24" or "WCC3"</p>
-             </div>
-           `;
+             </div>`;
            grid.appendChild(noResultEl);
        }
    } else {
@@ -423,16 +497,10 @@ window.filterMods = function() {
    }
 };
 
-// Admin toggle
+// Admin toggle (same as original)
 window.toggleHomeCard = function (id) {
-  if (!window.isAdmin) {
-    alert('Only admin can hide/show cards.');
-    return;
-  }
-  if (!window.db) {
-    alert('Database not ready.');
-    return;
-  }
+  if (!window.isAdmin) { alert('Only admin can hide/show cards.'); return; }
+  if (!window.db) { alert('Database not ready.'); return; }
 
   let arr = Array.isArray(window.homeHiddenCards) ? window.homeHiddenCards.slice() : [];
   const idx = arr.indexOf(id);
