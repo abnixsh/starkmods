@@ -1,6 +1,6 @@
 // pages/home.js
 
-// Global state for hidden cards
+// --- 1. DATA LOGIC (UNCHANGED) ---
 window.homeHiddenCards = window.homeHiddenCards || [];
 window.homeConfigLoaded = window.homeConfigLoaded || false;
 window._homeConfigFetchStarted = window._homeConfigFetchStarted || false;
@@ -35,365 +35,319 @@ function HomePage() {
   const hiddenCards = Array.isArray(window.homeHiddenCards) ? window.homeHiddenCards : [];
   const isHidden = (id) => hiddenCards.includes(id);
 
+  // --- 2. ADMIN CONTROLS ---
   const adminControls = (id) => {
     if (!isAdmin) return '';
     const hidden = isHidden(id);
-    const label = hidden ? 'Show' : 'Hide';
+    const label = hidden ? 'SHOW' : 'HIDE';
     const icon  = hidden ? 'visibility' : 'visibility_off';
-    const hiddenNote = hidden
-      ? `<div class="mb-2 text-[10px] text-red-500 font-bold uppercase border border-red-200 bg-red-50 px-2 py-1 rounded inline-block">Hidden</div>`
-      : '';
     return `
-      <div class="flex justify-between items-center mb-2 z-20 relative">
-        ${hiddenNote}
+      <div class="absolute top-0 right-0 z-30">
         <button onclick="window.toggleHomeCard('${id}')"
-                class="ml-auto text-slate-500 hover:text-red-500 text-[10px] flex items-center gap-1 bg-white/50 px-2 py-1 rounded-full transition shadow-sm border border-slate-200/50">
-          <span class="material-icons text-xs">${icon}</span>
-          <span class="uppercase font-bold">${label}</span>
+                class="bg-red-600 text-white px-3 py-1 text-[10px] font-mono border-l border-b border-black hover:bg-red-700">
+          ${label}
         </button>
       </div>`;
   };
 
-  const renderCard = (id, innerHtml) => {
+  // --- 3. RENDER CARD (Cyberpunk Style) ---
+  const renderCard = (id, data) => {
     if (!isAdmin && isHidden(id)) return '';
     const extraClasses = isHidden(id) ? 'opacity-50 grayscale' : '';
-    
-    // iOS Glass Card Class
+    const { title, subtitle, icon, image, version, tags, link } = data;
+
     return `
-      <article class="app-card ios-glass-card group p-5 hover:-translate-y-1 transition-all duration-300 ${extraClasses}"
-               data-card-id="${id}">
+      <div class="cyber-card group relative bg-[#0a0a0a] border border-[#333] hover:border-cyan-500 transition-all duration-300 ${extraClasses}" data-card-id="${id}">
         ${adminControls(id)}
-        <div class="relative z-10 h-full">
-            ${innerHtml}
+        
+        <!-- Image Area with Cut Corner -->
+        <div class="relative h-40 overflow-hidden cursor-pointer cyber-image-mask" onclick="window.router.navigateTo('${link}')">
+            <img src="${image}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-transparent"></div>
+            
+            <!-- Version Badge (Tech Tag) -->
+            <div class="absolute top-2 left-2 bg-cyan-900/80 border border-cyan-500/50 px-2 py-0.5 text-[10px] text-cyan-100 font-mono">
+                VER: ${version}
+            </div>
         </div>
-      </article>`;
+
+        <!-- Content -->
+        <div class="p-4 relative">
+            <div class="absolute -top-6 right-4 w-12 h-12 bg-[#0a0a0a] border border-[#333] p-1 shadow-lg group-hover:border-cyan-500 transition-colors">
+                <img src="${icon}" class="w-full h-full object-cover">
+            </div>
+
+            <h3 class="text-xl font-bold text-white font-rajdhani uppercase tracking-wide group-hover:text-cyan-400 transition-colors">${title}</h3>
+            <p class="text-xs text-gray-500 font-mono mb-4">_TARGET: ${subtitle}</p>
+
+            <div class="flex items-center justify-between mt-4 border-t border-[#222] pt-3">
+                <div class="flex gap-2">
+                    ${tags.map(tag => `<span class="text-[9px] text-gray-400 border border-gray-700 px-1 uppercase">${tag}</span>`).join('')}
+                </div>
+                <button onclick="window.router.navigateTo('${link}')" 
+                   class="cyber-button text-xs font-bold bg-cyan-600 hover:bg-cyan-500 text-black px-4 py-1 clip-button transition-all">
+                   INITIALIZE >
+                </button>
+            </div>
+        </div>
+      </div>
+    `;
   };
 
-  // Inject styles once
-  if (!document.getElementById('stark-hero-v9')) {
+  // --- 4. CSS INJECTION (Futuristic Theme) ---
+  if (!document.getElementById('stark-cyber-v1')) {
     const s = document.createElement('style');
-    s.id = 'stark-hero-v9';
+    s.id = 'stark-cyber-v1';
     s.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+
+      :root {
+        --c-bg: #050505;
+        --c-accent: #00f0ff; /* Cyber Cyan */
+        --c-accent-dim: rgba(0, 240, 255, 0.1);
+        --c-purple: #bc13fe;
+      }
 
       body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        overflow-x: hidden;
+        font-family: 'Rajdhani', sans-serif;
+        background-color: var(--c-bg);
+        background-image: 
+          linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        color: #e2e8f0;
       }
 
-      /* --- MARQUEE (Scrolling Text) --- */
-      .stark-marquee-wrapper {
-        width: 100vw;
-        margin-left: calc(-50vw + 50%);
-        background: #000;
-        color: #fff;
-        padding: 8px 0;
-        overflow: hidden;
-        white-space: nowrap;
+      .font-rajdhani { font-family: 'Rajdhani', sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+      /* GLITCH TEXT EFFECT */
+      .glitch-text {
         position: relative;
-        /* CHANGED: Lower z-index so Header/Menu goes OVER it */
-        z-index: 0; 
-        margin-bottom: 2rem;
-        /* CHANGED: Increased negative margin to pull it UP more */
-        margin-top: -2.25rem; 
+        color: white;
       }
-      
-      .stark-marquee-content {
-        display: inline-block;
-        animation: marquee 20s linear infinite;
-        font-size: 13px;
+      .glitch-text::before, .glitch-text::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+      }
+      .glitch-text::before {
+        left: 2px; text-shadow: -1px 0 #ff00c1; clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim 5s infinite linear alternate-reverse;
+      }
+      .glitch-text::after {
+        left: -2px; text-shadow: -1px 0 #00fff9; clip: rect(44px, 450px, 56px, 0);
+        animation: glitch-anim2 5s infinite linear alternate-reverse;
+      }
+      @keyframes glitch-anim {
+        0% { clip: rect(12px, 9999px, 56px, 0); }
+        5% { clip: rect(68px, 9999px, 9px, 0); }
+        100% { clip: rect(10px, 9999px, 86px, 0); }
+      }
+      @keyframes glitch-anim2 {
+        0% { clip: rect(85px, 9999px, 18px, 0); }
+        5% { clip: rect(10px, 9999px, 4px, 0); }
+        100% { clip: rect(32px, 9999px, 88px, 0); }
+      }
+
+      /* Cyber Card Styling */
+      .cyber-card {
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 92% 100%, 0 100%);
+      }
+      .cyber-image-mask {
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+      .clip-button {
+        clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 40%);
+      }
+
+      /* HUD Stats */
+      .hud-box {
+        background: rgba(0,0,0,0.6);
+        border: 1px solid #333;
+        border-left: 3px solid var(--c-accent);
+        padding: 10px;
+        position: relative;
+      }
+      .hud-box::after {
+        content: ''; position: absolute; top: 0; right: 0; width: 8px; height: 8px;
+        border-top: 1px solid var(--c-accent); border-right: 1px solid var(--c-accent);
+      }
+
+      /* Marquee */
+      .cyber-marquee {
+        background: var(--c-accent);
+        color: black;
+        font-family: 'JetBrains Mono', monospace;
         font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
       }
 
-      @keyframes marquee {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
+      /* Search Input */
+      .cyber-input {
+        background: rgba(0,0,0,0.8);
+        border: 1px solid #333;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .cyber-input:focus {
+        border-color: var(--c-accent);
+        box-shadow: 0 0 15px var(--c-accent-dim);
       }
 
-      /* --- BUTTONS (Colored Circles) --- */
-      .stark-btn-circle {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-        box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-      }
-      .stark-btn-circle:active { transform: scale(0.92); }
-
-      .btn-search { background: #fff; color: #334155; }
-      .dark .btn-search { background: #1e293b; color: #fff; }
-      .btn-telegram { background: #229ED9; color: #fff; }
-      .btn-discord { background: #5865F2; color: #fff; }
-
-      /* --- iOS GLASS MORPHISM CSS --- */
-      .ios-glass-card, .ios-glass-panel {
-        background: rgba(255, 255, 255, 0.65);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 
-          0 8px 32px rgba(0, 0, 0, 0.05),
-          inset 0 1px 0 rgba(255, 255, 255, 0.6),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-        position: relative;
-        overflow: hidden;
-      }
-      .dark .ios-glass-card, .dark .ios-glass-panel {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      }
-      
-      /* Animation */
-      .stark-in { 
-        opacity: 0; 
-        transform: translateY(16px); 
-        animation: starkElIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-      }
-      @keyframes starkElIn { 
-        to { opacity: 1; transform: translateY(0); } 
+      /* Button Hover Glow */
+      .glow-hover:hover {
+        box-shadow: 0 0 10px var(--c-accent);
+        text-shadow: 0 0 5px white;
       }
     `;
     document.head.appendChild(s);
   }
 
+  // --- 5. RENDER HTML ---
   return `
-  <div class="max-w-6xl mx-auto pb-24 animate-fade-in relative px-3 sm:px-6 pt-0">
-
-    <!-- ===== 1. SCROLLING BLACK BAR ===== -->
-    <div class="stark-marquee-wrapper">
-       <div class="stark-marquee-content">
-          50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-       </div>
+  <!-- Scrolling Tech Line -->
+  <div class="w-full overflow-hidden cyber-marquee py-1 -mt-6 mb-8 relative z-20">
+    <div class="whitespace-nowrap animate-[marquee_20s_linear_infinite] inline-block">
+       // SYSTEM UPDATE: V7.0 LIVE // ANTI-BAN PROTOCOLS: ACTIVE // 50% DISCOUNT INITIALIZED // SYSTEM UPDATE: V7.0 LIVE // ANTI-BAN PROTOCOLS: ACTIVE //
     </div>
+  </div>
 
-    <!-- ===== HERO SECTION ===== -->
-    <section class="mb-8 text-center px-4 relative z-10">
-       
-       <div class="flex flex-col items-center">
+  <div class="max-w-6xl mx-auto pb-24 px-4 relative z-10">
 
-          <!-- 2. TITLE IMAGE (Increased Size) -->
-          <div class="stark-in mb-6" style="animation-delay: 0.1s;">
-             <img src="assets/icons/starkimage.png" 
-                  alt="Stark Mods" 
-                  class="h-auto w-72 sm:w-96 mx-auto object-contain drop-shadow-sm" 
-                  onerror="this.style.display='none'; this.parentElement.innerHTML='<h1 class=\'text-5xl font-bold\'>Stark Mods</h1>'">
-          </div>
-          
-          <!-- 3. LIVE BADGE -->
-          <div class="stark-in inline-flex items-center gap-2 py-2 px-4 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 mb-6" style="animation-delay: 0.2s">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-            </span>
-            <span class="text-[11px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">
-              Update v7+ Live
-            </span>
-          </div>
+    <!-- HERO SECTION -->
+    <div class="flex flex-col items-center justify-center text-center mb-16">
+        
+        <!-- Tech Badge -->
+        <div class="mb-6 flex items-center gap-2 border border-cyan-500/30 bg-cyan-950/20 px-4 py-1 rounded-sm">
+            <div class="w-2 h-2 bg-cyan-400 animate-pulse"></div>
+            <span class="text-cyan-400 text-xs font-mono tracking-widest">SYSTEM ONLINE</span>
+        </div>
 
-          <!-- 4. TAGLINE -->
-          <p class="stark-in text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-lg mx-auto font-medium leading-relaxed" style="animation-delay: 0.3s">
-            Premium, Secure & Anti-Ban Mod Menus <br/> for iOS & Android.
-          </p>
-          
-          <!-- 5. COLORED CIRCLE BUTTONS -->
-          <div class="stark-in flex flex-row justify-center gap-5 w-full" style="animation-delay: 0.4s">
-             
-             <!-- Search (White) -->
+        <!-- Glitch Title -->
+        <div class="relative mb-6">
+            <h1 class="text-6xl sm:text-8xl font-black uppercase text-white tracking-tighter glitch-text" data-text="STARK MODS">
+                STARK MODS
+            </h1>
+        </div>
+
+        <p class="text-gray-400 max-w-lg mx-auto font-mono text-sm leading-relaxed mb-8">
+            > Access granted.<br>
+            > Injecting premium cheats for iOS & Android.<br>
+            > Status: Undetected.
+        </p>
+
+        <!-- Hexagon/Tech Buttons -->
+        <div class="flex gap-4">
              <button onclick="document.getElementById('search-mods').focus()" 
-                     class="stark-btn-circle btn-search group" title="Search">
-                <span class="material-icons text-xl group-hover:scale-110 transition-transform">search</span>
+                class="border border-white/20 hover:border-cyan-400 text-white p-3 hover:bg-white/5 transition-all clip-button">
+                <span class="material-icons">search</span>
              </button>
-             
-             <!-- Telegram (Blue) -->
              <button onclick="window.open('https://t.me/starkrc20', '_blank')" 
-                     class="stark-btn-circle btn-telegram group" title="Telegram">
-                <span class="material-icons text-xl group-hover:-rotate-12 transition-transform">telegram</span>
+                class="border border-blue-500/50 text-blue-400 hover:bg-blue-500/10 p-3 transition-all clip-button">
+                <span class="material-icons">telegram</span>
              </button>
-
-             <!-- Discord (Indigo) -->
              <button onclick="window.open('https://discord.gg/KaeHESH9n', '_blank')" 
-                     class="stark-btn-circle btn-discord group" title="Discord">
-                <svg class="w-6 h-6 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+                class="border border-indigo-500/50 text-indigo-400 hover:bg-indigo-500/10 p-3 transition-all clip-button">
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
              </button>
-          </div>
-       </div>
-    </section>
-
-    <!-- ===== STATS ===== -->
-    <div class="grid grid-cols-4 gap-3 mb-8 px-1">
-       <div class="ios-glass-panel p-3 text-center flex flex-col items-center justify-center">
-          <div class="text-xl sm:text-2xl font-black text-blue-600">5+</div>
-          <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mt-1">Mods</div>
-       </div>
-       <div class="ios-glass-panel p-3 text-center flex flex-col items-center justify-center">
-          <div class="text-xl sm:text-2xl font-black text-green-600">40k</div>
-          <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mt-1">Users</div>
-       </div>
-       <div class="ios-glass-panel p-3 text-center flex flex-col items-center justify-center">
-          <div class="text-xl sm:text-2xl font-black text-purple-600">24/7</div>
-          <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mt-1">Help</div>
-       </div>
-       <div class="ios-glass-panel p-3 text-center flex flex-col items-center justify-center">
-          <div class="text-xl sm:text-2xl font-black text-amber-500">100%</div>
-          <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mt-1">Safe</div>
-       </div>
+        </div>
     </div>
 
-    <!-- ===== SEARCH BAR ===== -->
-    <div class="relative z-40 mb-8 mx-auto max-w-4xl">
-      <div class="ios-glass-panel flex items-center p-1.5 ring-1 ring-black/5">
-         <div class="relative flex-1 group pl-2">
-            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition text-lg">search</span>
+    <!-- HUD STATS -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <div class="hud-box">
+            <h4 class="text-2xl font-bold text-white">5+</h4>
+            <span class="text-[10px] text-cyan-500 uppercase">Modules Active</span>
+        </div>
+        <div class="hud-box" style="border-left-color: var(--c-purple)">
+            <h4 class="text-2xl font-bold text-white">40K</h4>
+            <span class="text-[10px] text-purple-500 uppercase">Users Connected</span>
+        </div>
+        <div class="hud-box">
+            <h4 class="text-2xl font-bold text-white">24/7</h4>
+            <span class="text-[10px] text-cyan-500 uppercase">Uptime</span>
+        </div>
+        <div class="hud-box" style="border-left-color: #22c55e">
+            <h4 class="text-2xl font-bold text-white">100%</h4>
+            <span class="text-[10px] text-green-500 uppercase">Secure</span>
+        </div>
+    </div>
+
+    <!-- COMMAND LINE SEARCH -->
+    <div class="mb-10 relative">
+        <div class="cyber-input flex items-center p-3">
+            <span class="text-cyan-500 mr-2 font-mono">root@stark:~#</span>
             <input type="text" id="search-mods" onkeyup="window.filterMods()" 
-                   placeholder="Search games, mods..."
-                   class="w-full pl-10 pr-4 py-3 bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-400 font-medium text-sm">
-         </div>
-         <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-600 mx-1"></div>
-         <div class="relative pr-1">
-             <select id="filter-category" onchange="window.filterMods()" 
-                     class="pl-3 pr-8 py-2 bg-slate-100/50 dark:bg-slate-800/50 border-none outline-none text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded-xl transition appearance-none">
-                <option value="all">All</option>
-                <option value="free">Free</option>
-                <option value="premium">Paid</option>
-             </select>
-             <span class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 pointer-events-none">expand_more</span>
-         </div>
-      </div>
+                   placeholder="grep 'game_name'" 
+                   class="w-full bg-transparent border-none outline-none text-white font-mono text-sm placeholder-gray-600">
+            
+            <select id="filter-category" onchange="window.filterMods()" 
+                   class="bg-black text-xs font-mono text-gray-400 border border-gray-800 ml-2 px-2 py-1 outline-none">
+              <option value="all">ALL</option>
+              <option value="free">FREE</option>
+              <option value="premium">PAID</option>
+           </select>
+        </div>
     </div>
 
-    <!-- ===== MODS GRID (Glass Cards) ===== -->
-    <section class="grid md:grid-cols-3 gap-6" id="mods-grid">
+    <!-- GRID -->
+    <h2 class="text-xl text-white font-bold mb-6 flex items-center gap-2">
+        <span class="w-2 h-2 bg-cyan-500"></span> AVAILABLE INJECTIONS
+    </h2>
 
-      ${renderCard('rc25', `
-        <div class="flex flex-col h-full">
-          <div class="flex items-center gap-4 mb-4">
-            <div class="relative group-hover:scale-105 transition-transform duration-300">
-                <img src="assets/icons/icon_rc25.jpg" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=RC25'" />
-                <div class="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
-            </div>
-            <div>
-              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC25 Fan-Made</div>
-              <div class="text-[11px] text-slate-500 font-medium">Patch Update</div>
-            </div>
-          </div>
-          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/rc25')">
-             <img src="assets/img/img_rc25_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=RC25'">
-          </div>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">v7+</span>
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-300">Free</span>
-          </div>
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
-            The ultimate RC25 Patch. Enhanced graphics, updated squads, and optimized gameplay.
-          </p>
-          <button onclick="window.router.navigateTo('/rc25')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-full font-bold text-sm shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>Download</span>
-          </button>
-        </div>
-      `)}
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6" id="mods-grid">
+       
+       ${renderCard('rc25', {
+          title: 'RC25 PATCH',
+          subtitle: 'GRAPHICS_OVERHAUL',
+          icon: 'assets/icons/icon_rc25.jpg',
+          image: 'assets/img/img_rc25_1.jpg',
+          version: '7.0.1',
+          tags: ['FREE', 'VISUALS'],
+          link: '/rc25'
+       })}
 
-      ${renderCard('rc24', `
-        <div class="flex flex-col h-full">
-          <div class="flex items-center gap-4 mb-4">
-             <div class="relative group-hover:scale-105 transition-transform duration-300">
-                <img src="assets/icons/icon_rc24.png" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=RC24'" />
-                <div class="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
-             </div>
-             <div>
-              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC Realistic V3</div>
-              <div class="text-[11px] text-slate-500 font-medium">Texture Patch</div>
-            </div>
-          </div>
-          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/rc24')">
-             <img src="assets/img/img_rc24_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=RC24'">
-          </div>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">v4.6</span>
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-300">Free</span>
-          </div>
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
-            New T20 World Cup 2026 Jerseys, Realistic patch with enhanced textures & faces.
-          </p>
-          <button onclick="window.router.navigateTo('/rc24')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-full font-bold text-sm shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>Download</span>
-          </button>
-        </div>
-      `)}
+       ${renderCard('rc24', {
+          title: 'RC REALISTIC',
+          subtitle: 'TEXTURE_PACK_V3',
+          icon: 'assets/icons/icon_rc24.png',
+          image: 'assets/img/img_rc24_1.jpg',
+          version: '4.6',
+          tags: ['FREE', 'TEXTURES'],
+          link: '/rc24'
+       })}
 
-      ${renderCard('rc20', `
-        <div class="flex flex-col h-full">
-          <div class="flex items-center gap-4 mb-4">
-             <div class="relative group-hover:scale-105 transition-transform duration-300">
-                <img src="assets/icons/icon_rc20.jpg" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=RC20'" />
-                <div class="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
-             </div>
-             <div>
-              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC20 Mod Menu</div>
-              <div class="text-[11px] text-slate-500 font-medium">VIP Cheats</div>
-            </div>
-          </div>
-          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/rc20')">
-             <img src="assets/img/img_rc20_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=RC20'">
-          </div>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300">Premium</span>
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Safe</span>
-          </div>
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
-            VIP Mod Menu. Features include Timing Hack, Unlimited Coins/Tickets & more.
-          </p>
-          <button onclick="window.router.navigateTo('/rc20')" class="w-full bg-slate-100 dark:bg-slate-700 text-blue-600 dark:text-blue-400 py-2.5 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>View Details</span>
-          </button>
-        </div>
-      `)}
+       ${renderCard('rc20', {
+          title: 'RC20 GOD MODE',
+          subtitle: 'VIP_MENU_ACCESS',
+          icon: 'assets/icons/icon_rc20.jpg',
+          image: 'assets/img/img_rc20_1.jpg',
+          version: '6.1',
+          tags: ['PREMIUM', 'HACK'],
+          link: '/rc20'
+       })}
 
-      ${renderCard('wcc3', `
-        <div class="flex flex-col h-full">
-          <div class="flex items-center gap-4 mb-4">
-             <div class="relative group-hover:scale-105 transition-transform duration-300">
-                <img src="assets/icons/icon_wcc3.png" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=WCC3'" />
-                <div class="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
-             </div>
-             <div>
-              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">WCC3 Mod Menu</div>
-              <div class="text-[11px] text-slate-500 font-medium">VIP Injector</div>
-            </div>
-          </div>
-          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/wcc3')">
-             <img src="assets/img/img_wcc3_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=WCC3'">
-          </div>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300">Premium</span>
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Safe</span>
-          </div>
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
-            VIP Mod Menu with Career Mode Unlock, Unlimited Platinum, NPL Auction & more.
-          </p>
-          <button onclick="window.router.navigateTo('/wcc3')" class="w-full bg-slate-100 dark:bg-slate-700 text-blue-600 dark:text-blue-400 py-2.5 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>View Details</span>
-          </button>
-        </div>
-      `)}
+       ${renderCard('wcc3', {
+          title: 'WCC3 INJECTOR',
+          subtitle: 'CURRENCY_UNLOCKER',
+          icon: 'assets/icons/icon_wcc3.png',
+          image: 'assets/img/img_wcc3_1.jpg',
+          version: '3.2',
+          tags: ['PREMIUM', 'CAREER'],
+          link: '/wcc3'
+       })}
 
     </section>
+
   </div>
   `;
 }
 
-// ----------------------
-// SEARCH & FILTER 
-// ----------------------
+// --- 6. UTILITY FUNCTIONS (Standard Logic) ---
 window.filterMods = function() {
    const query = document.getElementById('search-mods').value.toLowerCase();
    const filter = document.getElementById('filter-category').value;
-   const cards = document.querySelectorAll('.app-card');
+   const cards = document.querySelectorAll('.cyber-card'); // Updated selector
    let foundCount = 0;
 
    cards.forEach(card => {
@@ -421,13 +375,8 @@ window.filterMods = function() {
        if(!noResultEl) {
            noResultEl = document.createElement('div');
            noResultEl.id = noResultId;
-           noResultEl.className = 'col-span-1 md:col-span-3 ios-glass-panel text-center py-20 text-slate-400';
-           noResultEl.innerHTML = `
-             <div class="flex flex-col items-center">
-                <span class="material-icons text-4xl mb-2 text-slate-300">search_off</span>
-                <p class="font-bold text-lg">No mods found</p>
-                <p class="text-sm opacity-60">Try searching for "RC24" or "WCC3"</p>
-             </div>`;
+           noResultEl.className = 'col-span-1 md:col-span-3 py-20 text-center font-mono text-gray-600';
+           noResultEl.innerHTML = `> ERROR: NO_DATA_FOUND <`;
            grid.appendChild(noResultEl);
        }
    } else {
@@ -436,8 +385,8 @@ window.filterMods = function() {
 };
 
 window.toggleHomeCard = function (id) {
-  if (!window.isAdmin) { alert('Only admin can hide/show cards.'); return; }
-  if (!window.db) { alert('Database not ready.'); return; }
+  if (!window.isAdmin) { alert('DENIED: Admin Access Required.'); return; }
+  if (!window.db) { alert('System Offline.'); return; }
 
   let arr = Array.isArray(window.homeHiddenCards) ? window.homeHiddenCards.slice() : [];
   const idx = arr.indexOf(id);
@@ -451,10 +400,6 @@ window.toggleHomeCard = function (id) {
       if (window.router && typeof window.router.handleRoute === 'function') {
         window.router.handleRoute('/');
       }
-    })
-    .catch(err => {
-      console.error('toggleHomeCard error:', err);
-      alert('Failed to update visibility: ' + err.message);
     });
 };
 
