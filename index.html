@@ -1,205 +1,324 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Stark Mods - Premium Mods for RC25, RC20, WCC3 and more." />
-  <title>Stark Mods</title>
-
-    <title>Stark Mods</title>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/stark-32.png">
-  <link rel="icon" type="image/x-icon" href="/assets/icons/stark_store.png">
-  <link rel="shortcut icon" href="/assets/icons/stark.ico">
-
-  <!-- Make all relative paths resolve from site root -->
-  <base href="/" />
-
-<!-- Tailwind CSS: dark mode controlled by .dark (class) -->
-
-<script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="/css/styles.css" />
-</head>
-
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 antialiased transition-colors duration-300">
-
-    <!-- HEADER -->
-  <header class="glass-header sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <div class="flex items-center justify-between h-16">
-
-        <!-- LEFT: Logo + Text (shown on PC & Mobile) -->
-        <div class="flex items-center gap-3">
-          <a href="/" class="flex items-center gap-3" data-link>
-            <img src="/assets/icons/icon_site.jpg" alt="Stark Mods"
-                 class="h-10 w-10 rounded-lg shadow-sm"
-                 onerror="this.src='https://placehold.co/40x40?text=S'" />
-            <div class="block">
-              <div class="text-lg font-semibold">Stark Mods</div>
-              <div class="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 -mt-1 font-bold uppercase tracking-wide">
-                Premium Mods &amp; Patches
-              </div>
-            </div>
-          </a>
-        </div>
-
-        <!-- RIGHT: Actions -->
-        <div class="flex items-center gap-2 sm:gap-3">
-
-          <!-- Desktop Nav (no Cart text link now) -->
-          <nav id="desktop-nav" class="hidden md:flex items-center gap-6 mr-2">
-  <a href="/" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Home</a>
-  <a href="/creator" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Mod Creator</a>
-  <a href="/contact" class="nav-link font-medium hover:text-blue-600 dark:hover:text-blue-400" data-link>Contact</a>
-</nav>
-
-                   <!-- AUTH BUTTON (Login / Profile) – desktop only -->
-          <div id="auth-container" class="relative hidden md:block"></div>
-
-          <!-- ADMIN ICON (only for admin; visibility controlled by JS) -->
-          <button id="admin-panel-btn"
-                  onclick="window.router.navigateTo('/admin')"
-                  class="hidden p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
-            <span class="material-icons text-xl">admin_panel_settings</span>
-          </button>
-
-          <!-- CART ICON (kept) -->
-          <button onclick="window.router.navigateTo('/cart')"
-                  class="relative p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm">
-            <span class="material-icons text-xl">shopping_cart</span>
-            <span id="cart-badge"
-                  class="hidden absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900">
-              0
-            </span>
-          </button>
-
-          <!-- DARK MODE -->
-          <script>
-  tailwind.config = { darkMode: 'class' }
-</script>
-
-          
-          <button id="theme-toggle"
-                  class="p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm hidden sm:block">
-            <span id="theme-icon" class="material-icons text-xl">dark_mode</span>
-          </button>
-
-          <!-- MOBILE MENU BUTTON -->
-          <button id="mobile-menu-button"
-                  class="md:hidden p-2 rounded-lg bg-white border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition shadow-sm">
-            <span class="material-icons text-2xl">menu</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- MOBILE MENU -->
-    <div id="mobile-menu"
-         class="md:hidden hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl absolute w-full left-0 z-40">
-      <div class="px-4 py-3 space-y-2">
-        <a href="/" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
-           data-link>Home</a>
-        <a href="/admin" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
-   data-link id="mobile-admin-link" style="display:none;">Admin Panel</a>
-        <a href="/cart" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
-           data-link>My Cart</a>
-        <a href="/creator" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
-   data-link>Mod Creator</a>
-        <a href="/contact" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
-           data-link>Contact</a>
-        <a href="/profile" class="block mobile-link py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium"
-           data-link>My Profile</a>
-
-        <!-- Mobile Auth Button -->
-        <div id="mobile-auth-container" class="mt-2"></div>
-
-        <!-- Mobile Theme Toggle -->
-        <button id="theme-toggle-mobile"
-                class="w-full text-left flex items-center gap-3 py-3 px-3 rounded hover:bg-slate-50 dark:hover:bg-slate-800 font-medium text-slate-600 dark:text-slate-300">
-          <span class="material-icons">dark_mode</span> Dark Mode
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main id="app-content" class="max-w-6xl mx-auto px-4 sm:px-6 py-10 min-h-[60vh]">
-    <div class="flex justify-center pt-20">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
-    </div>
-  </main>
-
-  <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors duration-300">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-        <div class="text-sm font-medium text-slate-600 dark:text-slate-400">
-          &copy; 2025 Stark Mods. All rights reserved.
-        </div>
-        <div class="flex gap-6 text-sm text-slate-500">
-          <a href="/privacy" class="hover:text-blue-600 dark:hover:text-blue-400 transition" data-link>Privacy</a>
-          <a href="/terms" class="hover:text-blue-600 dark:hover:text-blue-400 transition" data-link>Terms</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- FIREBASE SDKs (compat) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-  <!-- Your Scripts (absolute paths!) -->
-  <script src="/js/firebase-config.js"></script>
-  <script src="/js/app.js"></script>
-  <script src="/js/router.js"></script>
-
-<!-- ... existing body content ... -->
-
-<!-- MOBILE BOTTOM NAVIGATION BAR -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 pb-safe z-50 h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-  <div class="grid grid-cols-3 h-full">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StarkMods Store</title>
     
-    <!-- Home Link -->
-    <a href="#" onclick="window.router.navigateTo('/')" id="nav-home" 
-       class="bottom-nav-link flex flex-col items-center justify-center w-full text-slate-400 dark:text-slate-500 transition-colors">
-      <span class="material-icons text-2xl mb-0.5">home</span>
-      <span class="text-[10px] font-medium">Home</span>
-    </a>
+    <!-- 1. TAILWIND CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        iosBlue: '#007AFF',
+                        iosGray: '#F2F2F7',
+                        iosDark: '#1C1C1E'
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', 'Inter', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
-    <!-- Cart Link -->
-    <a href="#" onclick="window.router.navigateTo('/cart')" id="nav-cart" 
-       class="bottom-nav-link relative flex flex-col items-center justify-center w-full text-slate-400 dark:text-slate-500 transition-colors">
-      <span class="material-icons text-2xl mb-0.5">shopping_bag</span>
-      <span class="text-[10px] font-medium">Cart</span>
-      <!-- Mobile Badge -->
-      <span id="mobile-cart-badge" 
-            class="absolute top-1 right-[25%] bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm hidden scale-0 transition-transform duration-300">
-        0
-      </span>
-    </a>
+    <!-- 2. ICONS & FONTS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- 3. YOUR CUSTOM STYLES (External) -->
+    <link rel="stylesheet" href="css/styles.css">
 
-    <!-- Profile Link -->
-    <a href="#" onclick="window.router.navigateTo('/profile')" id="nav-profile" 
-       class="bottom-nav-link flex flex-col items-center justify-center w-full text-slate-400 dark:text-slate-500 transition-colors">
-      <span class="material-icons text-2xl mb-0.5">person</span>
-      <span class="text-[10px] font-medium">Profile</span>
-    </a>
+    <!-- 4. INTERNAL STYLES FOR GLASS DOCK (Ensures it looks right immediately) -->
+    <style>
+        /* SMOOTH SCROLLING */
+        html { scroll-behavior: smooth; }
+        
+        /* HIDE SCROLLBAR BUT KEEP SCROLL */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-  </div>
-</nav>
+        /* --- GLASS DOCK STYLES --- */
+        .glass-dock-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999; /* Highest priority */
+            width: auto;
+            display: flex;
+            justify-content: center;
+        }
 
-<!-- Add padding to body so content isn't hidden behind nav -->
-<style>
-  @media (max-width: 768px) {
-    body { padding-bottom: 5rem; } /* 80px extra space at bottom */
-  }
-</style>
+        .glass-dock {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 12px 30px;
+            /* iOS Glass Effect */
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 9999px; /* Pill Shape */
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255,255,255,0.2) inset;
+            transition: all 0.3s ease;
+        }
+
+        .dark .glass-dock {
+            background: rgba(28, 28, 30, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .dock-icon {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #8E8E93; /* Inactive Gray */
+            padding: 0 10px;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .dock-icon .material-icons {
+            font-size: 28px;
+            transition: color 0.3s ease;
+        }
+
+        /* Active State */
+        .dock-icon.active {
+            color: #007AFF; /* iOS Blue */
+            transform: translateY(-4px);
+        }
+        
+        /* Active Dot Indicator */
+        .dock-icon.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 4px;
+            height: 4px;
+            background: #007AFF;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #007AFF;
+        }
+
+        /* Prevent content from hiding behind dock */
+        body { padding-bottom: 100px; }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-black text-slate-900 dark:text-white antialiased transition-colors duration-300">
+
+    <!-- ================= HEADER ================= -->
+    <header class="fixed top-0 left-0 w-full z-40 bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/5 transition-all duration-300" id="main-header">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            
+            <!-- 1. Logo -->
+            <div class="flex items-center gap-2 cursor-pointer group" onclick="window.router.navigateTo('/')">
+                <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform">
+                    <span class="material-icons text-lg">bolt</span>
+                </div>
+                <span class="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                    Stark<span class="text-blue-600">Store</span>
+                </span>
+            </div>
+
+            <!-- 2. Desktop Navigation (Hidden on Mobile) -->
+            <div class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-full">
+                <button onclick="window.router.navigateTo('/')" class="px-4 py-2 rounded-full text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 transition">Home</button>
+                <button onclick="window.router.navigateTo('/creator')" class="px-4 py-2 rounded-full text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 transition">Creator</button>
+                <button onclick="window.router.navigateTo('/profile')" class="px-4 py-2 rounded-full text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 transition">Profile</button>
+            </div>
+
+            <!-- 3. Mobile Right Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Theme Toggle (Desktop/Tablet) -->
+                <button id="theme-toggle" class="hidden md:flex w-9 h-9 items-center justify-center rounded-full bg-slate-100 dark:bg-white/10 hover:bg-slate-200 transition">
+                    <span class="material-icons text-slate-600 dark:text-yellow-400 text-lg">dark_mode</span>
+                </button>
+
+                <!-- Cart Icon -->
+                <button onclick="window.router.navigateTo('/cart')" class="relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 transition">
+                    <span class="material-icons text-slate-700 dark:text-white">shopping_bag</span>
+                    <!-- Badge -->
+                    <span id="cart-badge" class="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold h-4 min-w-[16px] px-1 rounded-full flex items-center justify-center shadow-sm hidden">0</span>
+                </button>
+
+                <!-- HAMBURGER MENU BUTTON (3 Lines) -->
+                <button id="mobile-menu-btn" class="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white active:scale-90 transition-transform">
+                    <span class="material-icons">menu</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MOBILE DROPDOWN MENU (Hidden by default) -->
+        <div id="mobile-menu-dropdown" class="hidden absolute top-16 left-0 w-full bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl border-b border-slate-200 dark:border-white/10 shadow-2xl origin-top transition-all duration-300">
+            <div class="p-4 space-y-2">
+                <button onclick="window.router.navigateTo('/'); toggleMenu()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-white/5 active:bg-blue-50 dark:active:bg-blue-900/20 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                        <span class="material-icons">home</span>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-slate-900 dark:text-white">Home</div>
+                        <div class="text-xs text-slate-500">View all mods</div>
+                    </div>
+                </button>
+
+                <button onclick="window.router.navigateTo('/creator'); toggleMenu()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-white/5 active:bg-purple-50 dark:active:bg-purple-900/20 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                        <span class="material-icons">auto_fix_high</span>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-slate-900 dark:text-white">Mod Creator</div>
+                        <div class="text-xs text-slate-500">Customize your experience</div>
+                    </div>
+                </button>
+
+                <button onclick="window.router.navigateTo('/profile'); toggleMenu()" class="w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-white/5 active:bg-green-50 dark:active:bg-green-900/20 transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
+                        <span class="material-icons">person</span>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-slate-900 dark:text-white">My Profile</div>
+                        <div class="text-xs text-slate-500">Orders & Settings</div>
+                    </div>
+                </button>
+                
+                <div class="h-px bg-slate-100 dark:bg-white/10 my-2"></div>
+                
+                <button id="mobile-theme-toggle" class="w-full p-4 rounded-2xl flex items-center justify-between font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5">
+                    <span>Dark Mode</span>
+                    <span class="material-icons" id="mobile-theme-icon">toggle_off</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= MAIN APP CONTENT ================= -->
+    <main id="app" class="pt-20 min-h-screen">
+        <!-- Router will inject pages here -->
+        <div class="flex flex-col items-center justify-center h-[60vh] text-center px-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
+            <h2 class="text-xl font-bold">Loading StarkStore...</h2>
+        </div>
+    </main>
+
+    <!-- ================= FLOATING GLASS DOCK (iOS Style) ================= -->
+    <nav class="glass-dock-container md:hidden">
+        <div class="glass-dock">
+            <!-- 1. HOME -->
+            <div onclick="window.router.navigateTo('/')" id="dock-home" class="dock-icon active group">
+                <span class="material-icons group-active:scale-90 transition-transform">home</span>
+            </div>
+
+            <!-- 2. CREATOR -->
+            <div onclick="window.router.navigateTo('/creator')" id="dock-creator" class="dock-icon group">
+                <span class="material-icons group-active:scale-90 transition-transform">auto_fix_high</span>
+            </div>
+
+            <!-- 3. PROFILE -->
+            <div onclick="window.router.navigateTo('/profile')" id="dock-profile" class="dock-icon group">
+                <span class="material-icons group-active:scale-90 transition-transform">person</span>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ================= SCRIPTS ================= -->
+    
+    <!-- 1. Firebase (Required for your app logic) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+    <!-- 2. App Logic (Menu & Dock Handling) -->
+    <script>
+        // --- MOBILE MENU TOGGLE LOGIC ---
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const dropdown = document.getElementById('mobile-menu-dropdown');
+        
+        function toggleMenu() {
+            dropdown.classList.toggle('hidden');
+            const icon = menuBtn.querySelector('.material-icons');
+            // Change Icon based on state
+            if (dropdown.classList.contains('hidden')) {
+                icon.innerText = 'menu';
+                document.body.style.overflow = ''; // Enable Scroll
+            } else {
+                icon.innerText = 'close';
+                document.body.style.overflow = 'hidden'; // Disable Scroll when menu open
+            }
+        }
+
+        if (menuBtn) {
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleMenu();
+            });
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!dropdown.classList.contains('hidden') && !menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                toggleMenu();
+            }
+        });
+
+        // --- DOCK ACTIVE STATE LOGIC ---
+        // This function highlights the dock icon based on where the user is
+        window.updateDockHighlight = function(path) {
+            // Remove active from all
+            document.querySelectorAll('.dock-icon').forEach(el => el.classList.remove('active'));
+            
+            // Add active based on path
+            if (path.includes('creator')) {
+                document.getElementById('dock-creator').classList.add('active');
+            } else if (path.includes('profile') || path.includes('order')) {
+                document.getElementById('dock-profile').classList.add('active');
+            } else {
+                document.getElementById('dock-home').classList.add('active');
+            }
+        }
+
+        // --- MOCK ROUTER (To make buttons work immediately) ---
+        // Since I don't have your router.js, this simple version makes the UI responsive
+        if (!window.router) {
+            window.router = {
+                navigateTo: function(route) {
+                    console.log("Navigating to:", route);
+                    
+                    // Update Dock Visuals
+                    window.updateDockHighlight(route);
+                    
+                    // Close menu if open
+                    if (!dropdown.classList.contains('hidden')) toggleMenu();
+
+                    // NOTE: In your real app, your actual router will load content into #app
+                    // For demo purposes, we alert if real pages aren't loaded
+                    if(typeof window.HomePage === 'undefined') {
+                        // console.log("Page scripts not loaded yet");
+                    }
+                }
+            };
+        }
+    </script>
+
+    <!-- 3. Load Your Application Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/home.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/checkout.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/orderDetails.js"></script>
+    <script src="js/router.js"></script> <!-- Ensure this exists -->
 
 </body>
 </html>
