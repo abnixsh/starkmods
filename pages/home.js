@@ -70,9 +70,9 @@ function HomePage() {
   };
 
   // Inject styles once
-  if (!document.getElementById('stark-hero-v8')) {
+  if (!document.getElementById('stark-hero-v9')) {
     const s = document.createElement('style');
-    s.id = 'stark-hero-v8';
+    s.id = 'stark-hero-v9';
     s.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -84,7 +84,6 @@ function HomePage() {
       /* --- MARQUEE (Scrolling Text) --- */
       .stark-marquee-wrapper {
         width: 100vw;
-        /* Horizontal centering breakout */
         margin-left: calc(-50vw + 50%);
         background: #000;
         color: #fff;
@@ -92,10 +91,11 @@ function HomePage() {
         overflow: hidden;
         white-space: nowrap;
         position: relative;
-        z-index: 50;
+        /* CHANGED: Lower z-index so Header/Menu goes OVER it */
+        z-index: 0; 
         margin-bottom: 2rem;
-        /* Negative margin to pull it up against the header */
-        margin-top: -1.5rem; 
+        /* CHANGED: Increased negative margin to pull it UP more */
+        margin-top: -2.25rem; 
       }
       
       .stark-marquee-content {
@@ -164,11 +164,9 @@ function HomePage() {
   }
 
   return `
-  <!-- pt-0 to remove local padding, layout adjusted via CSS -->
   <div class="max-w-6xl mx-auto pb-24 animate-fade-in relative px-3 sm:px-6 pt-0">
 
     <!-- ===== 1. SCROLLING BLACK BAR ===== -->
-    <!-- The CSS class .stark-marquee-wrapper has a negative top margin to pull this up -->
     <div class="stark-marquee-wrapper">
        <div class="stark-marquee-content">
           50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;
@@ -180,11 +178,11 @@ function HomePage() {
        
        <div class="flex flex-col items-center">
 
-          <!-- 2. TITLE IMAGE (Replaced Text) -->
+          <!-- 2. TITLE IMAGE (Increased Size) -->
           <div class="stark-in mb-6" style="animation-delay: 0.1s;">
              <img src="assets/icons/starkimage.png" 
                   alt="Stark Mods" 
-                  class="h-auto w-48 sm:w-64 mx-auto object-contain drop-shadow-sm" 
+                  class="h-auto w-72 sm:w-96 mx-auto object-contain drop-shadow-sm" 
                   onerror="this.style.display='none'; this.parentElement.innerHTML='<h1 class=\'text-5xl font-bold\'>Stark Mods</h1>'">
           </div>
           
