@@ -4,17 +4,17 @@
 
 :root {
   /* iOS Color Palette (Light) */
-  --accent: #007AFF;           /* Apple Blue */
+  --accent: #007AFF;
   --accent-hover: #0062cc;
   
-  --bg-body: #F2F2F7;          /* iOS System Gray 6 */
+  --bg-body: #F2F2F7;
   --bg-card: #FFFFFF;
-  --bg-secondary: #E5E5EA;     /* iOS System Gray 5 */
+  --bg-secondary: #E5E5EA;
   
   --text-primary: #000000;
-  --text-secondary: #8E8E93;   /* iOS System Gray */
+  --text-secondary: #8E8E93;
   
-  --border-color: rgba(60, 60, 67, 0.12); /* iOS Separator */
+  --border-color: rgba(60, 60, 67, 0.12);
   
   --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
   --radius-card: 18px;
@@ -23,12 +23,12 @@
 
 .dark {
   /* iOS Color Palette (Dark) */
-  --accent: #0A84FF;           /* Apple Dark Mode Blue */
+  --accent: #0A84FF;
   --accent-hover: #007AFF;
   
   --bg-body: #000000;
-  --bg-card: #1C1C1E;          /* iOS Dark System Gray 6 */
-  --bg-secondary: #2C2C2E;     /* iOS Dark System Gray 5 */
+  --bg-card: #1C1C1E;
+  --bg-secondary: #2C2C2E;
   
   --text-primary: #FFFFFF;
   --text-secondary: #98989D;
@@ -49,22 +49,23 @@ body {
   color: var(--text-primary) !important;
   transition: background-color 0.3s ease, color 0.3s ease;
   margin: 0;
-  -webkit-font-smoothing: antialiased; /* iOS crisp text */
+  -webkit-font-smoothing: antialiased;
 }
 
 /* --- HEADER (Glassmorphism) --- */
 header, .glass-header {
-  background-color: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--border-color) !important;
+  background-color: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(0,0,0,0.06) !important;
   position: sticky;
   top: 0;
   z-index: 50;
 }
 
 .dark header, .dark .glass-header {
-  background-color: rgba(28, 28, 30, 0.8) !important;
+  background-color: rgba(28, 28, 30, 0.75) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
 }
 
 /* --- CARDS --- */
@@ -74,7 +75,7 @@ header, .glass-header {
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card) !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  overflow: hidden; /* Ensures images respect rounded corners */
+  overflow: hidden;
 }
 
 .dark .app-card, .dark .info-box, .dark .bg-slate-800 {
@@ -89,7 +90,7 @@ header, .glass-header {
 
 /* --- TYPOGRAPHY --- */
 h1, h2, h3, .font-bold {
-  font-weight: 600 !important; /* Apple tends to use SemiBold */
+  font-weight: 600 !important;
   letter-spacing: -0.02em;
 }
 
@@ -155,10 +156,14 @@ input:focus, select:focus, textarea:focus {
   letter-spacing: 0.5px;
 }
 
-/* --- MOBILE MENU --- */
+/* --- MOBILE MENU (Slide Down) --- */
 #mobile-menu {
-  background-color: var(--bg-card) !important;
-  border-top: 1px solid var(--border-color);
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+}
+.dark #mobile-menu {
+  background-color: rgba(0, 0, 0, 0.88) !important;
 }
 
 /* --- HERO SECTION --- */
@@ -204,4 +209,124 @@ input:focus, select:focus, textarea:focus {
 }
 .dark ::-webkit-scrollbar-thumb {
   background-color: #48484A;
+}
+
+
+/* ============================================
+   iOS FLOATING DOCK
+   ============================================ */
+
+.ios-dock-container {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.08),
+    0 2px 12px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -0.5px 0 rgba(0, 0, 0, 0.04);
+}
+
+.dark .ios-dock-container {
+  background: rgba(30, 30, 32, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.4),
+    0 2px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.ios-dock-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.ios-dock-btn:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+.dark .ios-dock-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ios-dock-btn:active {
+  transform: scale(0.88);
+  background: rgba(0, 0, 0, 0.08);
+}
+.dark .ios-dock-btn:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Active state for current page */
+.ios-dock-btn.dock-active .ios-dock-icon-wrap {
+  background: var(--accent);
+  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.35);
+}
+
+.ios-dock-btn.dock-active .ios-dock-icon {
+  color: #fff !important;
+  stroke: #fff !important;
+}
+
+.ios-dock-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.ios-dock-icon {
+  width: 22px;
+  height: 22px;
+  color: #6B7280;
+  stroke: #6B7280;
+  transition: all 0.25s ease;
+}
+
+.dark .ios-dock-icon {
+  color: #9CA3AF;
+  stroke: #9CA3AF;
+}
+
+.ios-dock-btn:hover .ios-dock-icon {
+  color: var(--accent);
+  stroke: var(--accent);
+  transform: scale(1.08);
+}
+
+/* Dock entrance animation */
+#ios-dock {
+  animation: dockSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.3s;
+}
+
+@keyframes dockSlideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 24px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* Safe area for dock — prevent content hiding behind it */
+main#app-content {
+  padding-bottom: 7rem !important;
 }
