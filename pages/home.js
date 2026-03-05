@@ -70,11 +70,10 @@ function HomePage() {
   };
 
   // Inject styles once
-  if (!document.getElementById('stark-hero-v7')) {
+  if (!document.getElementById('stark-hero-v8')) {
     const s = document.createElement('style');
-    s.id = 'stark-hero-v7';
+    s.id = 'stark-hero-v8';
     s.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap');
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
       body {
@@ -82,16 +81,10 @@ function HomePage() {
         overflow-x: hidden;
       }
 
-      /* The Script Font (Alex Brush) */
-      .stark-script-font {
-        font-family: 'Alex Brush', cursive;
-        font-weight: 400 !important;
-        font-style: normal;
-      }
-
       /* --- MARQUEE (Scrolling Text) --- */
       .stark-marquee-wrapper {
         width: 100vw;
+        /* Horizontal centering breakout */
         margin-left: calc(-50vw + 50%);
         background: #000;
         color: #fff;
@@ -101,6 +94,8 @@ function HomePage() {
         position: relative;
         z-index: 50;
         margin-bottom: 2rem;
+        /* Negative margin to pull it up against the header */
+        margin-top: -1.5rem; 
       }
       
       .stark-marquee-content {
@@ -169,27 +164,29 @@ function HomePage() {
   }
 
   return `
-  <!-- Padding top removed (pt-0) to let the marquee sit at the very top -->
+  <!-- pt-0 to remove local padding, layout adjusted via CSS -->
   <div class="max-w-6xl mx-auto pb-24 animate-fade-in relative px-3 sm:px-6 pt-0">
 
     <!-- ===== 1. SCROLLING BLACK BAR ===== -->
+    <!-- The CSS class .stark-marquee-wrapper has a negative top margin to pull this up -->
     <div class="stark-marquee-wrapper">
-       <!-- Duplicated content for smooth infinite loop -->
        <div class="stark-marquee-content">
           50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;
        </div>
     </div>
 
     <!-- ===== HERO SECTION ===== -->
-    <section class="mb-8 text-center px-4 relative z-10 mt-6">
+    <section class="mb-8 text-center px-4 relative z-10">
        
        <div class="flex flex-col items-center">
 
-          <!-- 2. TITLE: Alex Brush Font, Single Line on Mobile (text-5xl) -->
-          <h1 class="stark-in stark-script-font text-5xl sm:text-8xl text-blue-700 dark:text-blue-400 select-none leading-none pb-6 drop-shadow-sm whitespace-nowrap" 
-              style="animation-delay: 0.1s; text-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            Stark Mods
-          </h1>
+          <!-- 2. TITLE IMAGE (Replaced Text) -->
+          <div class="stark-in mb-6" style="animation-delay: 0.1s;">
+             <img src="assets/icons/starkimage.png" 
+                  alt="Stark Mods" 
+                  class="h-auto w-48 sm:w-64 mx-auto object-contain drop-shadow-sm" 
+                  onerror="this.style.display='none'; this.parentElement.innerHTML='<h1 class=\'text-5xl font-bold\'>Stark Mods</h1>'">
+          </div>
           
           <!-- 3. LIVE BADGE -->
           <div class="stark-in inline-flex items-center gap-2 py-2 px-4 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 mb-6" style="animation-delay: 0.2s">
