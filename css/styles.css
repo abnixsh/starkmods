@@ -1,28 +1,23 @@
-/* css/styles.css - Clean iOS Theme */
+/* css/styles.css */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  /* iOS Color Palette */
-  --primary: #007AFF;           /* iOS Blue */
-  --bg-body: #F2F2F7;          /* iOS System Gray 6 */
+  --primary: #007AFF;
+  --bg-body: #F2F2F7;
   --bg-card: #FFFFFF;
   --text-main: #000000;
   --text-muted: #8E8E93;
   --border: rgba(0, 0, 0, 0.08);
-  --dock-bg: rgba(255, 255, 255, 0.85);
-  --dock-shadow: 0 10px 40px rgba(0,0,0,0.1);
 }
 
 .dark {
-  --primary: #0A84FF;           /* iOS Dark Blue */
+  --primary: #0A84FF;
   --bg-body: #000000;
-  --bg-card: #1C1C1E;          /* iOS Dark Gray 6 */
+  --bg-card: #1C1C1E;
   --text-main: #FFFFFF;
   --text-muted: #98989D;
   --border: rgba(255, 255, 255, 0.12);
-  --dock-bg: rgba(28, 28, 30, 0.85);
-  --dock-shadow: 0 10px 40px rgba(0,0,0,0.4);
 }
 
 /* GLOBAL RESET */
@@ -37,7 +32,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* HEADER GLASS */
+/* HEADER */
 .glass-header {
   background-color: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px) saturate(180%);
@@ -48,60 +43,82 @@ body {
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* --- THE FLOATING DOCK --- */
+/* --- YOUR SPECIFIC GLASS DOCK STYLE --- */
 .glass-dock {
-  background-color: var(--dock-bg);
-  backdrop-filter: blur(25px) saturate(180%);
-  -webkit-backdrop-filter: blur(25px) saturate(180%);
-  border-radius: 999px; /* Pill Shape */
-  box-shadow: var(--dock-shadow);
-  border: 1px solid rgba(255,255,255,0.2);
-  display: inline-flex;
-  padding: 6px 20px;
+  /* Positioning & Size (Stretched with spacing) */
+  width: calc(100% - 32px); /* 16px gap on each side */
+  max-width: 500px; /* Don't get too wide on PC */
+  height: 70px;     /* Fixed height for the dock */
+  margin: 0 auto;
+  
+  /* Your provided Visual Styles */
+  background: rgba(255, 255, 255, 0.65); /* Increased opacity slightly for readability */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 6px 3px rgba(255, 255, 255, 0.1); /* Reduced inner glow intensity */
+  position: relative;
+  overflow: hidden;
+  
+  /* Layout for buttons */
+  display: flex;
+  align-items: center;
+  justify-content: space-around; /* Distribute buttons evenly */
+  padding: 0 20px;
 }
 
 .dark .glass-dock {
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(30, 30, 35, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Gradients from your code (applied to dock) */
+.glass-dock::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  pointer-events: none;
+}
+.glass-dock::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 1px; height: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3));
+  pointer-events: none;
 }
 
 /* DOCK BUTTONS */
 .dock-btn {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: 12px;
   color: var(--text-muted);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  position: relative;
+  transition: all 0.3s ease;
+  z-index: 10; /* Ensure above gradients */
 }
 
-/* Active State (Blue Circle Background) */
 .dock-btn.active {
-  background-color: rgba(0, 122, 255, 0.15); /* Light Blue BG */
   color: var(--primary);
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
-
 .dark .dock-btn.active {
-  background-color: rgba(10, 132, 255, 0.2);
-  color: #60a5fa; /* Lighter blue for dark mode */
+  background: rgba(255, 255, 255, 0.1);
+  color: #60a5fa;
 }
 
-/* Hover State (Desktop) */
-@media(hover: hover) {
-  .dock-btn:hover:not(.active) {
-    color: var(--primary);
-    background-color: rgba(0,0,0,0.03);
-  }
-  .dark .dock-btn:hover:not(.active) {
-    background-color: rgba(255,255,255,0.05);
-  }
-}
-
-/* --- CARDS & PANELS --- */
+/* CARDS */
 .app-card, .ios-glass-panel, .info-box {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
@@ -109,14 +126,7 @@ body {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
 }
 
-/* --- TYPOGRAPHY UTILS --- */
-.font-inter { font-family: 'Inter', sans-serif; }
-
-/* --- ANIMATIONS --- */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.animate-fade-in { animation: fadeIn 0.5s ease-out; }
-
-/* Mobile Menu Scrollbar Hide */
+/* SCROLLBAR */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
 .dark ::-webkit-scrollbar-thumb { background: #333; }
