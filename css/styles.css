@@ -68,6 +68,15 @@ header, .glass-header {
   border-bottom: 1px solid rgba(255,255,255,0.06) !important;
 }
 
+/* --- HEADER LOGO: White in Dark Mode --- */
+.header-logo {
+  transition: filter 0.3s ease;
+}
+
+.dark .header-logo {
+  filter: brightness(0) invert(1);
+}
+
 /* --- CARDS --- */
 .app-card, .info-box, .bg-white, .content-card {
   background-color: var(--bg-card) !important;
@@ -213,23 +222,40 @@ input:focus, select:focus, textarea:focus {
 
 
 /* ============================================
-   iOS FLOATING DOCK (Updated - Wider + More Blur)
+   iOS FLOATING DOCK (Full Width with Edge Gaps)
    ============================================ */
+
+#ios-dock {
+  animation: dockSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.3s;
+}
+
+@keyframes dockSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 .ios-dock-container {
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(40px) saturate(200%);
   -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border-radius: 9999px;
+  border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
     inset 0 0 6px 3px rgba(255, 255, 255, 0.3);
-  padding: 6px 16px;
+  padding: 6px 8px;
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 /* Top highlight edge */
@@ -281,9 +307,9 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  flex: 1;
+  height: 52px;
+  border-radius: 20px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -300,7 +326,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .ios-dock-btn:active {
-  transform: scale(0.88);
+  transform: scale(0.92);
   background: rgba(0, 0, 0, 0.08);
 }
 .dark .ios-dock-btn:active {
@@ -308,6 +334,13 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Active state for current page */
+.ios-dock-btn.dock-active {
+  background: rgba(0, 122, 255, 0.08);
+}
+.dark .ios-dock-btn.dock-active {
+  background: rgba(10, 132, 255, 0.12);
+}
+
 .ios-dock-btn.dock-active .ios-dock-icon-wrap {
   background: var(--accent);
   box-shadow: 0 4px 16px rgba(0, 122, 255, 0.35);
@@ -322,15 +355,15 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .ios-dock-icon {
-  width: 23px;
-  height: 23px;
+  width: 22px;
+  height: 22px;
   color: #6B7280;
   stroke: #6B7280;
   transition: all 0.25s ease;
@@ -347,26 +380,7 @@ input:focus, select:focus, textarea:focus {
   transform: scale(1.08);
 }
 
-/* Dock entrance animation */
-#ios-dock {
-  animation: dockSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-  animation-delay: 0.3s;
-}
-
-@keyframes dockSlideUp {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 24px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-
-
 /* Safe area for dock — prevent content hiding behind it */
 main#app-content {
-  padding-bottom: 7rem !important;
+  padding-bottom: 6rem !important;
 }
