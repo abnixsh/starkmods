@@ -33,53 +33,51 @@
   <!-- ===== HEADER (iOS Style: Hamburger Left, Logo Center, Cart Right) ===== -->
   <header class="glass-header sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
-      <div class="flex items-center justify-between h-14">
+    <div class="flex items-center justify-between h-14">
 
-        <!-- LEFT: Hamburger Menu Button -->
-        <div class="flex items-center gap-2">
-          <button id="mobile-menu-button"
-                  class="p-2 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 transition-all active:scale-95">
-            <span class="material-icons text-[22px]">menu</span>
-          </button>
+  <!-- LEFT: Hamburger Menu Button (No background glass) -->
+  <div class="flex items-center gap-2">
+    <button id="mobile-menu-button"
+            class="p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10">
+      <span class="material-icons text-[24px]">menu</span>
+    </button>
 
-          <!-- ADMIN ICON (only for admin; visibility controlled by JS) -->
-          <button id="admin-panel-btn"
-                  onclick="window.router.navigateTo('/admin')"
-                  class="hidden p-2 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 transition-all active:scale-95">
-            <span class="material-icons text-xl">admin_panel_settings</span>
-          </button>
-        </div>
+    <!-- ADMIN ICON (only for admin; visibility controlled by JS) -->
+    <button id="admin-panel-btn"
+            onclick="window.router.navigateTo('/admin')"
+            class="hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10">
+      <span class="material-icons text-xl">admin_panel_settings</span>
+    </button>
+  </div>
 
-        <!-- CENTER: Logo -->
-        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <a href="/" data-link class="block">
-            <img src="/assets/icons/starkmodslogo.png" alt="Stark Mods"
-                 class="h-9 sm:h-10 object-contain"
-                 onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-lg font-bold\'>Stark Mods</span>';" />
-          </a>
-        </div>
+  <!-- CENTER: Logo -->
+  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+    <a href="/" data-link class="block">
+      <img src="/assets/icons/starkmodslogo.png" alt="Stark Mods"
+           class="h-9 sm:h-10 object-contain"
+           onerror="this.onerror=null; this.style.display='none'; this.parentElement.innerHTML='<span class=\'text-lg font-bold\'>Stark Mods</span>';" />
+    </a>
+  </div>
 
-        <!-- RIGHT: Cart Icon (iOS Style) -->
-        <div class="flex items-center gap-2">
-          <!-- Theme Toggle (desktop only) -->
-          <button id="theme-toggle"
-                  class="hidden sm:flex p-2 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 transition-all active:scale-95">
-            <span id="theme-icon" class="material-icons text-xl">dark_mode</span>
-          </button>
+  <!-- RIGHT: Cart Icon (No background glass) -->
+  <div class="flex items-center gap-2">
+    <!-- Theme Toggle (desktop only) -->
+    <button id="theme-toggle"
+            class="hidden sm:flex p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10">
+      <span id="theme-icon" class="material-icons text-xl">dark_mode</span>
+    </button>
 
-          <!-- Cart -->
-          <button onclick="window.router.navigateTo('/cart')"
-                  class="relative p-2 rounded-xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 transition-all active:scale-95">
-            <span class="material-icons text-[22px]">shopping_bag</span>
-            <span id="cart-badge"
-                  class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 shadow-sm">
-              0
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-
+    <!-- Cart -->
+    <button onclick="window.router.navigateTo('/cart')"
+            class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10">
+      <span class="material-icons text-[24px]">shopping_bag</span>
+      <span id="cart-badge"
+            class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 shadow-sm">
+        0
+      </span>
+    </button>
+  </div>
+</div>
     <!-- SLIDE-DOWN MENU (replaces old mobile menu — works on all screens) -->
     <div id="mobile-menu"
          class="hidden border-t border-slate-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl absolute w-full left-0 z-40 transition-all">
