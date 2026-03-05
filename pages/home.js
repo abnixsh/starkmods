@@ -70,22 +70,72 @@ function HomePage() {
   };
 
   // Inject styles once
-  if (!document.getElementById('stark-hero-v4')) {
+  if (!document.getElementById('stark-hero-v6')) {
     const s = document.createElement('style');
-    s.id = 'stark-hero-v4';
+    s.id = 'stark-hero-v6';
     s.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
       body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        overflow-x: hidden; /* Prevent horizontal scroll from marquee */
       }
 
-      /* The Script Font Class */
+      /* The Script Font */
       .stark-script-font {
         font-family: 'Great Vibes', cursive;
-        font-weight: 400; /* Not bold */
+        font-weight: 400 !important;
+        font-style: normal;
       }
+
+      /* --- MARQUEE (Scrolling Text) --- */
+      .stark-marquee-wrapper {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        background: #000;
+        color: #fff;
+        padding: 8px 0;
+        overflow: hidden;
+        white-space: nowrap;
+        position: relative;
+        z-index: 50;
+        margin-bottom: 2rem;
+      }
+      
+      .stark-marquee-content {
+        display: inline-block;
+        animation: marquee 15s linear infinite;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      @keyframes marquee {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+      }
+
+      /* --- BUTTONS (Colored Circles from Image) --- */
+      .stark-btn-circle {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+      }
+      .stark-btn-circle:active { transform: scale(0.92); }
+
+      /* Specific Button Colors */
+      .btn-search { background: #fff; color: #334155; }
+      .dark .btn-search { background: #1e293b; color: #fff; }
+      
+      .btn-telegram { background: #229ED9; color: #fff; } /* Telegram Blue */
+      .btn-discord { background: #5865F2; color: #fff; }  /* Discord Blurple */
 
       /* --- iOS GLASS MORPHISM CSS --- */
       .ios-glass-card, .ios-glass-panel {
@@ -101,108 +151,13 @@ function HomePage() {
         position: relative;
         overflow: hidden;
       }
-
       .dark .ios-glass-card, .dark .ios-glass-panel {
         background: rgba(30, 41, 59, 0.6);
         border: 1px solid rgba(255, 255, 255, 0.08);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       }
-
-      .ios-glass-card::before, .ios-glass-panel::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-        opacity: 0.6;
-        pointer-events: none;
-      }
-
-      .ios-glass-card::after, .ios-glass-panel::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; width: 1px; height: 100%;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent, rgba(255, 255, 255, 0.2));
-        opacity: 0.5;
-        pointer-events: none;
-      }
-
-      /* iOS Button Style (Icon Only) */
-      .ios-icon-btn {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.5);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,0.4);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        color: #475569;
-      }
-      .dark .ios-icon-btn {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid rgba(255,255,255,0.1);
-        color: #e2e8f0;
-      }
-      .ios-icon-btn:hover {
-        transform: translateY(-2px) scale(1.05);
-        background: rgba(255, 255, 255, 0.8);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-      }
-      .dark .ios-icon-btn:hover {
-        background: rgba(51, 65, 85, 0.8);
-      }
-      .ios-icon-btn:active {
-        transform: scale(0.95);
-      }
-
-      /* --- ANIMATIONS (Restored) --- */
-      .stark-stroke-path {
-        stroke-dasharray: 1500;
-        stroke-dashoffset: 1500;
-        animation: starkDraw 3s ease forwards;
-        fill: none;
-        stroke-width: 2;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-      @keyframes starkDraw {
-        0% { stroke-dashoffset: 1500; }
-        100% { stroke-dashoffset: 0; }
-      }
-
-      .stark-title-reveal {
-        opacity: 0;
-        animation: starkTitleIn 1s ease forwards;
-        animation-delay: 2.2s;
-      }
-      @keyframes starkTitleIn {
-        0% { opacity: 0; transform: scale(0.96); }
-        100% { opacity: 1; transform: scale(1); }
-      }
-
-      .stark-shimmer {
-        position: relative;
-        overflow: hidden;
-        display: inline-block;
-      }
-      .stark-shimmer::after {
-        content: '';
-        position: absolute;
-        top: 0; left: -100%; width: 50%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-        animation: starkShimmer 4s ease-in-out infinite;
-        animation-delay: 3.5s;
-        pointer-events: none;
-      }
-      @keyframes starkShimmer {
-        0% { left: -100%; }
-        50% { left: 150%; }
-        100% { left: 150%; }
-      }
       
+      /* Simple Fade In */
       .stark-in { 
         opacity: 0; 
         transform: translateY(16px); 
@@ -215,88 +170,61 @@ function HomePage() {
     document.head.appendChild(s);
   }
 
-  // Generate SVG path for "Stark Mods" handwriting effect (Restored)
-  const svgHandwriting = `
-    <svg viewBox="0 0 500 100" class="w-full max-w-md mx-auto h-20 sm:h-28 overflow-visible" aria-hidden="true">
-      <defs>
-        <linearGradient id="starkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style="stop-color:#3b82f6"/>
-          <stop offset="40%" style="stop-color:#8b5cf6"/>
-          <stop offset="70%" style="stop-color:#ec4899"/>
-          <stop offset="100%" style="stop-color:#f59e0b"/>
-        </linearGradient>
-      </defs>
-      <path class="stark-stroke-path" stroke="url(#starkGrad)" d="M30,65 C30,45 15,40 15,55 C15,70 45,75 45,55 C45,40 25,35 25,50" style="animation-delay:0s"/>
-      <path class="stark-stroke-path" stroke="url(#starkGrad)" d="M55,30 L55,75 M45,45 L65,45" style="animation-delay:0.3s"/>
-      <path class="stark-stroke-path" stroke="url(#starkGrad)" d="M85,50 C75,45 65,50 70,60 C75,70 85,70 85,60 L85,75" style="animation-delay:0.6s"/>
-      <path class="stark-stroke-path" stroke="url(#starkGrad)" d="M95,50 L95,75 M95,55 C100,45 115,45 115,55" style="animation-delay:0.9s"/>
-      <path class="stark-stroke-path" stroke="url(#starkGrad)" d="M125,30 L125,75 M140,50 L125,60 L142,75" style="animation-delay:1.2s"/>
-      <path class="stark-stroke-path" stroke="url(#starkGrad)" d="M175,75 L175,40 L195,65 L215,40 L215,75" style="animation-delay:1.5s"/>
-      <path class="stark-stroke-path" stroke="url(#starkGrad)" d="M235,60 C235,48 250,48 250,60 C250,72 235,72 235,60" style="animation-delay:1.8s"/>
-      <path class="stark-stroke-path" stroke="url(#starkGrad)" d="M270,60 C260,50 255,55 258,63 C261,71 270,72 270,60 L270,30 L270,75" style="animation-delay:2.0s"/>
-      <path class="stark-stroke-path" stroke="url(#starkGrad)" d="M285,55 C285,48 278,48 278,53 C278,58 290,58 290,63 C290,70 280,70 280,65" style="animation-delay:2.2s"/>
-    </svg>
-  `;
-
   return `
-  <div class="max-w-6xl mx-auto pb-24 animate-fade-in relative px-3 sm:px-6 pt-6">
+  <div class="max-w-6xl mx-auto pb-24 animate-fade-in relative px-3 sm:px-6">
 
-    <!-- ===== HERO SECTION (Transparent BG) ===== -->
-    <section class="mb-4 text-center py-10 px-4 isolate relative">
+    <!-- ===== 1. SCROLLING BLACK BAR ===== -->
+    <div class="stark-marquee-wrapper">
+       <div class="stark-marquee-content">
+          50% off on new mods - cricket x coming soon - 50% off on new mods - cricket x coming soon -
+       </div>
+    </div>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="mb-8 text-center px-4 relative z-10">
        
-       <!-- Floating particles -->
-       <div class="stark-particle w-2 h-2 bg-blue-400 top-0 left-10 rounded-full blur-[1px] absolute opacity-50"></div>
-       <div class="stark-particle w-3 h-3 bg-purple-400 bottom-0 right-10 rounded-full blur-[2px] absolute opacity-50"></div>
+       <div class="flex flex-col items-center">
 
-       <div class="relative z-10 flex flex-col items-center">
+          <!-- 2. TITLE: Solid Blue, Script Font (No SVG, No Gradient) -->
+          <h1 class="stark-in stark-script-font text-7xl sm:text-8xl text-blue-700 dark:text-blue-400 select-none leading-none pb-6 drop-shadow-sm" 
+              style="animation-delay: 0.1s; text-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            Stark Mods
+          </h1>
           
-          <!-- Live Badge -->
-          <div class="stark-in inline-flex items-center gap-2 py-1.5 px-3 rounded-full bg-white/40 dark:bg-black/20 backdrop-blur-md border border-white/20 shadow-sm mb-4">
-            <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          <!-- 3. LIVE BADGE (Below Title) -->
+          <div class="stark-in inline-flex items-center gap-2 py-2 px-4 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 mb-6" style="animation-delay: 0.2s">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
             </span>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">
+            <span class="text-[11px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">
               Update v7+ Live
             </span>
           </div>
 
-          <!-- SVG Handwriting Animation (Restored) -->
-          <div class="mb-2 transform scale-90 sm:scale-100">
-            ${svgHandwriting}
-          </div>
-
-          <!-- TITLE: Great Vibes Font + Gradient + Shimmer (Restored Style) -->
-          <div class="stark-shimmer -mt-4">
-            <h1 class="stark-title-reveal stark-script-font text-6xl sm:text-8xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent select-none leading-tight pb-4">
-              Stark Mods
-            </h1>
-          </div>
-          
-          <!-- Tagline -->
-          <p class="stark-in text-sm sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-xl mx-auto leading-relaxed font-medium mt-2" style="animation-delay: 3s">
-            Premium, Secure & Anti-Ban Mod Menus for iOS & Android.
+          <!-- 4. TAGLINE -->
+          <p class="stark-in text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-lg mx-auto font-medium leading-relaxed" style="animation-delay: 0.3s">
+            Premium, Secure & Anti-Ban Mod Menus <br/> for iOS & Android.
           </p>
           
-          <!-- Buttons: Horizontal Line, Icon Only -->
-          <div class="stark-in flex flex-row justify-center gap-4 w-full" style="animation-delay: 3.2s">
+          <!-- 5. COLORED CIRCLE BUTTONS -->
+          <div class="stark-in flex flex-row justify-center gap-5 w-full" style="animation-delay: 0.4s">
              
-             <!-- Browse Icon -->
+             <!-- Search (White) -->
              <button onclick="document.getElementById('search-mods').focus()" 
-                     class="ios-icon-btn group" title="Search Mods">
-                <span class="material-icons text-xl group-hover:text-blue-500 transition-colors">search</span>
+                     class="stark-btn-circle btn-search group" title="Search">
+                <span class="material-icons text-xl group-hover:scale-110 transition-transform">search</span>
              </button>
              
-             <!-- Telegram Icon -->
+             <!-- Telegram (Blue) -->
              <button onclick="window.open('https://t.me/starkrc20', '_blank')" 
-                     class="ios-icon-btn group" title="Telegram Channel">
-                <span class="material-icons text-xl group-hover:-rotate-12 group-hover:text-blue-500 transition-all">telegram</span>
+                     class="stark-btn-circle btn-telegram group" title="Telegram">
+                <span class="material-icons text-xl group-hover:-rotate-12 transition-transform">telegram</span>
              </button>
 
-             <!-- Discord Icon -->
+             <!-- Discord (Indigo) -->
              <button onclick="window.open('https://discord.gg/KaeHESH9n', '_blank')" 
-                     class="ios-icon-btn group" title="Discord Server">
-                <svg class="w-5 h-5 fill-current group-hover:scale-110 group-hover:text-indigo-500 transition-all" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+                     class="stark-btn-circle btn-discord group" title="Discord">
+                <svg class="w-6 h-6 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
              </button>
           </div>
        </div>
@@ -322,7 +250,7 @@ function HomePage() {
        </div>
     </div>
 
-    <!-- ===== SEARCH BAR (Not Sticky) ===== -->
+    <!-- ===== SEARCH BAR (Functional, Not Sticky) ===== -->
     <div class="relative z-40 mb-8 mx-auto max-w-4xl">
       <div class="ios-glass-panel flex items-center p-1.5 ring-1 ring-black/5">
          <div class="relative flex-1 group pl-2">
