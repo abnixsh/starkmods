@@ -1,144 +1,207 @@
-/* css/styles.css */
+/* css/styles.css - Clean iOS Theme */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* --- 1. THEME VARIABLES (Restored to Original Slate Palette) --- */
 :root {
-  /* Light Mode (Slate 50 background) */
-  --bg-body: #f8fafc; 
-  --bg-card: #ffffff;
-  --text-main: #1e293b; /* Slate 800 */
-  --text-muted: #64748b; /* Slate 500 */
-  --border: #e2e8f0;    /* Slate 200 */
+  /* iOS Color Palette (Light) */
+  --accent: #007AFF;           /* Apple Blue */
+  --accent-hover: #0062cc;
+  
+  --bg-body: #F2F2F7;          /* iOS System Gray 6 */
+  --bg-card: #FFFFFF;
+  --bg-secondary: #E5E5EA;     /* iOS System Gray 5 */
+  
+  --text-primary: #000000;
+  --text-secondary: #8E8E93;   /* iOS System Gray */
+  
+  --border-color: rgba(60, 60, 67, 0.12); /* iOS Separator */
+  
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --radius-card: 18px;
+  --radius-btn: 12px;
 }
 
 .dark {
-  /* Dark Mode (Slate 900 background - Like Original) */
-  --bg-body: #0f172a; 
-  --bg-card: #1e293b;   /* Slate 800 */
-  --text-main: #f8fafc; /* Slate 50 */
-  --text-muted: #94a3b8; /* Slate 400 */
-  --border: #334155;    /* Slate 700 */
+  /* iOS Color Palette (Dark) */
+  --accent: #0A84FF;           /* Apple Dark Mode Blue */
+  --accent-hover: #007AFF;
+  
+  --bg-body: #000000;
+  --bg-card: #1C1C1E;          /* iOS Dark System Gray 6 */
+  --bg-secondary: #2C2C2E;     /* iOS Dark System Gray 5 */
+  
+  --text-primary: #FFFFFF;
+  --text-secondary: #98989D;
+  
+  --border-color: rgba(84, 84, 88, 0.35);
+  
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* GLOBAL RESET */
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* --- GLOBAL SETTINGS --- */
+* { box-sizing: border-box; }
+
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-body);
-  color: var(--text-main);
-  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-body) !important;
+  color: var(--text-primary) !important;
   transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  -webkit-font-smoothing: antialiased; /* iOS crisp text */
 }
 
-/* --- 2. HEADER --- */
-.glass-header {
-  background-color: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-}
-.dark .glass-header {
-  background-color: rgba(15, 23, 42, 0.85); /* Slate 900 with opacity */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* --- 3. BOTTOM DOCK (Your Specific CSS + Stretched) --- */
-.glass-dock-container {
-  position: fixed;
-  bottom: 15px;
-  left: 0; 
-  right: 0;
-  display: flex;
-  justify-content: center;
+/* --- HEADER (Glassmorphism) --- */
+header, .glass-header {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-color) !important;
+  position: sticky;
+  top: 0;
   z-index: 50;
-  pointer-events: none; /* Let clicks pass through empty space */
 }
 
-.glass-dock {
-  pointer-events: auto;
-  /* Stretched dimensions */
-  width: calc(100% - 24px); 
-  max-width: 500px;
-  height: 70px;
-  
-  /* YOUR PROVIDED CSS */
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(15px); /* Increased blur slightly for text readability */
-  -webkit-backdrop-filter: blur(15px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 6px 3px rgba(255, 255, 255, 0.1); /* Lowered opacity of inner glow */
-  position: relative;
-  overflow: hidden;
-
-  /* Layout */
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
+.dark header, .dark .glass-header {
+  background-color: rgba(28, 28, 30, 0.8) !important;
 }
 
-/* Dark Mode Overrides for Dock */
-.dark .glass-dock {
-  background: rgba(30, 41, 59, 0.6); /* Slate 800 semi-transparent */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+/* --- CARDS --- */
+.app-card, .info-box, .bg-white, .content-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden; /* Ensures images respect rounded corners */
 }
 
-/* YOUR GRADIENTS (Applied to Dock) */
-.glass-dock::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-  pointer-events: none;
+.dark .app-card, .dark .info-box, .dark .bg-slate-800 {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
 }
 
-.glass-dock::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; width: 1px; height: 100%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), transparent, rgba(255, 255, 255, 0.3));
-  pointer-events: none;
+.app-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1) !important;
 }
 
-/* Dock Buttons */
-.dock-btn {
-  width: 50px; 
-  height: 50px;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  border-radius: 14px;
-  color: var(--text-muted);
-  transition: all 0.3s ease;
-  z-index: 10;
+/* --- TYPOGRAPHY --- */
+h1, h2, h3, .font-bold {
+  font-weight: 600 !important; /* Apple tends to use SemiBold */
+  letter-spacing: -0.02em;
 }
 
-.dock-btn.active {
-  background: rgba(255, 255, 255, 0.6);
-  color: #2563eb; /* Blue 600 */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-.dark .dock-btn.active {
-  background: rgba(255, 255, 255, 0.15);
-  color: #60a5fa; /* Blue 400 */
+.text-slate-500, .dark .text-slate-400 {
+  color: var(--text-secondary) !important;
 }
 
-/* --- 4. CARDS & GENERAL --- */
-.app-card, .ios-glass-panel, .info-box {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
+/* --- BUTTONS --- */
+.btn, button.bg-blue-600 {
+  background-color: var(--accent) !important;
+  color: #fff !important;
+  border-radius: var(--radius-btn);
+  font-weight: 600;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-.dark ::-webkit-scrollbar-thumb { background: #475569; }
+.btn:hover, button.bg-blue-600:hover {
+  background-color: var(--accent-hover) !important;
+  transform: scale(1.02);
+}
+
+/* --- INPUTS --- */
+input, select, textarea, .form-input {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid transparent;
+  color: var(--text-primary) !important;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+input:focus, select:focus, textarea:focus {
+  background-color: var(--bg-card) !important;
+  border-color: var(--accent);
+  outline: none;
+}
+
+/* --- NAVIGATION --- */
+.nav-link {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 8px 12px;
+  transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+.dark .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --- BADGES --- */
+.badge {
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- MOBILE MENU --- */
+#mobile-menu {
+  background-color: var(--bg-card) !important;
+  border-top: 1px solid var(--border-color);
+}
+
+/* --- HERO SECTION --- */
+.hero-section {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* --- CAROUSEL (iOS Page Control Style) --- */
+.screenshot-carousel {
+  border-radius: var(--radius-card);
+}
+.screenshot-carousel-nav {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.screenshot-carousel-indicator {
+  background: rgba(255,255,255,0.4);
+}
+.screenshot-carousel-indicator.active {
+  background: #fff;
+}
+
+/* --- SCROLLBAR --- */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb {
+  background-color: #C1C1C1;
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #48484A;
+}
