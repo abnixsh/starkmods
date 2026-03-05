@@ -237,3 +237,81 @@ input:focus, select:focus, textarea:focus {
 .bottom-nav-link.active span {
   font-weight: 600;
 }
+
+/* --- FLOATING GLASS DOCK (iOS Style) --- */
+.glass-dock-container {
+  position: fixed;
+  bottom: 30px; /* Floating off the bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: auto;
+  min-width: 280px; /* Minimum width */
+  max-width: 90%;
+}
+
+.glass-dock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 25px;
+  background: rgba(255, 255, 255, 0.75); /* Milky white transparency */
+  backdrop-filter: blur(20px) saturate(180%); /* Heavy blur for glass effect */
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Subtle white border */
+  border-radius: 50px; /* Pill shape */
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.1), /* Large soft shadow */
+    0 5px 10px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6); /* Inner highlight */
+  transition: all 0.3s ease;
+}
+
+/* Dark Mode Glass */
+.dark .glass-dock {
+  background: rgba(28, 28, 30, 0.75); /* Dark gray transparency */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Dock Icons */
+.dock-icon {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #8E8E93; /* Inactive Color */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+/* Active State (Scale up + Color) */
+.dock-icon.active {
+  color: var(--accent); /* Blue */
+  transform: translateY(-5px); /* Pop up slightly */
+}
+
+.dock-icon.active .material-icons {
+  text-shadow: 0 4px 12px rgba(0, 122, 255, 0.4); /* Glow effect */
+}
+
+.dock-label {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 2px;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: all 0.2s ease;
+  height: 0;
+  overflow: hidden;
+}
+
+/* Show label only on active? Or always? 
+   iOS docks usually don't show text, but for clarity let's keep it subtle */
+.dock-icon.active .dock-label {
+  opacity: 1;
+  transform: translateY(0);
+  height: auto;
+}
