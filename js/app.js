@@ -37,9 +37,6 @@
     const plan = product.plans[planType];
     if (!plan) return;
 
-    // Abhi design single‑item cart ka hai.
-    // Naya item add karte hi purana replace hota hai.
-    // Multi‑item cart banane ke liye cart.js / checkout.js bhi change karne honge.
     if (plan.price === 0) {
       window.open('https://www.mediafire.com/', '_blank');
       return;
@@ -77,7 +74,7 @@
       btn.classList.toggle('hidden', !isAdmin);
     }
     if (mobileLink) {
-      mobileLink.style.display = isAdmin ? 'block' : 'none';
+      mobileLink.style.display = isAdmin ? 'flex' : 'none';
     }
   };
 
@@ -119,7 +116,6 @@
     const isDark = !html.classList.contains('dark');
     applyTheme(isDark);
     localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
-    // Dark mode change hote hi mobile menu band karo
     closeMobileMenu();
   }
 
@@ -210,10 +206,34 @@
     });
   }
 
-  // --- 4. INIT ON DOM LOAD ---
+  // --- 4. DOCK ACTIVE STATE ---
+  function updateDockActive() {
+    const path = location.pathname.replace(/\/$/, '') || '/';
+    const dockMap = {
+      '/': 'home',
+      '/creator': 'creator',
+      '/profile': 'profile'
+    };
+
+    document.querySelectorAll('.ios-dock-btn').forEach(btn => {
+      btn.classList.remove('dock-active');
+    });
+
+    const activeKey = dockMap[path];
+    if (activeKey) {
+      const activeBtn = document.querySelector(`.ios-dock-btn[data-dock="${activeKey}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('dock-active');
+      }
+    }
+  }
+  window.updateDockActive = updateDockActive;
+
+  // --- 5. INIT ON DOM LOAD ---
   document.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
     updateCartBadge();
+    updateDockActive();
     if (window.updateAdminIcon) window.updateAdminIcon();
 
     // Theme toggles
@@ -221,7 +241,7 @@
       .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
       .forEach(btn => btn.addEventListener('click', toggleTheme));
 
-    // Mobile menu button
+    // Menu button (now works on all screens)
     const menuBtn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');
     if (menuBtn && menu) {
@@ -230,17 +250,25 @@
       });
     }
 
-    // Scroll par mobile menu auto close (sirf chote screens par)
+    // Close menu on scroll
     window.addEventListener('scroll', () => {
-      if (window.innerWidth < 768) {
-        closeMobileMenu();
-      }
+      closeMobileMenu();
     });
+
+    // Close menu when clicking a link inside it
+    if (menu) {
+      menu.querySelectorAll('a[data-link]').forEach(link => {
+        link.addEventListener('click', () => {
+          closeMobileMenu();
+        });
+      });
+    }
   });
 
   // Called by router after each page render
   window.initializeComponents = function () {
     initializeCarousels();
     updateCartBadge();
+    updateDockActive();
   };
 })();
