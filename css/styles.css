@@ -205,3 +205,35 @@ input:focus, select:focus, textarea:focus {
 .dark ::-webkit-scrollbar-thumb {
   background-color: #48484A;
 }
+
+/* --- EXISTING CODE ABOVE ... --- */
+
+/* --- 1. SCROLL REVEAL ANIMATION --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); /* Apple's Ease Curve */
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger delays for lists */
+.reveal.delay-100 { transition-delay: 0.1s; }
+.reveal.delay-200 { transition-delay: 0.2s; }
+.reveal.delay-300 { transition-delay: 0.3s; }
+
+/* --- 2. MOBILE BOTTOM NAV UTILS --- */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Bottom Nav Active State */
+.bottom-nav-link.active {
+  color: var(--accent) !important;
+}
+.bottom-nav-link.active span {
+  font-weight: 600;
+}
