@@ -2,22 +2,23 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
+/* --- 1. THEME VARIABLES (Restored to Original Slate Palette) --- */
 :root {
-  --primary: #007AFF;
-  --bg-body: #F2F2F7;
-  --bg-card: #FFFFFF;
-  --text-main: #000000;
-  --text-muted: #8E8E93;
-  --border: rgba(0, 0, 0, 0.08);
+  /* Light Mode (Slate 50 background) */
+  --bg-body: #f8fafc; 
+  --bg-card: #ffffff;
+  --text-main: #1e293b; /* Slate 800 */
+  --text-muted: #64748b; /* Slate 500 */
+  --border: #e2e8f0;    /* Slate 200 */
 }
 
 .dark {
-  --primary: #0A84FF;
-  --bg-body: #000000;
-  --bg-card: #1C1C1E;
-  --text-main: #FFFFFF;
-  --text-muted: #98989D;
-  --border: rgba(255, 255, 255, 0.12);
+  /* Dark Mode (Slate 900 background - Like Original) */
+  --bg-body: #0f172a; 
+  --bg-card: #1e293b;   /* Slate 800 */
+  --text-main: #f8fafc; /* Slate 50 */
+  --text-muted: #94a3b8; /* Slate 400 */
+  --border: #334155;    /* Slate 700 */
 }
 
 /* GLOBAL RESET */
@@ -29,56 +30,68 @@ body {
   background-color: var(--bg-body);
   color: var(--text-main);
   margin: 0;
-  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* HEADER */
+/* --- 2. HEADER --- */
 .glass-header {
   background-color: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
 }
 .dark .glass-header {
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(15, 23, 42, 0.85); /* Slate 900 with opacity */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* --- YOUR SPECIFIC GLASS DOCK STYLE --- */
+/* --- 3. BOTTOM DOCK (Your Specific CSS + Stretched) --- */
+.glass-dock-container {
+  position: fixed;
+  bottom: 15px;
+  left: 0; 
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 50;
+  pointer-events: none; /* Let clicks pass through empty space */
+}
+
 .glass-dock {
-  /* Positioning & Size (Stretched with spacing) */
-  width: calc(100% - 32px); /* 16px gap on each side */
-  max-width: 500px; /* Don't get too wide on PC */
-  height: 70px;     /* Fixed height for the dock */
-  margin: 0 auto;
+  pointer-events: auto;
+  /* Stretched dimensions */
+  width: calc(100% - 24px); 
+  max-width: 500px;
+  height: 70px;
   
-  /* Your provided Visual Styles */
-  background: rgba(255, 255, 255, 0.65); /* Increased opacity slightly for readability */
-  backdrop-filter: blur(15px);
+  /* YOUR PROVIDED CSS */
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(15px); /* Increased blur slightly for text readability */
   -webkit-backdrop-filter: blur(15px);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 6px 3px rgba(255, 255, 255, 0.1); /* Reduced inner glow intensity */
+    inset 0 0 6px 3px rgba(255, 255, 255, 0.1); /* Lowered opacity of inner glow */
   position: relative;
   overflow: hidden;
-  
-  /* Layout for buttons */
+
+  /* Layout */
   display: flex;
   align-items: center;
-  justify-content: space-around; /* Distribute buttons evenly */
-  padding: 0 20px;
+  justify-content: space-around;
 }
 
+/* Dark Mode Overrides for Dock */
 .dark .glass-dock {
-  background: rgba(30, 30, 35, 0.65);
+  background: rgba(30, 41, 59, 0.6); /* Slate 800 semi-transparent */
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-/* Gradients from your code (applied to dock) */
+/* YOUR GRADIENTS (Applied to Dock) */
 .glass-dock::before {
   content: '';
   position: absolute;
@@ -86,6 +99,7 @@ body {
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
   pointer-events: none;
 }
+
 .glass-dock::after {
   content: '';
   position: absolute;
@@ -94,39 +108,37 @@ body {
   pointer-events: none;
 }
 
-/* DOCK BUTTONS */
+/* Dock Buttons */
 .dock-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
+  width: 50px; 
   height: 50px;
-  border-radius: 12px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  border-radius: 14px;
   color: var(--text-muted);
   transition: all 0.3s ease;
-  z-index: 10; /* Ensure above gradients */
+  z-index: 10;
 }
 
 .dock-btn.active {
-  color: var(--primary);
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.6);
+  color: #2563eb; /* Blue 600 */
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 .dark .dock-btn.active {
-  background: rgba(255, 255, 255, 0.1);
-  color: #60a5fa;
+  background: rgba(255, 255, 255, 0.15);
+  color: #60a5fa; /* Blue 400 */
 }
 
-/* CARDS */
+/* --- 4. CARDS & GENERAL --- */
 .app-card, .ios-glass-panel, .info-box {
   background-color: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 20px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
 }
 
-/* SCROLLBAR */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
-.dark ::-webkit-scrollbar-thumb { background: #333; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
