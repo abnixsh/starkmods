@@ -295,7 +295,7 @@ function renderSmartPaymentDetails() {
   // 4. PAYPAL (USD Conversion)
   else if (method === 'paypal') {
     const usdAmount = (item.price * rates.USD).toFixed(2);
-    const paypalEmail = "yourpaypal@email.com"; // REPLACE THIS
+    const paypalEmail = "PAYPAL IS NOT ACCEPTED YET!"; // REPLACE THIS
 
     box.innerHTML = `
       <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl mb-4 border border-blue-200 dark:border-blue-800">
