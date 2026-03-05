@@ -27,6 +27,13 @@
       plans: {
         free: { name: 'Free Version', price: 0 }
       }
+    },
+    rc24: {
+      name: 'RC24 Patch',
+      icon: 'assets/icons/icon_rc24.png',
+      plans: {
+        free: { name: 'Free Version', price: 0 }
+      }
     }
   };
 
@@ -37,14 +44,13 @@
     const plan = product.plans[planType];
     if (!plan) return;
 
-    // Abhi design single‑item cart ka hai.
-    // Naya item add karte hi purana replace hota hai.
-    // Multi‑item cart banane ke liye cart.js / checkout.js bhi change karne honge.
+    // Direct download for free items
     if (plan.price === 0) {
-      window.open('https://www.mediafire.com/', '_blank');
+      window.open('https://www.mediafire.com/', '_blank'); // Replace with real links
       return;
     }
 
+    // Single item cart logic
     window.cart = [{
       gameId,
       gameName: product.name,
@@ -54,7 +60,6 @@
     }];
 
     updateCartBadge();
-
     if (window.router) window.router.navigateTo('/cart');
   };
 
@@ -67,161 +72,76 @@
   }
   window.updateCartBadge = updateCartBadge;
 
-  // --- 1b. ADMIN ICON TOGGLE ---
+  // --- 2. ADMIN & UI UTILS ---
   window.updateAdminIcon = function () {
-    const btn = document.getElementById('admin-panel-btn');
     const mobileLink = document.getElementById('mobile-admin-link');
     const isAdmin = !!(window.currentUser && window.isAdmin);
-
-    if (btn) {
-      btn.classList.toggle('hidden', !isAdmin);
-    }
-    if (mobileLink) {
-      mobileLink.style.display = isAdmin ? 'block' : 'none';
-    }
+    if (mobileLink) mobileLink.style.display = isAdmin ? 'flex' : 'none';
   };
 
-  // --- 2. THEME LOGIC ---
+  // --- 3. DOCK ACTIVE STATE LOGIC ---
+  function updateActiveDock() {
+    const path = window.location.pathname.replace(/\/$/, '') || '/';
+    
+    // IDs of dock buttons
+    const navs = {
+      '/': 'dock-home',
+      '/creator': 'dock-creator',
+      '/profile': 'dock-profile'
+    };
+
+    // Remove active class from all
+    Object.values(navs).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('active');
+    });
+
+    // Add active class to current
+    const activeId = navs[path];
+    if (activeId) {
+      const activeEl = document.getElementById(activeId);
+      if (activeEl) activeEl.classList.add('active');
+    }
+  }
+
+  // --- 4. THEME LOGIC ---
   const THEME_KEY = 'stark_theme_dark';
 
   function applyTheme(isDark) {
     const html = document.documentElement;
-    if (!html) return;
-
     html.classList.toggle('dark', isDark);
 
     const iconDesktop = document.getElementById('theme-icon');
-    const iconMobile = document.querySelector('#theme-toggle-mobile .material-icons');
     if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
-    if (iconMobile) iconMobile.textContent = isDark ? 'light_mode' : 'dark_mode';
   }
 
   function initializeTheme() {
     const saved = localStorage.getItem(THEME_KEY);
-    let isDark;
-    if (saved === '1') isDark = true;
-    else if (saved === '0') isDark = false;
-    else isDark = false; // default light
-
+    const isDark = saved === '1'; // Default to light if null
     applyTheme(isDark);
   }
-
-  function closeMobileMenu() {
-    const menu = document.getElementById('mobile-menu');
-    if (menu && !menu.classList.contains('hidden')) {
-      menu.classList.add('hidden');
-    }
-  }
-  window.closeMobileMenu = closeMobileMenu;
 
   function toggleTheme() {
     const html = document.documentElement;
     const isDark = !html.classList.contains('dark');
     applyTheme(isDark);
     localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
-    // Dark mode change hote hi mobile menu band karo
-    closeMobileMenu();
+    // Close mobile menu if open
+    document.getElementById('mobile-menu').classList.add('hidden');
   }
 
-  // --- 3. CAROUSEL LOGIC ---
-  function initializeCarousels() {
-    document.querySelectorAll('.screenshot-carousel').forEach((carousel) => {
-      if (carousel.dataset.carouselInit === '1') return;
-      carousel.dataset.carouselInit = '1';
-
-      const track = carousel.querySelector('.screenshot-carousel-track');
-      const slides = carousel.querySelectorAll('.screenshot-carousel-slide');
-      if (!track || slides.length <= 1) return;
-
-      let index = 0;
-      const total = slides.length;
-
-      const prevBtn = carousel.querySelector('.screenshot-carousel-nav.prev');
-      const nextBtn = carousel.querySelector('.screenshot-carousel-nav.next');
-
-      const indicatorsContainer = carousel.querySelector('.screenshot-carousel-indicators');
-      const indicators = [];
-      if (indicatorsContainer) {
-        indicatorsContainer.innerHTML = '';
-        slides.forEach((_, i) => {
-          const dot = document.createElement('div');
-          dot.className = 'screenshot-carousel-indicator' + (i === 0 ? ' active' : '');
-          dot.addEventListener('click', () => {
-            index = i;
-            update();
-            resetAutoplay();
-          });
-          indicatorsContainer.appendChild(dot);
-          indicators.push(dot);
-        });
-      }
-
-      function update() {
-        track.style.transform = `translateX(-${index * 100}%)`;
-        indicators.forEach((dot, i) => dot.classList.toggle('active', i === index));
-      }
-
-      function goNext() {
-        index = (index + 1) % total;
-        update();
-      }
-
-      function goPrev() {
-        index = (index - 1 + total) % total;
-        update();
-      }
-
-      if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-          goPrev();
-          resetAutoplay();
-        });
-      }
-      if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-          goNext();
-          resetAutoplay();
-        });
-      }
-
-      let autoplayId = null;
-
-      function startAutoplay() {
-        if (autoplayId) return;
-        autoplayId = setInterval(goNext, 4000);
-      }
-
-      function stopAutoplay() {
-        if (!autoplayId) return;
-        clearInterval(autoplayId);
-        autoplayId = null;
-      }
-
-      function resetAutoplay() {
-        stopAutoplay();
-        startAutoplay();
-      }
-
-      carousel.addEventListener('mouseenter', stopAutoplay);
-      carousel.addEventListener('mouseleave', startAutoplay);
-
-      update();
-      startAutoplay();
-    });
-  }
-
-  // --- 4. INIT ON DOM LOAD ---
+  // --- 5. INITIALIZATION ---
   document.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
     updateCartBadge();
-    if (window.updateAdminIcon) window.updateAdminIcon();
+    updateActiveDock(); // Run once on load
 
-    // Theme toggles
-    document
-      .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
-      .forEach(btn => btn.addEventListener('click', toggleTheme));
+    // Theme Listeners
+    document.querySelectorAll('#theme-toggle, #theme-toggle-mobile').forEach(btn => {
+      btn.addEventListener('click', toggleTheme);
+    });
 
-    // Mobile menu button
+    // Mobile Menu Toggle
     const menuBtn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');
     if (menuBtn && menu) {
@@ -230,17 +150,19 @@
       });
     }
 
-    // Scroll par mobile menu auto close (sirf chote screens par)
+    // Close menu on scroll
     window.addEventListener('scroll', () => {
-      if (window.innerWidth < 768) {
-        closeMobileMenu();
+      if (menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
       }
     });
   });
 
-  // Called by router after each page render
+  // Called by router.js after page injection
   window.initializeComponents = function () {
-    initializeCarousels();
     updateCartBadge();
+    updateActiveDock(); // Update dock when route changes
+    if (window.updateAdminIcon) window.updateAdminIcon();
   };
+
 })();
