@@ -44,13 +44,11 @@
     const plan = product.plans[planType];
     if (!plan) return;
 
-    // Direct download for free items
     if (plan.price === 0) {
-      window.open('https://www.mediafire.com/', '_blank'); // Replace with real links
+      window.open('https://www.mediafire.com/', '_blank');
       return;
     }
 
-    // Single item cart logic
     window.cart = [{
       gameId,
       gameName: product.name,
@@ -72,31 +70,25 @@
   }
   window.updateCartBadge = updateCartBadge;
 
-  // --- 2. ADMIN & UI UTILS ---
+  // --- 2. ADMIN ICON ---
   window.updateAdminIcon = function () {
     const mobileLink = document.getElementById('mobile-admin-link');
     const isAdmin = !!(window.currentUser && window.isAdmin);
     if (mobileLink) mobileLink.style.display = isAdmin ? 'flex' : 'none';
   };
 
-  // --- 3. DOCK ACTIVE STATE LOGIC ---
+  // --- 3. DOCK ACTIVE STATE ---
   function updateActiveDock() {
     const path = window.location.pathname.replace(/\/$/, '') || '/';
-    
-    // IDs of dock buttons
     const navs = {
       '/': 'dock-home',
       '/creator': 'dock-creator',
       '/profile': 'dock-profile'
     };
-
-    // Remove active class from all
     Object.values(navs).forEach(id => {
       const el = document.getElementById(id);
       if (el) el.classList.remove('active');
     });
-
-    // Add active class to current
     const activeId = navs[path];
     if (activeId) {
       const activeEl = document.getElementById(activeId);
@@ -110,14 +102,12 @@
   function applyTheme(isDark) {
     const html = document.documentElement;
     html.classList.toggle('dark', isDark);
-
-    const iconDesktop = document.getElementById('theme-icon');
-    if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
   }
 
   function initializeTheme() {
     const saved = localStorage.getItem(THEME_KEY);
-    const isDark = saved === '1'; // Default to light if null
+    // Default to dark mode if not set, or if set to '1'
+    const isDark = saved === null || saved === '1'; 
     applyTheme(isDark);
   }
 
@@ -127,21 +117,16 @@
     applyTheme(isDark);
     localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
     // Close mobile menu if open
-    document.getElementById('mobile-menu').classList.add('hidden');
+    const menu = document.getElementById('mobile-menu');
+    if(menu) menu.classList.add('hidden');
   }
 
-  // --- 5. INITIALIZATION ---
+  // --- 5. DOM READY ---
   document.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
     updateCartBadge();
-    updateActiveDock(); // Run once on load
+    updateActiveDock();
 
-    // Theme Listeners
-    document.querySelectorAll('#theme-toggle, #theme-toggle-mobile').forEach(btn => {
-      btn.addEventListener('click', toggleTheme);
-    });
-
-    // Mobile Menu Toggle
     const menuBtn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');
     if (menuBtn && menu) {
@@ -150,7 +135,9 @@
       });
     }
 
-    // Close menu on scroll
+    const themeBtn = document.getElementById('theme-toggle-mobile');
+    if(themeBtn) themeBtn.addEventListener('click', toggleTheme);
+
     window.addEventListener('scroll', () => {
       if (menu && !menu.classList.contains('hidden')) {
         menu.classList.add('hidden');
@@ -158,10 +145,9 @@
     });
   });
 
-  // Called by router.js after page injection
   window.initializeComponents = function () {
     updateCartBadge();
-    updateActiveDock(); // Update dock when route changes
+    updateActiveDock();
     if (window.updateAdminIcon) window.updateAdminIcon();
   };
 
