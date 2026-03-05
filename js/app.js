@@ -1,14 +1,9 @@
+// js/app.js
 (function () {
   'use strict';
 
-  // =========================================
-  // 1. DATA & CONFIGURATION
-  // =========================================
-  
-  // Cart State
+  // --- 1. CART SYSTEM ---
   window.cart = [];
-
-  // Product Database (Hardcoded as requested)
   window.products = {
     rc20: {
       name: 'RC20 Mod',
@@ -35,10 +30,6 @@
     }
   };
 
-  // =========================================
-  // 2. CART LOGIC
-  // =========================================
-
   window.addToCart = function (gameId, planType) {
     const product = window.products[gameId];
     if (!product) return;
@@ -46,13 +37,14 @@
     const plan = product.plans[planType];
     if (!plan) return;
 
-    // External Link Check (Free Versions)
+    // Abhi design single‑item cart ka hai.
+    // Naya item add karte hi purana replace hota hai.
+    // Multi‑item cart banane ke liye cart.js / checkout.js bhi change karne honge.
     if (plan.price === 0) {
       window.open('https://www.mediafire.com/', '_blank');
       return;
     }
 
-    // Single Item Cart Logic (Replaces existing item)
     window.cart = [{
       gameId,
       gameName: product.name,
@@ -62,219 +54,193 @@
     }];
 
     updateCartBadge();
-    
-    // Navigate to Cart Page
+
     if (window.router) window.router.navigateTo('/cart');
   };
 
   function updateCartBadge() {
-    const count = window.cart.length;
     const badge = document.getElementById('cart-badge');
-    
     if (badge) {
-      badge.innerText = count;
-      if (count > 0) {
-        badge.classList.remove('hidden');
-        badge.classList.add('flex'); // Ensure it displays
-      } else {
-        badge.classList.add('hidden');
-        badge.classList.remove('flex');
-      }
+      badge.innerText = window.cart.length;
+      badge.classList.toggle('hidden', window.cart.length === 0);
     }
   }
-  
-  // Export for other files to use
   window.updateCartBadge = updateCartBadge;
 
-  // =========================================
-  // 3. THEME LOGIC (Dark/Light Mode)
-  // =========================================
+  // --- 1b. ADMIN ICON TOGGLE ---
+  window.updateAdminIcon = function () {
+    const btn = document.getElementById('admin-panel-btn');
+    const mobileLink = document.getElementById('mobile-admin-link');
+    const isAdmin = !!(window.currentUser && window.isAdmin);
+
+    if (btn) {
+      btn.classList.toggle('hidden', !isAdmin);
+    }
+    if (mobileLink) {
+      mobileLink.style.display = isAdmin ? 'block' : 'none';
+    }
+  };
+
+  // --- 2. THEME LOGIC ---
   const THEME_KEY = 'stark_theme_dark';
 
   function applyTheme(isDark) {
     const html = document.documentElement;
     if (!html) return;
 
-    // Toggle Class
     html.classList.toggle('dark', isDark);
 
-    // Update Desktop Icon
-    const iconDesktop = document.getElementById('theme-icon'); // The span inside the button
-    if (iconDesktop) {
-        iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
-    }
-
-    // Update Mobile Menu Icon (if exists)
-    const iconMobile = document.getElementById('mobile-theme-icon');
-    if (iconMobile) {
-        iconMobile.textContent = isDark ? 'toggle_on' : 'toggle_off';
-        iconMobile.classList.toggle('text-blue-500', isDark);
-    }
+    const iconDesktop = document.getElementById('theme-icon');
+    const iconMobile = document.querySelector('#theme-toggle-mobile .material-icons');
+    if (iconDesktop) iconDesktop.textContent = isDark ? 'light_mode' : 'dark_mode';
+    if (iconMobile) iconMobile.textContent = isDark ? 'light_mode' : 'dark_mode';
   }
 
   function initializeTheme() {
     const saved = localStorage.getItem(THEME_KEY);
-    // Default to light (false) if null, or true if '1'
-    const isDark = saved === '1'; 
+    let isDark;
+    if (saved === '1') isDark = true;
+    else if (saved === '0') isDark = false;
+    else isDark = false; // default light
+
     applyTheme(isDark);
   }
+
+  function closeMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    if (menu && !menu.classList.contains('hidden')) {
+      menu.classList.add('hidden');
+    }
+  }
+  window.closeMobileMenu = closeMobileMenu;
 
   function toggleTheme() {
     const html = document.documentElement;
     const isDark = !html.classList.contains('dark');
     applyTheme(isDark);
     localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
+    // Dark mode change hote hi mobile menu band karo
+    closeMobileMenu();
   }
 
-  // =========================================
-  // 4. NAVIGATION & DOCK LOGIC
-  // =========================================
-
-  // Updates the Glass Dock to show which page is active
-  window.updateActiveDock = function() {
-    // 1. Get current path (works with Hash router or History API)
-    const path = window.location.hash || window.location.pathname;
-
-    // 2. Define IDs
-    const dockIds = {
-      'home': document.getElementById('dock-home'),
-      'creator': document.getElementById('dock-creator'),
-      'profile': document.getElementById('dock-profile')
-    };
-
-    // 3. Reset all
-    Object.values(dockIds).forEach(el => {
-      if(el) el.classList.remove('active');
-    });
-
-    // 4. Set Active based on path logic
-    if (path.includes('creator')) {
-      dockIds['creator']?.classList.add('active');
-    } else if (path.includes('profile') || path.includes('order')) {
-      dockIds['profile']?.classList.add('active');
-    } else {
-      // Default to Home for '/' or empty
-      dockIds['home']?.classList.add('active');
-    }
-  };
-
-  // Closes the mobile dropdown menu
-  window.closeMobileMenu = function() {
-    const dropdown = document.getElementById('mobile-menu-dropdown');
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    
-    if (dropdown && !dropdown.classList.contains('hidden')) {
-      dropdown.classList.add('hidden');
-      document.body.style.overflow = ''; // Enable scroll
-      
-      // Reset Icon
-      if(menuBtn) {
-        const icon = menuBtn.querySelector('.material-icons');
-        if(icon) icon.innerText = 'menu';
-      }
-    }
-  };
-
-  // =========================================
-  // 5. ANIMATIONS (Scroll Reveal)
-  // =========================================
-  
-  function initScrollReveal() {
-    // Select all elements with class 'reveal'
-    const reveals = document.querySelectorAll('.reveal');
-    
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('active');
-          observer.unobserve(entry.target); // Only animate once
-        }
-      });
-    }, { threshold: 0.1 });
-
-    reveals.forEach(el => observer.observe(el));
-  }
-
-  // =========================================
-  // 6. CAROUSEL LOGIC (Screenshots)
-  // =========================================
+  // --- 3. CAROUSEL LOGIC ---
   function initializeCarousels() {
     document.querySelectorAll('.screenshot-carousel').forEach((carousel) => {
-      // Prevent double init
       if (carousel.dataset.carouselInit === '1') return;
       carousel.dataset.carouselInit = '1';
 
       const track = carousel.querySelector('.screenshot-carousel-track');
       const slides = carousel.querySelectorAll('.screenshot-carousel-slide');
-      
       if (!track || slides.length <= 1) return;
 
       let index = 0;
-      
-      // Auto Scroll
-      const interval = setInterval(() => {
-        index = (index + 1) % slides.length;
+      const total = slides.length;
+
+      const prevBtn = carousel.querySelector('.screenshot-carousel-nav.prev');
+      const nextBtn = carousel.querySelector('.screenshot-carousel-nav.next');
+
+      const indicatorsContainer = carousel.querySelector('.screenshot-carousel-indicators');
+      const indicators = [];
+      if (indicatorsContainer) {
+        indicatorsContainer.innerHTML = '';
+        slides.forEach((_, i) => {
+          const dot = document.createElement('div');
+          dot.className = 'screenshot-carousel-indicator' + (i === 0 ? ' active' : '');
+          dot.addEventListener('click', () => {
+            index = i;
+            update();
+            resetAutoplay();
+          });
+          indicatorsContainer.appendChild(dot);
+          indicators.push(dot);
+        });
+      }
+
+      function update() {
         track.style.transform = `translateX(-${index * 100}%)`;
-      }, 4000);
-      
-      // Optional: Pause on hover could be added here
+        indicators.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      }
+
+      function goNext() {
+        index = (index + 1) % total;
+        update();
+      }
+
+      function goPrev() {
+        index = (index - 1 + total) % total;
+        update();
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+          goPrev();
+          resetAutoplay();
+        });
+      }
+      if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+          goNext();
+          resetAutoplay();
+        });
+      }
+
+      let autoplayId = null;
+
+      function startAutoplay() {
+        if (autoplayId) return;
+        autoplayId = setInterval(goNext, 4000);
+      }
+
+      function stopAutoplay() {
+        if (!autoplayId) return;
+        clearInterval(autoplayId);
+        autoplayId = null;
+      }
+
+      function resetAutoplay() {
+        stopAutoplay();
+        startAutoplay();
+      }
+
+      carousel.addEventListener('mouseenter', stopAutoplay);
+      carousel.addEventListener('mouseleave', startAutoplay);
+
+      update();
+      startAutoplay();
     });
   }
 
-  // =========================================
-  // 7. INITIALIZATION (On Load)
-  // =========================================
-  
+  // --- 4. INIT ON DOM LOAD ---
   document.addEventListener('DOMContentLoaded', () => {
-    // A. Init Theme
     initializeTheme();
-    document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
-    document.getElementById('mobile-theme-toggle')?.addEventListener('click', toggleTheme);
-
-    // B. Init Cart Badge
     updateCartBadge();
+    if (window.updateAdminIcon) window.updateAdminIcon();
 
-    // C. Header Menu Logic (EventListener)
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    const dropdown = document.getElementById('mobile-menu-dropdown');
+    // Theme toggles
+    document
+      .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
+      .forEach(btn => btn.addEventListener('click', toggleTheme));
 
-    if (menuBtn && dropdown) {
-      menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isHidden = dropdown.classList.contains('hidden');
-        
-        if (isHidden) {
-          dropdown.classList.remove('hidden');
-          menuBtn.querySelector('.material-icons').innerText = 'close';
-          document.body.style.overflow = 'hidden'; // Lock scroll
-        } else {
-          window.closeMobileMenu();
-        }
-      });
-
-      // Close if clicking outside
-      document.addEventListener('click', (e) => {
-        if (!dropdown.contains(e.target) && !menuBtn.contains(e.target)) {
-          window.closeMobileMenu();
-        }
+    // Mobile menu button
+    const menuBtn = document.getElementById('mobile-menu-button');
+    const menu = document.getElementById('mobile-menu');
+    if (menuBtn && menu) {
+      menuBtn.addEventListener('click', () => {
+        menu.classList.toggle('hidden');
       });
     }
+
+    // Scroll par mobile menu auto close (sirf chote screens par)
+    window.addEventListener('scroll', () => {
+      if (window.innerWidth < 768) {
+        closeMobileMenu();
+      }
+    });
   });
 
-  // =========================================
-  // 8. ROUTER HOOK (Global Function)
-  // =========================================
-  
-  // This function is called by router.js AFTER a page is rendered.
-  // It re-initializes dynamic components.
+  // Called by router after each page render
   window.initializeComponents = function () {
     initializeCarousels();
     updateCartBadge();
-    initScrollReveal();
-    updateActiveDock(); // Update the glass dock visuals
-    
-    // Ensure mobile menu is closed after navigation
-    window.closeMobileMenu();
   };
-
 })();
