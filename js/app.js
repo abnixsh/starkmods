@@ -206,28 +206,28 @@
     });
   }
 
-  // --- 4. DOCK ACTIVE STATE ---
-  function updateDockActive() {
-    const path = location.pathname.replace(/\/$/, '') || '/';
-    const dockMap = {
-      '/': 'home',
-      '/creator': 'creator',
-      '/profile': 'profile'
-    };
+// --- 4. DOCK ACTIVE STATE ---
+function updateDockActive() {
+  const path = location.pathname.replace(/\/$/, '') || '/';
+  const dockMap = {
+    '/': 'home',
+    '/creator': 'creator',
+    '/profile': 'profile'
+  };
 
-    document.querySelectorAll('.ios-dock-btn').forEach(btn => {
-      btn.classList.remove('dock-active');
-    });
+  document.querySelectorAll('.ios-dock-item').forEach(btn => {
+    btn.classList.remove('dock-active');
+  });
 
-    const activeKey = dockMap[path];
-    if (activeKey) {
-      const activeBtn = document.querySelector(`.ios-dock-btn[data-dock="${activeKey}"]`);
-      if (activeBtn) {
-        activeBtn.classList.add('dock-active');
-      }
+  const activeKey = dockMap[path];
+  if (activeKey) {
+    const activeBtn = document.querySelector(`.ios-dock-item[data-dock="${activeKey}"]`);
+    if (activeBtn) {
+      activeBtn.classList.add('dock-active');
     }
   }
-  window.updateDockActive = updateDockActive;
+}
+window.updateDockActive = updateDockActive;
 
   // --- 5. INIT ON DOM LOAD ---
   document.addEventListener('DOMContentLoaded', () => {
