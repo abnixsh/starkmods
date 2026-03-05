@@ -1,6 +1,6 @@
 // pages/home.js
 
-// Global state for hidden cards
+// --- 1. DATA LOGIC (DO NOT TOUCH) ---
 window.homeHiddenCards = window.homeHiddenCards || [];
 window.homeConfigLoaded = window.homeConfigLoaded || false;
 window._homeConfigFetchStarted = window._homeConfigFetchStarted || false;
@@ -35,365 +35,335 @@ function HomePage() {
   const hiddenCards = Array.isArray(window.homeHiddenCards) ? window.homeHiddenCards : [];
   const isHidden = (id) => hiddenCards.includes(id);
 
+  // --- 2. ADMIN CONTROLS ---
   const adminControls = (id) => {
     if (!isAdmin) return '';
     const hidden = isHidden(id);
     const label = hidden ? 'Show' : 'Hide';
     const icon  = hidden ? 'visibility' : 'visibility_off';
-    const hiddenNote = hidden
-      ? `<div class="mb-2 text-[10px] text-red-500 font-bold uppercase border border-red-200 bg-red-50 px-2 py-1 rounded inline-block">Hidden</div>`
-      : '';
+    // Small floating admin pill
     return `
-      <div class="flex justify-between items-center mb-2 z-20 relative">
-        ${hiddenNote}
+      <div class="absolute top-3 right-3 z-30">
         <button onclick="window.toggleHomeCard('${id}')"
-                class="ml-auto text-slate-500 hover:text-red-500 text-[10px] flex items-center gap-1 bg-white/50 px-2 py-1 rounded-full transition shadow-sm border border-slate-200/50">
-          <span class="material-icons text-xs">${icon}</span>
-          <span class="uppercase font-bold">${label}</span>
+                class="flex items-center gap-1 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider hover:bg-red-600 transition-colors shadow-lg">
+          <span class="material-icons text-[12px]">${icon}</span>
+          <span>${label}</span>
         </button>
       </div>`;
   };
 
-  const renderCard = (id, innerHtml) => {
+  // --- 3. COMPONENT: RENDER CARD (App Store Style) ---
+  const renderCard = (id, data) => {
     if (!isAdmin && isHidden(id)) return '';
     const extraClasses = isHidden(id) ? 'opacity-50 grayscale' : '';
     
-    // iOS Glass Card Class
+    // Destructuring data for cleaner HTML
+    const { title, subtitle, icon, image, version, tags, link } = data;
+
     return `
-      <article class="app-card ios-glass-card group p-5 hover:-translate-y-1 transition-all duration-300 ${extraClasses}"
-               data-card-id="${id}">
+      <article class="ios-card-wrapper group relative flex flex-col ${extraClasses}" data-card-id="${id}">
         ${adminControls(id)}
-        <div class="relative z-10 h-full">
-            ${innerHtml}
+        
+        <!-- Large Cover Image -->
+        <div class="relative w-full aspect-video sm:aspect-[4/3] overflow-hidden rounded-t-[28px] cursor-pointer" onclick="window.router.navigateTo('${link}')">
+            <div class="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse"></div>
+            <img src="${image}" alt="${title}" 
+                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                 onload="this.previousElementSibling.remove()"
+                 onerror="this.src='https://placehold.co/600x400/1e293b/FFF?text=${title}'">
+            <!-- Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+            
+            <!-- Floating Version Badge -->
+            <div class="absolute bottom-3 left-4">
+               <span class="px-2 py-1 rounded-md bg-white/20 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold tracking-wider uppercase">
+                 ${version}
+               </span>
+            </div>
+        </div>
+
+        <!-- Content Section (Glass) -->
+        <div class="ios-card-body flex-1 p-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-x border-b border-white/50 dark:border-white/5 rounded-b-[28px] flex flex-col relative z-10">
+            
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex gap-4">
+                    <img src="${icon}" class="w-14 h-14 rounded-[14px] shadow-sm border border-black/5 dark:border-white/10" onerror="this.src='https://placehold.co/64'">
+                    <div class="flex flex-col justify-center">
+                        <h3 class="text-[17px] font-semibold text-slate-900 dark:text-white leading-tight -mt-0.5">${title}</h3>
+                        <p class="text-[13px] text-slate-500 dark:text-slate-400 font-medium line-clamp-1">${subtitle}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tags & Action -->
+            <div class="mt-auto flex items-center justify-between">
+                <div class="flex gap-1.5">
+                   ${tags.map(tag => `
+                     <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${tag === 'Free' ? 'bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}">
+                       ${tag}
+                     </span>
+                   `).join('')}
+                </div>
+                
+                <button onclick="window.router.navigateTo('${link}')" 
+                        class="ios-get-btn bg-slate-100 hover:bg-slate-200 text-blue-600 dark:bg-slate-800 dark:text-blue-400 px-6 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all active:scale-95">
+                  GET
+                </button>
+            </div>
         </div>
       </article>`;
   };
 
-  // Inject styles once
-  if (!document.getElementById('stark-hero-v9')) {
+  // --- 4. CSS INJECTION (Premium Styling) ---
+  if (!document.getElementById('stark-ios-v2')) {
     const s = document.createElement('style');
-    s.id = 'stark-hero-v9';
+    s.id = 'stark-ios-v2';
     s.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+      :root {
+        --ios-blue: #007AFF;
+        --ios-bg-light: #F5F5F7;
+        --ios-bg-dark: #000000;
+      }
 
       body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        overflow-x: hidden;
+        font-family: 'Inter', -apple-system, sans-serif;
+        background-color: var(--ios-bg-light);
+      }
+      .dark body {
+        background-color: var(--ios-bg-dark);
       }
 
-      /* --- MARQUEE (Scrolling Text) --- */
-      .stark-marquee-wrapper {
-        width: 100vw;
-        margin-left: calc(-50vw + 50%);
-        background: #000;
-        color: #fff;
-        padding: 8px 0;
+      /* Marquee Animation */
+      .marquee-container {
+        width: 100%;
         overflow: hidden;
         white-space: nowrap;
-        position: relative;
-        /* CHANGED: Lower z-index so Header/Menu goes OVER it */
-        z-index: 0; 
-        margin-bottom: 2rem;
-        /* CHANGED: Increased negative margin to pull it UP more */
-        margin-top: -2.25rem; 
-      }
-      
-      .stark-marquee-content {
-        display: inline-block;
-        animation: marquee 20s linear infinite;
-        font-size: 13px;
+        background: #111;
+        color: white;
+        font-size: 11px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
+        padding: 10px 0;
+        position: relative;
+        z-index: 10;
       }
-
-      @keyframes marquee {
+      .marquee-content {
+        display: inline-block;
+        animation: scrollText 30s linear infinite;
+      }
+      @keyframes scrollText {
         0% { transform: translateX(0); }
         100% { transform: translateX(-50%); }
       }
 
-      /* --- BUTTONS (Colored Circles) --- */
-      .stark-btn-circle {
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-        box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-      }
-      .stark-btn-circle:active { transform: scale(0.92); }
-
-      .btn-search { background: #fff; color: #334155; }
-      .dark .btn-search { background: #1e293b; color: #fff; }
-      .btn-telegram { background: #229ED9; color: #fff; }
-      .btn-discord { background: #5865F2; color: #fff; }
-
-      /* --- iOS GLASS MORPHISM CSS --- */
-      .ios-glass-card, .ios-glass-panel {
+      /* iOS Glass Effects */
+      .ios-glass {
         background: rgba(255, 255, 255, 0.65);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 
-          0 8px 32px rgba(0, 0, 0, 0.05),
-          inset 0 1px 0 rgba(255, 255, 255, 0.6),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-        position: relative;
-        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.3);
       }
-      .dark .ios-glass-card, .dark .ios-glass-panel {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      .dark .ios-glass {
+        background: rgba(28, 28, 30, 0.65);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
-      
-      /* Animation */
-      .stark-in { 
-        opacity: 0; 
-        transform: translateY(16px); 
-        animation: starkElIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+
+      /* Bento Grid Widget */
+      .bento-widget {
+        background: #fff;
+        border-radius: 22px;
+        padding: 16px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.03);
+        border: 1px solid rgba(0,0,0,0.04);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
       }
-      @keyframes starkElIn { 
-        to { opacity: 1; transform: translateY(0); } 
+      .dark .bento-widget {
+        background: #1c1c1e;
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+      .bento-widget:hover {
+        transform: scale(1.02);
+      }
+
+      /* Card Shadows */
+      .ios-card-wrapper {
+        border-radius: 28px;
+        box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease;
+      }
+      .ios-card-wrapper:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 50px -10px rgba(0,0,0,0.12);
+      }
+
+      /* Animations */
+      .fade-up {
+        animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      @keyframes fadeUp {
+        to { opacity: 1; transform: translateY(0); }
       }
     `;
     document.head.appendChild(s);
   }
 
+  // --- 5. RENDER HTML ---
   return `
-  <div class="max-w-6xl mx-auto pb-24 animate-fade-in relative px-3 sm:px-6 pt-0">
-
-    <!-- ===== 1. SCROLLING BLACK BAR ===== -->
-    <div class="stark-marquee-wrapper">
-       <div class="stark-marquee-content">
-          50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;  50% OFF ON NEW MODS - CRICKET X COMING SOON  &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-       </div>
+  <!-- Top Marquee (Full Width) -->
+  <div class="marquee-container -mt-10 mb-8 shadow-sm">
+    <div class="marquee-content">
+      Premium iOS Mods • Update v7+ Available • Join Telegram for Support • 100% Anti-Ban Guarantee • Premium iOS Mods • Update v7+ Available • Join Telegram for Support • 100% Anti-Ban Guarantee •
     </div>
+  </div>
 
-    <!-- ===== HERO SECTION ===== -->
-    <section class="mb-8 text-center px-4 relative z-10">
+  <div class="max-w-5xl mx-auto pb-32 px-4 sm:px-6">
+
+    <!-- HERO SECTION -->
+    <header class="flex flex-col items-center text-center mb-12 fade-up" style="animation-delay: 0.1s">
        
-       <div class="flex flex-col items-center">
-
-          <!-- 2. TITLE IMAGE (Increased Size) -->
-          <div class="stark-in mb-6" style="animation-delay: 0.1s;">
-             <img src="assets/icons/starkimage.png" 
-                  alt="Stark Mods" 
-                  class="h-auto w-72 sm:w-96 mx-auto object-contain drop-shadow-sm" 
-                  onerror="this.style.display='none'; this.parentElement.innerHTML='<h1 class=\'text-5xl font-bold\'>Stark Mods</h1>'">
-          </div>
-          
-          <!-- 3. LIVE BADGE -->
-          <div class="stark-in inline-flex items-center gap-2 py-2 px-4 rounded-full bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 mb-6" style="animation-delay: 0.2s">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-            </span>
-            <span class="text-[11px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300">
-              Update v7+ Live
-            </span>
-          </div>
-
-          <!-- 4. TAGLINE -->
-          <p class="stark-in text-base sm:text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-lg mx-auto font-medium leading-relaxed" style="animation-delay: 0.3s">
-            Premium, Secure & Anti-Ban Mod Menus <br/> for iOS & Android.
-          </p>
-          
-          <!-- 5. COLORED CIRCLE BUTTONS -->
-          <div class="stark-in flex flex-row justify-center gap-5 w-full" style="animation-delay: 0.4s">
-             
-             <!-- Search (White) -->
-             <button onclick="document.getElementById('search-mods').focus()" 
-                     class="stark-btn-circle btn-search group" title="Search">
-                <span class="material-icons text-xl group-hover:scale-110 transition-transform">search</span>
-             </button>
-             
-             <!-- Telegram (Blue) -->
-             <button onclick="window.open('https://t.me/starkrc20', '_blank')" 
-                     class="stark-btn-circle btn-telegram group" title="Telegram">
-                <span class="material-icons text-xl group-hover:-rotate-12 transition-transform">telegram</span>
-             </button>
-
-             <!-- Discord (Indigo) -->
-             <button onclick="window.open('https://discord.gg/KaeHESH9n', '_blank')" 
-                     class="stark-btn-circle btn-discord group" title="Discord">
-                <svg class="w-6 h-6 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
-             </button>
-          </div>
+       <!-- Logo Image -->
+       <div class="mb-6 relative group">
+          <div class="absolute -inset-4 bg-blue-500/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
+          <img src="assets/icons/starkimage.png" alt="Stark Mods" 
+               class="relative w-64 sm:w-80 h-auto object-contain drop-shadow-lg"
+               onerror="this.style.display='none'; this.parentElement.innerHTML='<h1 class=\'text-6xl font-black tracking-tighter text-slate-900 dark:text-white\'>Stark Mods</h1>'">
        </div>
+
+       <!-- Tagline -->
+       <h2 class="text-lg sm:text-xl font-medium text-slate-500 dark:text-slate-400 max-w-lg leading-relaxed mb-8">
+         Unlock the ultimate gaming experience.<br class="hidden sm:block"> Premium & Secure Mod Menus.
+       </h2>
+
+       <!-- Quick Actions Pill (Glass) -->
+       <div class="ios-glass inline-flex items-center p-1.5 rounded-full shadow-lg gap-2">
+          
+          <button onclick="document.getElementById('search-mods').focus()" 
+                  class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:scale-105 active:scale-95 transition-all" title="Search">
+            <span class="material-icons text-[20px]">search</span>
+          </button>
+
+          <div class="w-px h-6 bg-slate-200 dark:bg-slate-700"></div>
+
+          <button onclick="window.open('https://t.me/starkrc20', '_blank')" 
+                  class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 text-white hover:bg-blue-600 active:scale-95 transition-all shadow-md shadow-blue-500/30" title="Telegram">
+             <span class="material-icons text-[20px] -ml-0.5 mt-0.5 -rotate-12">telegram</span>
+          </button>
+
+          <button onclick="window.open('https://discord.gg/KaeHESH9n', '_blank')" 
+                  class="w-12 h-12 flex items-center justify-center rounded-full bg-[#5865F2] text-white hover:bg-[#4752c4] active:scale-95 transition-all shadow-md shadow-indigo-500/30" title="Discord">
+             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+          </button>
+       </div>
+
+    </header>
+
+    <!-- BENTO STATS -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12 fade-up" style="animation-delay: 0.2s">
+        <div class="bento-widget">
+            <span class="text-3xl font-bold text-blue-600 mb-1">5+</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Mods</span>
+        </div>
+        <div class="bento-widget">
+            <span class="text-3xl font-bold text-green-500 mb-1">40k</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Downloads</span>
+        </div>
+        <div class="bento-widget">
+            <span class="material-icons text-3xl text-purple-500 mb-1">support_agent</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">24/7 Support</span>
+        </div>
+        <div class="bento-widget">
+            <span class="material-icons text-3xl text-amber-500 mb-1">verified_user</span>
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">100% Safe</span>
+        </div>
     </section>
 
-    <!-- ===== STATS ===== -->
-    <div class="grid grid-cols-4 gap-3 mb-8 px-1">
-       <div class="ios-glass-panel p-3 text-center flex flex-col items-center justify-center">
-          <div class="text-xl sm:text-2xl font-black text-blue-600">5+</div>
-          <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mt-1">Mods</div>
-       </div>
-       <div class="ios-glass-panel p-3 text-center flex flex-col items-center justify-center">
-          <div class="text-xl sm:text-2xl font-black text-green-600">40k</div>
-          <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mt-1">Users</div>
-       </div>
-       <div class="ios-glass-panel p-3 text-center flex flex-col items-center justify-center">
-          <div class="text-xl sm:text-2xl font-black text-purple-600">24/7</div>
-          <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mt-1">Help</div>
-       </div>
-       <div class="ios-glass-panel p-3 text-center flex flex-col items-center justify-center">
-          <div class="text-xl sm:text-2xl font-black text-amber-500">100%</div>
-          <div class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mt-1">Safe</div>
+    <!-- SEARCH & FILTER -->
+    <div class="fade-up mb-8 sticky top-4 z-40" style="animation-delay: 0.3s">
+       <div class="ios-glass rounded-2xl flex items-center p-2 shadow-sm">
+           <span class="material-icons text-slate-400 ml-3">search</span>
+           <input type="text" id="search-mods" onkeyup="window.filterMods()" 
+                  placeholder="Search Apps & Games" 
+                  class="w-full bg-transparent border-none outline-none text-sm font-medium text-slate-900 dark:text-white px-3 py-2 placeholder-slate-400">
+           
+           <div class="h-6 w-px bg-slate-200 dark:bg-white/10 mx-2"></div>
+           
+           <select id="filter-category" onchange="window.filterMods()" 
+                   class="bg-transparent text-xs font-bold text-slate-500 dark:text-slate-400 border-none outline-none mr-2 cursor-pointer">
+              <option value="all">All</option>
+              <option value="free">Free</option>
+              <option value="premium">Paid</option>
+           </select>
        </div>
     </div>
 
-    <!-- ===== SEARCH BAR ===== -->
-    <div class="relative z-40 mb-8 mx-auto max-w-4xl">
-      <div class="ios-glass-panel flex items-center p-1.5 ring-1 ring-black/5">
-         <div class="relative flex-1 group pl-2">
-            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition text-lg">search</span>
-            <input type="text" id="search-mods" onkeyup="window.filterMods()" 
-                   placeholder="Search games, mods..."
-                   class="w-full pl-10 pr-4 py-3 bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-400 font-medium text-sm">
-         </div>
-         <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-600 mx-1"></div>
-         <div class="relative pr-1">
-             <select id="filter-category" onchange="window.filterMods()" 
-                     class="pl-3 pr-8 py-2 bg-slate-100/50 dark:bg-slate-800/50 border-none outline-none text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded-xl transition appearance-none">
-                <option value="all">All</option>
-                <option value="free">Free</option>
-                <option value="premium">Paid</option>
-             </select>
-             <span class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 pointer-events-none">expand_more</span>
-         </div>
-      </div>
+    <!-- MAIN GRID -->
+    <div class="flex items-center justify-between mb-6 px-1 fade-up" style="animation-delay: 0.35s">
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Featured Mods</h2>
+        <span class="text-xs font-medium text-blue-500 cursor-pointer">See All</span>
     </div>
 
-    <!-- ===== MODS GRID (Glass Cards) ===== -->
-    <section class="grid md:grid-cols-3 gap-6" id="mods-grid">
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 fade-up" id="mods-grid" style="animation-delay: 0.4s">
+       
+       ${renderCard('rc25', {
+          title: 'RC25 Fan-Made',
+          subtitle: 'Ultimate Patch Update v7+',
+          icon: 'assets/icons/icon_rc25.jpg',
+          image: 'assets/img/img_rc25_1.jpg',
+          version: 'v7.0',
+          tags: ['Free', 'Sports'],
+          link: '/rc25'
+       })}
 
-      ${renderCard('rc25', `
-        <div class="flex flex-col h-full">
-          <div class="flex items-center gap-4 mb-4">
-            <div class="relative group-hover:scale-105 transition-transform duration-300">
-                <img src="assets/icons/icon_rc25.jpg" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=RC25'" />
-                <div class="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
-            </div>
-            <div>
-              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC25 Fan-Made</div>
-              <div class="text-[11px] text-slate-500 font-medium">Patch Update</div>
-            </div>
-          </div>
-          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/rc25')">
-             <img src="assets/img/img_rc25_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=RC25'">
-          </div>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">v7+</span>
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-300">Free</span>
-          </div>
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
-            The ultimate RC25 Patch. Enhanced graphics, updated squads, and optimized gameplay.
-          </p>
-          <button onclick="window.router.navigateTo('/rc25')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-full font-bold text-sm shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>Download</span>
-          </button>
-        </div>
-      `)}
+       ${renderCard('rc24', {
+          title: 'RC Realistic V3',
+          subtitle: 'High-Res Textures & Jerseys',
+          icon: 'assets/icons/icon_rc24.png',
+          image: 'assets/img/img_rc24_1.jpg',
+          version: 'v4.6',
+          tags: ['Free', 'Graphics'],
+          link: '/rc24'
+       })}
 
-      ${renderCard('rc24', `
-        <div class="flex flex-col h-full">
-          <div class="flex items-center gap-4 mb-4">
-             <div class="relative group-hover:scale-105 transition-transform duration-300">
-                <img src="assets/icons/icon_rc24.png" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=RC24'" />
-                <div class="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
-             </div>
-             <div>
-              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC Realistic V3</div>
-              <div class="text-[11px] text-slate-500 font-medium">Texture Patch</div>
-            </div>
-          </div>
-          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/rc24')">
-             <img src="assets/img/img_rc24_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=RC24'">
-          </div>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">v4.6</span>
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-300">Free</span>
-          </div>
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
-            New T20 World Cup 2026 Jerseys, Realistic patch with enhanced textures & faces.
-          </p>
-          <button onclick="window.router.navigateTo('/rc24')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-full font-bold text-sm shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>Download</span>
-          </button>
-        </div>
-      `)}
+       ${renderCard('rc20', {
+          title: 'RC20 Mod Menu',
+          subtitle: 'VIP Cheats & Unlocks',
+          icon: 'assets/icons/icon_rc20.jpg',
+          image: 'assets/img/img_rc20_1.jpg',
+          version: 'v6.1',
+          tags: ['Premium', 'Mod Menu'],
+          link: '/rc20'
+       })}
 
-      ${renderCard('rc20', `
-        <div class="flex flex-col h-full">
-          <div class="flex items-center gap-4 mb-4">
-             <div class="relative group-hover:scale-105 transition-transform duration-300">
-                <img src="assets/icons/icon_rc20.jpg" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=RC20'" />
-                <div class="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
-             </div>
-             <div>
-              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">RC20 Mod Menu</div>
-              <div class="text-[11px] text-slate-500 font-medium">VIP Cheats</div>
-            </div>
-          </div>
-          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/rc20')">
-             <img src="assets/img/img_rc20_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=RC20'">
-          </div>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300">Premium</span>
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Safe</span>
-          </div>
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
-            VIP Mod Menu. Features include Timing Hack, Unlimited Coins/Tickets & more.
-          </p>
-          <button onclick="window.router.navigateTo('/rc20')" class="w-full bg-slate-100 dark:bg-slate-700 text-blue-600 dark:text-blue-400 py-2.5 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>View Details</span>
-          </button>
-        </div>
-      `)}
-
-      ${renderCard('wcc3', `
-        <div class="flex flex-col h-full">
-          <div class="flex items-center gap-4 mb-4">
-             <div class="relative group-hover:scale-105 transition-transform duration-300">
-                <img src="assets/icons/icon_wcc3.png" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=WCC3'" />
-                <div class="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
-             </div>
-             <div>
-              <div class="text-lg font-bold text-slate-900 dark:text-white leading-tight">WCC3 Mod Menu</div>
-              <div class="text-[11px] text-slate-500 font-medium">VIP Injector</div>
-            </div>
-          </div>
-          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/wcc3')">
-             <img src="assets/img/img_wcc3_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=WCC3'">
-          </div>
-          <div class="flex flex-wrap items-center gap-2 mb-3">
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300">Premium</span>
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Safe</span>
-          </div>
-          <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
-            VIP Mod Menu with Career Mode Unlock, Unlimited Platinum, NPL Auction & more.
-          </p>
-          <button onclick="window.router.navigateTo('/wcc3')" class="w-full bg-slate-100 dark:bg-slate-700 text-blue-600 dark:text-blue-400 py-2.5 rounded-full font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>View Details</span>
-          </button>
-        </div>
-      `)}
+       ${renderCard('wcc3', {
+          title: 'WCC3 VIP Injector',
+          subtitle: 'Career Unlock & Platinum',
+          icon: 'assets/icons/icon_wcc3.png',
+          image: 'assets/img/img_wcc3_1.jpg',
+          version: 'v3.2',
+          tags: ['Premium', 'Career'],
+          link: '/wcc3'
+       })}
 
     </section>
+
   </div>
   `;
 }
 
-// ----------------------
-// SEARCH & FILTER 
-// ----------------------
+// --- 6. UTILITY FUNCTIONS (Unchanged logic) ---
 window.filterMods = function() {
    const query = document.getElementById('search-mods').value.toLowerCase();
    const filter = document.getElementById('filter-category').value;
-   const cards = document.querySelectorAll('.app-card');
+   const cards = document.querySelectorAll('.ios-card-wrapper');
    let foundCount = 0;
 
    cards.forEach(card => {
@@ -406,7 +376,7 @@ window.filterMods = function() {
       if (filter === 'premium' && !isPremium) matchesFilter = false;
 
       if (matchesSearch && matchesFilter) {
-         card.style.display = 'block';
+         card.style.display = 'flex';
          foundCount++;
       } else {
          card.style.display = 'none';
@@ -421,13 +391,13 @@ window.filterMods = function() {
        if(!noResultEl) {
            noResultEl = document.createElement('div');
            noResultEl.id = noResultId;
-           noResultEl.className = 'col-span-1 md:col-span-3 ios-glass-panel text-center py-20 text-slate-400';
+           noResultEl.className = 'col-span-1 md:col-span-3 py-20 text-center';
            noResultEl.innerHTML = `
-             <div class="flex flex-col items-center">
-                <span class="material-icons text-4xl mb-2 text-slate-300">search_off</span>
-                <p class="font-bold text-lg">No mods found</p>
-                <p class="text-sm opacity-60">Try searching for "RC24" or "WCC3"</p>
-             </div>`;
+             <div class="inline-block p-4 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
+                <span class="material-icons text-3xl text-slate-400">search_off</span>
+             </div>
+             <p class="font-semibold text-slate-500">No results found.</p>
+           `;
            grid.appendChild(noResultEl);
        }
    } else {
