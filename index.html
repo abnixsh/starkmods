@@ -159,5 +159,47 @@
   <script src="/js/app.js"></script>
   <script src="/js/router.js"></script>
 
+<!-- ... existing body content ... -->
+
+<!-- MOBILE BOTTOM NAVIGATION BAR -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 dark:bg-[#1C1C1E]/90 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 pb-safe z-50 h-16 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+  <div class="grid grid-cols-3 h-full">
+    
+    <!-- Home Link -->
+    <a href="#" onclick="window.router.navigateTo('/')" id="nav-home" 
+       class="bottom-nav-link flex flex-col items-center justify-center w-full text-slate-400 dark:text-slate-500 transition-colors">
+      <span class="material-icons text-2xl mb-0.5">home</span>
+      <span class="text-[10px] font-medium">Home</span>
+    </a>
+
+    <!-- Cart Link -->
+    <a href="#" onclick="window.router.navigateTo('/cart')" id="nav-cart" 
+       class="bottom-nav-link relative flex flex-col items-center justify-center w-full text-slate-400 dark:text-slate-500 transition-colors">
+      <span class="material-icons text-2xl mb-0.5">shopping_bag</span>
+      <span class="text-[10px] font-medium">Cart</span>
+      <!-- Mobile Badge -->
+      <span id="mobile-cart-badge" 
+            class="absolute top-1 right-[25%] bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm hidden scale-0 transition-transform duration-300">
+        0
+      </span>
+    </a>
+
+    <!-- Profile Link -->
+    <a href="#" onclick="window.router.navigateTo('/profile')" id="nav-profile" 
+       class="bottom-nav-link flex flex-col items-center justify-center w-full text-slate-400 dark:text-slate-500 transition-colors">
+      <span class="material-icons text-2xl mb-0.5">person</span>
+      <span class="text-[10px] font-medium">Profile</span>
+    </a>
+
+  </div>
+</nav>
+
+<!-- Add padding to body so content isn't hidden behind nav -->
+<style>
+  @media (max-width: 768px) {
+    body { padding-bottom: 5rem; } /* 80px extra space at bottom */
+  }
+</style>
+
 </body>
 </html>
