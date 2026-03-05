@@ -58,7 +58,6 @@ function HomePage() {
     if (!isAdmin && isHidden(id)) return '';
     const extraClasses = isHidden(id) ? 'opacity-50 grayscale' : '';
     
-    // iOS Glass Card Class
     return `
       <article class="app-card ios-glass-card group p-5 hover:-translate-y-1 transition-all duration-300 ${extraClasses}"
                data-card-id="${id}">
@@ -75,55 +74,11 @@ function HomePage() {
     s.id = 'stark-hero-v4';
     s.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+      /* Note: Inter is now loaded globally in index.html */
 
-      body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      }
-
-      /* The Script Font Class */
       .stark-script-font {
         font-family: 'Great Vibes', cursive;
-        font-weight: 400; /* Not bold */
-      }
-
-      /* --- iOS GLASS MORPHISM CSS --- */
-      .ios-glass-card, .ios-glass-panel {
-        background: rgba(255, 255, 255, 0.65);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        box-shadow: 
-          0 8px 32px rgba(0, 0, 0, 0.05),
-          inset 0 1px 0 rgba(255, 255, 255, 0.6),
-          inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .dark .ios-glass-card, .dark .ios-glass-panel {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      }
-
-      .ios-glass-card::before, .ios-glass-panel::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0; height: 1px;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-        opacity: 0.6;
-        pointer-events: none;
-      }
-
-      .ios-glass-card::after, .ios-glass-panel::after {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; width: 1px; height: 100%;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent, rgba(255, 255, 255, 0.2));
-        opacity: 0.5;
-        pointer-events: none;
+        font-weight: 400; 
       }
 
       /* iOS Button Style (Icon Only) */
@@ -158,7 +113,6 @@ function HomePage() {
         transform: scale(0.95);
       }
 
-      /* --- ANIMATIONS (Restored) --- */
       .stark-stroke-path {
         stroke-dasharray: 1500;
         stroke-dashoffset: 1500;
@@ -215,7 +169,7 @@ function HomePage() {
     document.head.appendChild(s);
   }
 
-  // Generate SVG path for "Stark Mods" handwriting effect (Restored)
+  // Generate SVG path for "Stark Mods" handwriting effect
   const svgHandwriting = `
     <svg viewBox="0 0 500 100" class="w-full max-w-md mx-auto h-20 sm:h-28 overflow-visible" aria-hidden="true">
       <defs>
@@ -241,7 +195,7 @@ function HomePage() {
   return `
   <div class="max-w-6xl mx-auto pb-24 animate-fade-in relative px-3 sm:px-6 pt-6">
 
-    <!-- ===== HERO SECTION (Transparent BG) ===== -->
+    <!-- ===== HERO SECTION ===== -->
     <section class="mb-4 text-center py-10 px-4 isolate relative">
        
        <!-- Floating particles -->
@@ -261,12 +215,12 @@ function HomePage() {
             </span>
           </div>
 
-          <!-- SVG Handwriting Animation (Restored) -->
+          <!-- SVG Handwriting -->
           <div class="mb-2 transform scale-90 sm:scale-100">
             ${svgHandwriting}
           </div>
 
-          <!-- TITLE: Great Vibes Font + Gradient + Shimmer (Restored Style) -->
+          <!-- TITLE -->
           <div class="stark-shimmer -mt-4">
             <h1 class="stark-title-reveal stark-script-font text-6xl sm:text-8xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent select-none leading-tight pb-4">
               Stark Mods
@@ -278,8 +232,8 @@ function HomePage() {
             Premium, Secure & Anti-Ban Mod Menus for iOS & Android.
           </p>
           
-          <!-- Buttons: Horizontal Line, Icon Only -->
-          <div class="stark-in flex flex-row justify-center gap-4 w-full" style="animation-delay: 3.2s">
+          <!-- Buttons: FIXED ALIGNMENT HERE -->
+          <div class="stark-in flex flex-row justify-center items-center gap-6 w-full" style="animation-delay: 3.2s">
              
              <!-- Browse Icon -->
              <button onclick="document.getElementById('search-mods').focus()" 
@@ -322,14 +276,17 @@ function HomePage() {
        </div>
     </div>
 
-    <!-- ===== SEARCH BAR ===== -->
+    <!-- ===== SEARCH BAR (FIXED OVERLAP) ===== -->
     <div class="sticky top-20 z-40 mb-8 mx-auto max-w-4xl">
       <div class="ios-glass-panel flex items-center p-1.5 ring-1 ring-black/5">
          <div class="relative flex-1 group pl-2">
-            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition text-lg">search</span>
+            <!-- Added pointer-events-none and adjusted position -->
+            <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-blue-500 transition text-xl">search</span>
+            
+            <!-- Increased left padding to pl-12 to avoid overlap -->
             <input type="text" id="search-mods" onkeyup="window.filterMods()" 
                    placeholder="Search games, mods..."
-                   class="w-full pl-10 pr-4 py-3 bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-400 font-medium text-sm">
+                   class="w-full pl-12 pr-4 py-3 bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-400 font-medium text-sm">
          </div>
          <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-600 mx-1"></div>
          <div class="relative pr-1">
@@ -339,17 +296,17 @@ function HomePage() {
                 <option value="free">Free</option>
                 <option value="premium">Paid</option>
              </select>
+             <!-- Icon pointer-events-none to prevent clicking issues -->
              <span class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 pointer-events-none">expand_more</span>
          </div>
       </div>
     </div>
 
-    <!-- ===== MODS GRID (Glass Cards) ===== -->
+    <!-- ===== MODS GRID ===== -->
     <section class="grid md:grid-cols-3 gap-6" id="mods-grid">
 
       ${renderCard('rc25', `
         <div class="flex flex-col h-full">
-          <!-- Header -->
           <div class="flex items-center gap-4 mb-4">
             <div class="relative group-hover:scale-105 transition-transform duration-300">
                 <img src="assets/icons/icon_rc25.jpg" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=RC25'" />
@@ -361,23 +318,19 @@ function HomePage() {
             </div>
           </div>
           
-          <!-- Image -->
           <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/rc25')">
              <img src="assets/img/img_rc25_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=RC25'">
           </div>
 
-          <!-- Tags -->
           <div class="flex flex-wrap items-center gap-2 mb-3">
              <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">v7+</span>
              <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-300">Free</span>
           </div>
 
-          <!-- Description -->
           <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
             The ultimate RC25 Patch. Enhanced graphics, updated squads, and optimized gameplay.
           </p>
 
-          <!-- Button -->
           <button onclick="window.router.navigateTo('/rc25')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-full font-bold text-sm shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-1">
             <span>Download</span>
           </button>
