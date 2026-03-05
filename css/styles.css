@@ -243,16 +243,16 @@ input:focus, select:focus, textarea:focus {
 
 .ios-dock-container {
   background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  backdrop-filter: blur(21px);
+  -webkit-backdrop-filter: blur(21px);
   border-radius: 28px;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 0 6px 3px rgba(255, 255, 255, 0.3);
-  padding: 6px 8px;
+    inset 0 0 0px 0px rgba(255, 255, 255, 0);
+  padding: 8px 6px;
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -273,6 +273,7 @@ input:focus, select:focus, textarea:focus {
     transparent
   );
   pointer-events: none;
+  z-index: 1;
 }
 
 /* Left highlight edge */
@@ -290,60 +291,101 @@ input:focus, select:focus, textarea:focus {
     rgba(255, 255, 255, 0.3)
   );
   pointer-events: none;
+  z-index: 1;
 }
 
 .dark .ios-dock-container {
-  background: rgba(30, 30, 32, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(30, 30, 32, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow:
-    0 8px 40px rgba(0, 0, 0, 0.4),
-    0 2px 12px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 0 6px 3px rgba(255, 255, 255, 0.02);
+    0 8px 32px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.02),
+    inset 0 0 0px 0px rgba(255, 255, 255, 0);
 }
 
+/* --- DOCK BUTTONS (iOS App Icon Style) --- */
 .ios-dock-btn {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   flex: 1;
-  height: 52px;
-  border-radius: 20px;
+  height: 54px;
+  border-radius: 16px;
   background: transparent;
   border: none;
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
   -webkit-tap-highlight-color: transparent;
   outline: none;
-}
-
-.ios-dock-btn:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-.dark .ios-dock-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  gap: 0;
 }
 
 .ios-dock-btn:active {
-  transform: scale(0.92);
-  background: rgba(0, 0, 0, 0.08);
-}
-.dark .ios-dock-btn:active {
-  background: rgba(255, 255, 255, 0.12);
+  transform: scale(0.88);
 }
 
-/* Active state for current page */
-.ios-dock-btn.dock-active {
-  background: rgba(0, 122, 255, 0.08);
-}
-.dark .ios-dock-btn.dock-active {
-  background: rgba(10, 132, 255, 0.12);
+/* --- iOS STYLE ICON WRAP (Rounded Square like App Icons) --- */
+.ios-dock-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.03);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
 }
 
+.dark .ios-dock-icon-wrap {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Subtle inner shine on icon wrap (like real iOS icons) */
+.ios-dock-icon-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  border-radius: 14px 14px 0 0;
+  pointer-events: none;
+}
+
+/* Hover: lift + glow */
+.ios-dock-btn:hover .ios-dock-icon-wrap {
+  background: rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.dark .ios-dock-btn:hover .ios-dock-icon-wrap {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* --- ACTIVE STATE (Current Page) --- */
 .ios-dock-btn.dock-active .ios-dock-icon-wrap {
   background: var(--accent);
-  box-shadow: 0 4px 16px rgba(0, 122, 255, 0.35);
+  box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35);
+}
+
+.ios-dock-btn.dock-active .ios-dock-icon-wrap::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
 }
 
 .ios-dock-btn.dock-active .ios-dock-icon {
@@ -351,36 +393,33 @@ input:focus, select:focus, textarea:focus {
   stroke: #fff !important;
 }
 
-.ios-dock-icon-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
+/* --- ICON STYLE --- */
 .ios-dock-icon {
   width: 22px;
   height: 22px;
-  color: #6B7280;
-  stroke: #6B7280;
+  color: #3C3C43;
+  stroke: #3C3C43;
   transition: all 0.25s ease;
+  position: relative;
+  z-index: 2;
 }
 
 .dark .ios-dock-icon {
-  color: #9CA3AF;
-  stroke: #9CA3AF;
+  color: #AEAEB2;
+  stroke: #AEAEB2;
 }
 
 .ios-dock-btn:hover .ios-dock-icon {
   color: var(--accent);
   stroke: var(--accent);
-  transform: scale(1.08);
 }
 
-/* Safe area for dock — prevent content hiding behind it */
+.ios-dock-btn.dock-active:hover .ios-dock-icon {
+  color: #fff;
+  stroke: #fff;
+}
+
+/* Safe area for dock */
 main#app-content {
   padding-bottom: 6rem !important;
 }
