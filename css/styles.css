@@ -235,64 +235,81 @@ input:focus, select:focus, textarea:focus {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- The Matte Glass Pill --- */
+/* --- The Solid Matte Pill (Like Image 1) --- */
 .ios-dock-pill {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
   width: 100%;
-  padding: 8px 10px; 
-  border-radius: 9999px;
-  position: relative;
-  z-index: 100;
+  padding: 10px 15px; /* Adjust padding to match the thicker look */
 
-  /* 1. HIGH OPACITY BACKGROUND (The Key Fix)
-     We use 0.9 (90%) opacity to hide the clutter behind the dock.
-     Gradient goes from Pure White to slightly "Milky" Grey. 
+  /* 
+     KEY FIX: HIGH OPACITY GRADIENT 
+     1. Top color is nearly solid white (0.95 opacity).
+     2. Bottom color is a darker grey (0.9 opacity).
+     This gradient creates the 3D volume AND hides the content behind it.
   */
   background: linear-gradient(
     180deg, 
-    rgba(255, 255, 255, 0.95) 0%, 
-    rgba(242, 242, 247, 0.85) 100%
+    rgba(245, 245, 245, 0.95) 0%, 
+    rgba(200, 200, 205, 0.90) 100%
   );
 
-  /* 2. HEAVY BLUR 
-     Even though opacity is high, this smooths out colors behind it 
-  */
-  backdrop-filter: blur(40px); 
-  -webkit-backdrop-filter: blur(40px);
+  /* Keep blur high to smooth out any tiny transparency details */
+  backdrop-filter: blur(30px); 
+  -webkit-backdrop-filter: blur(30px);
 
-  /* 3. SOLID BORDER
-     A clear border defines the shape against the page content 
-  */
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 9999px;
 
-  /* 4. VOLUME SHADOWS
-     - Drop shadow for lifting.
-     - Inset White Top: catches "light" from above.
-     - Inset Grey Bottom: gives the pill thickness.
+  /* Subtle border */
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
+  /* 
+     THE "BEVEL" LIGHTING (Matches Image 1)
+     - Drop Shadow: lifts it up.
+     - Inset Top White: Adds the shine on the top edge.
+     - Inset Bottom Grey: Adds thickness to the bottom.
   */
   box-shadow:
-    0 10px 30px -5px rgba(0, 0, 0, 0.15), /* Drop Shadow */
-    inset 0 1px 0 0 rgba(255, 255, 255, 1.0), /* Sharp Top Highlight */
-    inset 0 -2px 5px rgba(0, 0, 0, 0.05); /* Soft Bottom Inner Shadow */
+    0 10px 25px -5px rgba(0, 0, 0, 0.15),
+    inset 0 1px 1px rgba(255, 255, 255, 1),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.05);
+
+  position: relative;
+  z-index: 100;
 }
 
-/* --- Optional: Top Sheen Reflection (Like your snippet) --- */
-.ios-dock-pill::after {
+/* --- Active Item Circle (Solid White) --- */
+.ios-dock-item.dock-active::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 20%;
-  right: 20%;
-  height: 1px;
-  background: linear-gradient(
-    90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.8), 
-    transparent
-  );
-  pointer-events: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px; /* Slightly larger for that pop */
+  height: 44px;
+  border-radius: 50%;
+  
+  /* Pure White Background */
+  background: #FFFFFF;
+  
+  /* Deep shadow to separate it from the grey dock background */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 0;
+  transition: all 0.3s ease;
+}
+
+/* --- Icon Colors --- */
+/* Inactive icons need to be dark enough to see on the grey background */
+.ios-dock-item svg {
+  stroke: #555555; 
+  z-index: 2;
+  position: relative;
+}
+
+/* Active icon (inside the white circle) - Black looks best */
+.ios-dock-item.dock-active svg {
+  stroke: #000000;
 }
 
 /* --- Dark Mode: "Smoked" Matte Glass --- */
