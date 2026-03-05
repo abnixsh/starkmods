@@ -74,7 +74,7 @@ function HomePage() {
     s.id = 'stark-hero-v4';
     s.textContent = `
       @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
-      /* Note: Inter is now loaded globally in index.html */
+      /* Inter is now in main styles */
 
       .stark-script-font {
         font-family: 'Great Vibes', cursive;
@@ -232,24 +232,15 @@ function HomePage() {
             Premium, Secure & Anti-Ban Mod Menus for iOS & Android.
           </p>
           
-          <!-- Buttons: FIXED ALIGNMENT HERE -->
+          <!-- Buttons -->
           <div class="stark-in flex flex-row justify-center items-center gap-6 w-full" style="animation-delay: 3.2s">
-             
-             <!-- Browse Icon -->
-             <button onclick="document.getElementById('search-mods').focus()" 
-                     class="ios-icon-btn group" title="Search Mods">
+             <button onclick="document.getElementById('search-mods').focus()" class="ios-icon-btn group" title="Search Mods">
                 <span class="material-icons text-xl group-hover:text-blue-500 transition-colors">search</span>
              </button>
-             
-             <!-- Telegram Icon -->
-             <button onclick="window.open('https://t.me/starkrc20', '_blank')" 
-                     class="ios-icon-btn group" title="Telegram Channel">
+             <button onclick="window.open('https://t.me/starkrc20', '_blank')" class="ios-icon-btn group" title="Telegram Channel">
                 <span class="material-icons text-xl group-hover:-rotate-12 group-hover:text-blue-500 transition-all">telegram</span>
              </button>
-
-             <!-- Discord Icon -->
-             <button onclick="window.open('https://discord.gg/KaeHESH9n', '_blank')" 
-                     class="ios-icon-btn group" title="Discord Server">
+             <button onclick="window.open('https://discord.gg/KaeHESH9n', '_blank')" class="ios-icon-btn group" title="Discord Server">
                 <svg class="w-5 h-5 fill-current group-hover:scale-110 group-hover:text-indigo-500 transition-all" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
              </button>
           </div>
@@ -278,26 +269,27 @@ function HomePage() {
 
     <!-- ===== SEARCH BAR (FIXED OVERLAP) ===== -->
     <div class="sticky top-20 z-40 mb-8 mx-auto max-w-4xl">
-      <div class="ios-glass-panel flex items-center p-1.5 ring-1 ring-black/5">
+      <div class="ios-glass-panel flex items-center p-1.5 ring-1 ring-black/5 dark:ring-white/10">
          <div class="relative flex-1 group pl-2">
-            <!-- Added pointer-events-none and adjusted position -->
+            <!-- Icon is absolute. Input needs padding-left to clear it -->
             <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within:text-blue-500 transition text-xl">search</span>
             
-            <!-- Increased left padding to pl-12 to avoid overlap -->
+            <!-- Added pl-12 (3rem) to clear the icon -->
             <input type="text" id="search-mods" onkeyup="window.filterMods()" 
                    placeholder="Search games, mods..."
                    class="w-full pl-12 pr-4 py-3 bg-transparent border-none outline-none text-slate-800 dark:text-white placeholder-slate-400 font-medium text-sm">
          </div>
          <div class="h-6 w-[1px] bg-slate-300 dark:bg-slate-600 mx-1"></div>
          <div class="relative pr-1">
+             <!-- Added pr-10 to clear the dropdown arrow -->
              <select id="filter-category" onchange="window.filterMods()" 
-                     class="pl-3 pr-8 py-2 bg-slate-100/50 dark:bg-slate-800/50 border-none outline-none text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded-xl transition appearance-none">
+                     class="pl-3 pr-10 py-2 bg-slate-100/50 dark:bg-slate-800/50 border-none outline-none text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 rounded-xl transition appearance-none">
                 <option value="all">All</option>
                 <option value="free">Free</option>
                 <option value="premium">Paid</option>
              </select>
-             <!-- Icon pointer-events-none to prevent clicking issues -->
-             <span class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 pointer-events-none">expand_more</span>
+             <!-- Icon absolute right -->
+             <span class="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-500 pointer-events-none">expand_more</span>
          </div>
       </div>
     </div>
