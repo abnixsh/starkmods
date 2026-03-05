@@ -233,36 +233,41 @@ input:focus, select:focus, textarea:focus {
 @keyframes dockSlideUp {
   from {
     opacity: 0;
-    transform: translate(-50%, 20px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
 }
 
+/* --- The Frosted Glass Pill --- */
 .ios-dock-pill {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 28px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  justify-content: space-evenly;
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(30px) saturate(150%);
+  -webkit-backdrop-filter: blur(30px) saturate(150%);
   border-radius: 9999px;
-  border: 0.5px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow:
-    0 2px 20px rgba(0, 0, 0, 0.08),
-    0 0.5px 0 rgba(255, 255, 255, 0.5) inset;
+    0 8px 32px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .dark .ios-dock-pill {
-  background: rgba(44, 44, 46, 0.7);
-  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
-    0 2px 20px rgba(0, 0, 0, 0.3),
-    0 0.5px 0 rgba(255, 255, 255, 0.04) inset;
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.02);
 }
 
 /* --- Dock Icon Button --- */
@@ -271,8 +276,8 @@ input:focus, select:focus, textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: transparent;
   border: none;
@@ -284,26 +289,26 @@ input:focus, select:focus, textarea:focus {
 }
 
 .ios-dock-item:active {
-  transform: scale(0.85);
+  transform: scale(0.82);
 }
 
-/* --- Icon SVG --- */
+/* --- Icon SVG (Inactive: Dark Grey) --- */
 .ios-dock-item svg {
-  width: 24px;
-  height: 24px;
-  stroke-width: 1.8;
+  width: 22px;
+  height: 22px;
+  stroke-width: 2;
   fill: none;
-  stroke: #8E8E93;
-  transition: stroke 0.25s ease, fill 0.25s ease;
+  stroke: #636366;
+  transition: stroke 0.3s ease;
   position: relative;
   z-index: 2;
 }
 
 .dark .ios-dock-item svg {
-  stroke: #98989D;
+  stroke: #8E8E93;
 }
 
-/* --- Active White Circle Behind Icon --- */
+/* --- Active: White Circle Behind Icon --- */
 .ios-dock-item.dock-active::before {
   content: '';
   position: absolute;
@@ -315,19 +320,19 @@ input:focus, select:focus, textarea:focus {
   border-radius: 50%;
   background: #FFFFFF;
   box-shadow:
-    0 2px 12px rgba(0, 122, 255, 0.15),
-    0 0 0 0.5px rgba(0, 0, 0, 0.04);
+    0 2px 10px rgba(0, 0, 0, 0.06),
+    0 0 0 0.5px rgba(0, 0, 0, 0.03);
   z-index: 0;
 }
 
 .dark .ios-dock-item.dock-active::before {
-  background: #2C2C2E;
+  background: rgba(255, 255, 255, 0.12);
   box-shadow:
-    0 2px 12px rgba(10, 132, 255, 0.2),
+    0 2px 10px rgba(0, 0, 0, 0.1),
     0 0 0 0.5px rgba(255, 255, 255, 0.06);
 }
 
-/* --- Active Icon Color (iOS Blue) --- */
+/* --- Active Icon: iOS Blue --- */
 .ios-dock-item.dock-active svg {
   stroke: #007AFF;
 }
@@ -336,13 +341,13 @@ input:focus, select:focus, textarea:focus {
   stroke: #0A84FF;
 }
 
-/* --- Hover (non-active only) --- */
+/* --- Hover (non-active) --- */
 .ios-dock-item:not(.dock-active):hover svg {
   stroke: #3C3C43;
 }
 
 .dark .ios-dock-item:not(.dock-active):hover svg {
-  stroke: #E5E5EA;
+  stroke: #D1D1D6;
 }
 
 /* Safe area for dock */
