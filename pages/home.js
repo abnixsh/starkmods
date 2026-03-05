@@ -322,8 +322,8 @@ function HomePage() {
        </div>
     </div>
 
-    <!-- ===== SEARCH BAR ===== -->
-    <div class="sticky top-20 z-40 mb-8 mx-auto max-w-4xl">
+    <!-- ===== SEARCH BAR (Not Sticky) ===== -->
+    <div class="relative z-40 mb-8 mx-auto max-w-4xl">
       <div class="ios-glass-panel flex items-center p-1.5 ring-1 ring-black/5">
          <div class="relative flex-1 group pl-2">
             <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition text-lg">search</span>
