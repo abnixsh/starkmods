@@ -84,7 +84,7 @@ function Rc20Page() {
           RC20 Mod Menu
         </h1>
         <div class="flex flex-wrap gap-2 mt-3">
-         <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v6.1</span>
+         <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">v6.2</span>
           <span class="badge bg-sky-500 text-white border border-sky-600 px-3 py-1 rounded-full text-xs font-medium">Non Root</span>
           <span class="badge bg-amber-400 text-black border border-amber-500 px-3 py-1 rounded-full text-xs font-bold">PREMIUM</span>
             <span class="badge bg-red-800 text-white border border-red-900 px-3 py-1 rounded-full text-xs font-medium">Anti-Ban</span>
@@ -132,6 +132,10 @@ function Rc20Page() {
         
         <ul class="grid grid-cols-1 gap-y-3">
           ${createFeatureItem('Always Six Vip')}
+          ${createFeatureItem('All Commentary Unlock')}
+          ${createFeatureItem('Never Bouncer')}
+          ${createFeatureItem('Never No ball')}
+          ${createFeatureItem('Never Wide ball')}
           ${createFeatureItem('Show Ball Variation')}
           ${createFeatureItem('Always No ball & Wide ball')}
           ${createFeatureItem('Unlimited Runs & Coins')}
