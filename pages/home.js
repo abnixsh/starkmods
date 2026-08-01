@@ -270,7 +270,7 @@ function HomePage() {
     <!-- ===== MODS GRID (Glass Cards) ===== -->
     <section class="grid md:grid-cols-3 gap-6" id="mods-grid">
 
-      ${renderCard('rc25', `
+    ${renderCard('rc25', `
         <div class="flex flex-col h-full">
           <div class="flex items-center gap-4 mb-4">
             <div class="relative group-hover:scale-105 transition-transform duration-300">
@@ -282,22 +282,33 @@ function HomePage() {
               <div class="text-[11px] text-slate-500 font-medium">Patch Update</div>
             </div>
           </div>
-          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm" onclick="window.router.navigateTo('/rc25')">
-             <img src="assets/img/img_rc25_1.jpg" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.src='https://placehold.co/320x180?text=RC25'">
+          <div class="app-card-screenshots mb-4 rounded-xl overflow-hidden h-40 relative cursor-pointer shadow-sm group" onclick="window.router.navigateTo('/rc25')">
+             <img src="assets/img/logo_rc25_v8_beta.png" loading="lazy" class="w-full h-full object-cover blur-md transition-all duration-500 group-hover:blur-lg" onerror="this.src='https://placehold.co/320x180?text=RC25'">
+             <div class="absolute inset-0 bg-gradient-to-br from-blue-600/40 via-purple-600/40 to-red-600/40 flex items-center justify-center">
+               <div class="text-center">
+                 <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center mx-auto mb-2 border border-white/30">
+                   <span class="material-icons text-white text-2xl">lock</span>
+                 </div>
+                 <p class="text-white text-xs font-bold drop-shadow-lg">Aug 2, 2026</p>
+               </div>
+             </div>
           </div>
           <div class="flex flex-wrap items-center gap-2 mb-3">
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">v7+</span>
-             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-300">Free</span>
+             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">v8 Beta</span>
+             <span class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300 flex items-center gap-1">
+               <span class="w-1 h-1 bg-orange-500 rounded-full animate-pulse"></span>
+               Upcoming
+             </span>
           </div>
           <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 flex-1 leading-relaxed">
-            The ultimate RC25 Patch. Enhanced graphics, updated squads, and optimized gameplay.
+            The biggest RC25 update yet. Revolutionary graphics, enhanced AI, and exclusive features coming August 2nd.
           </p>
           <button onclick="window.router.navigateTo('/rc25')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-full font-bold text-sm shadow-lg shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-1">
-            <span>Download</span>
+            <span class="material-icons text-sm">event</span>
+            <span>View Details</span>
           </button>
         </div>
       `)}
-
       ${renderCard('rc24', `
         <div class="flex flex-col h-full">
           <div class="flex items-center gap-4 mb-4">
