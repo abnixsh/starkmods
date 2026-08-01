@@ -244,13 +244,13 @@ function Rc25Page() {
                    <p class="text-xs text-slate-700 dark:text-slate-300 font-semibold mb-2">🤫 Features Classified</p>
                    <ul class="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
                      <li class="flex items-center gap-2"><span class="text-orange-500">▸</span> Major gameplay overhaul</li>
-                     <li class="flex items-center gap-2"><span class="text-orange-500">▸</span> Next-gen graphics engine</li>
-                     <li class="flex items-center gap-2"><span class="text-orange-500">▸</span> Revolutionary new features</li>
-                     <li class="flex items-center gap-2"><span class="text-orange-500">▸</span> Complete squad updates</li>
+                     <li class="flex items-center gap-2"><span class="text-orange-500">▸</span> Graphics Advancements</li>
+                     <li class="flex items-center gap-2"><span class="text-orange-500">▸</span> 2 New Scorebars</li>
+                     <li class="flex items-center gap-2"><span class="text-orange-500">▸</span> Improved Ai</li>
                      <li class="flex items-center gap-2"><span class="text-orange-500">▸</span> And much more... 🔥</li>
                    </ul>
                    <div class="mt-3 text-center">
-                     <span class="text-[10px] text-orange-600 dark:text-orange-400 font-black uppercase tracking-wider">Full changelog releasing on Aug 2nd</span>
+                     <span class="text-[10px] text-orange-600 dark:text-orange-400 font-black uppercase tracking-wider">Full Features list releasing on Aug 2nd</span>
                    </div>
                  </div>
               </div>
