@@ -87,8 +87,8 @@ function CheckoutPage() {
               <span class="font-bold text-sm text-slate-700 dark:text-slate-200">UPI / QR (India)</span>
             </button>
             <button onclick="window.selectMethod('ep')" class="pay-card border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:border-green-500 transition flex flex-col items-center gap-2 bg-slate-50 dark:bg-slate-900">
-              <img src="assets/icons/pay_easypaisa.png" class="h-8 object-contain" onerror="this.style.display='none'">
-              <span class="font-bold text-sm text-slate-700 dark:text-slate-200">EasyPaisa (PK)</span>
+              <img src="assets/icons/pay_nayapay.png" class="h-8 object-contain" onerror="this.style.display='none'">
+              <span class="font-bold text-sm text-slate-700 dark:text-slate-200">NayaPay (PK)</span>
             </button>
             <button onclick="window.selectMethod('binance')" class="pay-card border-2 border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:border-yellow-500 transition flex flex-col items-center gap-2 bg-slate-50 dark:bg-slate-900">
               <img src="assets/icons/pay_binance.png" class="h-8 object-contain" onerror="this.style.display='none'">
@@ -236,7 +236,7 @@ function renderSmartPaymentDetails() {
   // 2. EASYPAISA (PKR Conversion)
   else if (method === 'ep') {
     const epNumber = "03045381058";
-    const epName = "Ghulam shabir";
+    const epName = "Muzammil Hasnain";
     
     // CONVERSION LOGIC: Round up to nearest whole number
     const pkrAmount = Math.ceil(item.price * rates.PKR);
@@ -247,7 +247,7 @@ function renderSmartPaymentDetails() {
         <div class="text-xs font-bold text-green-500 uppercase">Total Amount (PKR)</div>
       </div>
 
-      <img src="assets/icons/pay_easypaisa.png" class="h-10 mx-auto mb-4 object-contain" onerror="this.style.display='none'">
+      <img src="assets/icons/pay_nayapay.png" class="h-10 mx-auto mb-4 object-contain" onerror="this.style.display='none'">
 
       <div class="text-left bg-slate-100 dark:bg-slate-900 p-4 rounded-xl space-y-3">
         <div>
@@ -255,7 +255,7 @@ function renderSmartPaymentDetails() {
            <div class="font-semibold text-slate-900 dark:text-white">${epName}</div>
         </div>
         <div>
-           <div class="text-[10px] text-slate-500 uppercase font-bold">EasyPaisa Number</div>
+           <div class="text-[10px] text-slate-500 uppercase font-bold">NayaPay Number</div>
            <div class="flex justify-between items-center bg-white dark:bg-slate-950 p-2 rounded-lg mt-1 border border-slate-200 dark:border-slate-700">
              <span class="font-mono text-lg font-bold text-slate-900 dark:text-white">${epNumber}</span>
              <button class="text-green-500 hover:text-green-600" onclick="navigator.clipboard.writeText('${epNumber}')">
