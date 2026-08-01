@@ -274,7 +274,7 @@ function HomePage() {
         <div class="flex flex-col h-full">
           <div class="flex items-center gap-4 mb-4">
             <div class="relative group-hover:scale-105 transition-transform duration-300">
-                <img src="assets/icons/icon_rc25.jpg" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=RC25'" />
+                <img src="assets/icons/logo_rc25_v8_beta.png" class="h-16 w-16 rounded-[14px] shadow-md object-cover" onerror="this.src='https://placehold.co/64?text=RC25'" />
                 <div class="absolute inset-0 rounded-[14px] ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
             </div>
             <div>
