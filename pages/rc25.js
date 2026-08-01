@@ -101,7 +101,7 @@ function Rc25Page() {
     <div class="relative rounded-[2rem] overflow-hidden shadow-2xl mb-8 group border border-white/30 dark:border-slate-700/50 bg-white/10 dark:bg-black/30 backdrop-blur-xl">
       
       <div class="p-6 sm:p-10 flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left relative z-10">
-         <img src="assets/icons/icon_rc25.jpg" class="w-32 h-32 rounded-[1.5rem] shadow-2xl border border-white/20 dark:border-slate-700 object-cover transform group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/128?text=RC25'">
+         <img src="assets/icons/logo_rc25_v8_beta.png" class="w-32 h-32 rounded-[1.5rem] shadow-2xl border border-white/20 dark:border-slate-700 object-cover transform group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/128?text=RC25'">
          
          <div class="flex-1">
             <h1 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mb-2 tracking-tight leading-none">
