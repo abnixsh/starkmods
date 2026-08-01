@@ -138,29 +138,32 @@ function Rc25Page() {
       <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -z-10"></div>
     </div>
 
-    <!-- PREVIEW SECTION -->
-    <section class="mb-10 relative">
+    <!-- PREVIEW SECTION - FIXED FOR MOBILE -->
+    <section class="mb-10">
        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 px-2">Preview</h2>
-       <div class="relative rounded-3xl overflow-hidden">
-         <div class="absolute inset-0 z-10 flex items-center justify-center">
-           <div class="text-center p-8">
-             <div class="w-20 h-20 bg-white/10 dark:bg-white/5 backdrop-blur-xl rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl border border-white/20">
-               <span class="material-icons text-white text-4xl">lock</span>
+       <div class="relative rounded-3xl overflow-hidden min-h-[300px] sm:min-h-[400px]">
+         
+         <!-- Gradient Background -->
+         <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-red-600"></div>
+         
+         <!-- Blurred Screenshots Background -->
+         <div class="absolute inset-0 flex gap-4 p-4 overflow-hidden blur-3xl opacity-20">
+            ${[1, 2, 3, 4, 5].map(i => `
+              <div class="shrink-0 h-full w-64 sm:w-80 rounded-2xl bg-white/10"></div>
+            `).join('')}
+         </div>
+         
+         <!-- Lock Overlay Content -->
+         <div class="absolute inset-0 flex items-center justify-center p-6 sm:p-8">
+           <div class="text-center max-w-sm">
+             <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-2xl border border-white/20">
+               <span class="material-icons text-white text-3xl sm:text-4xl">lock</span>
              </div>
-             <h3 class="text-3xl font-black text-white mb-3 drop-shadow-lg">Screenshots Locked</h3>
-             <p class="text-white/80 text-sm max-w-sm mx-auto font-medium">Exclusive previews revealed on August 2nd</p>
+             <h3 class="text-2xl sm:text-3xl font-black text-white mb-2 sm:mb-3 drop-shadow-lg">Screenshots Locked</h3>
+             <p class="text-white/90 text-xs sm:text-sm font-medium leading-relaxed">Exclusive previews will be revealed on August 2nd</p>
            </div>
          </div>
          
-         <div class="absolute inset-0 bg-gradient-to-br from-blue-600/90 via-purple-600/90 to-red-600/90 backdrop-blur-2xl"></div>
-         
-         <div class="flex overflow-x-auto gap-4 pb-6 snap-x snap-mandatory no-scrollbar px-2 blur-3xl opacity-30" style="scroll-padding-left: 0;">
-            ${[1, 2, 3, 4, 5].map(i => `
-              <div class="snap-center shrink-0 first:pl-0 last:pr-4">
-                 <div class="h-48 sm:h-64 w-80 rounded-2xl bg-slate-300 dark:bg-slate-700"></div>
-              </div>
-            `).join('')}
-         </div>
        </div>
     </section>
 
@@ -186,12 +189,12 @@ function Rc25Page() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
             </iframe>
           </div>
-          <div class="p-4 flex justify-between items-center">
+          <div class="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
              <div>
                 <h3 class="font-bold text-white text-sm">Installation Guide (v7+)</h3>
                 <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Watch for smooth installation</p>
              </div>
-             <a href="${channelLink}" target="_blank" class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-full shadow-lg shadow-red-500/30 hover:bg-red-700 transition flex items-center gap-1">
+             <a href="${channelLink}" target="_blank" class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-full shadow-lg shadow-red-500/30 hover:bg-red-700 transition flex items-center gap-1 whitespace-nowrap">
                <span class="material-icons text-sm">subscriptions</span> Subscribe
              </a>
           </div>
