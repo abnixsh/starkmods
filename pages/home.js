@@ -289,7 +289,7 @@ function HomePage() {
                  <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center mx-auto mb-2 border border-white/30">
                    <span class="material-icons text-white text-2xl">lock</span>
                  </div>
-                 <p class="text-white text-xs font-bold drop-shadow-lg">Aug 2, 2026</p>
+                 <p class="text-white text-xs font-bold drop-shadow-lg">Aug 3, 2026</p>
                </div>
              </div>
           </div>
