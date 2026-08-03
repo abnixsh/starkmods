@@ -1,306 +1,579 @@
 // pages/rc25.js
 
 // Global config state (Defaults set immediately to prevent loading stuck)
+
 window.rc25Config = {
-  enabled: true,
-  link: 'https://dupload.net/rovsuelnyeth' // Default link if DB fails
+
+enabled: true,
+
+link: 'https://dupload.net/rovsuelnyeth' // Default link if DB fails
+
 };
+
 window.rc25ConfigLoaded = false;
 
 // Background Fetch (Doesn't block UI)
+
 window.fetchRc25ConfigBackground = function () {
-  if (window.rc25ConfigLoaded || !window.db) {
-    if (!window.db) setTimeout(window.fetchRc25ConfigBackground, 500); // Retry if DB not ready
-    return;
+
+if (window.rc25ConfigLoaded || !window.db) {
+
+if (!window.db) setTimeout(window.fetchRc25ConfigBackground, 500); // Retry if DB not ready
+
+return;
+
+}
+
+window.db.collection('gameConfig').doc('rc25').get()
+
+.then(doc => {
+
+  if (doc.exists) {
+
+    window.rc25Config = doc.data();
+
+    // If link changed or disabled, update UI live without refresh
+
+    const btn = document.getElementById('main-download-btn');
+
+    const statusBadge = document.getElementById('status-badge');
+
+    
+
+    if (btn && window.rc25Config.enabled === false) {
+
+        btn.href = "javascript:void(0)";
+
+        btn.innerHTML = `<span class="material-icons">lock</span> Temporarily Disabled`;
+
+        btn.classList.add('grayscale', 'cursor-not-allowed');
+
+    } else if (btn) {
+
+        btn.href = window.rc25Config.link;
+
+    }
+
   }
 
-  window.db.collection('gameConfig').doc('rc25').get()
-    .then(doc => {
-      if (doc.exists) {
-        window.rc25Config = doc.data();
-        // If link changed or disabled, update UI live without refresh
-        const btn = document.getElementById('main-download-btn');
-        const statusBadge = document.getElementById('status-badge');
-        
-        if (btn && window.rc25Config.enabled === false) {
-            btn.href = "javascript:void(0)";
-            btn.innerHTML = `<span class="material-icons">lock</span> Temporarily Disabled`;
-            btn.classList.add('grayscale', 'cursor-not-allowed');
-        } else if (btn) {
-            btn.href = window.rc25Config.link;
-        }
-      }
-      window.rc25ConfigLoaded = true;
-    })
-    .catch(err => console.warn('Config fetch error, using defaults', err));
+  window.rc25ConfigLoaded = true;
+
+})
+
+.catch(err => console.warn('Config fetch error, using defaults', err));
+
 };
 
 // Show unavailable message
+
 window.showUnavailableMessage = function() {
-  const modal = document.createElement('div');
-  modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in';
-  modal.innerHTML = `
-    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="this.parentElement.remove()"></div>
-    <div class="relative bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700 transform animate-scale-in">
-      <div class="text-center">
-        <div class="w-16 h-16 bg-blue-500 dark:bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-          <span class="material-icons text-white text-3xl">schedule</span>
-        </div>
-        <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">Coming Soon</h3>
-        <p class="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
-          RC25 v8.0 is under final testing. Available on <strong class="text-blue-600 dark:text-blue-400">August 2nd, 2026</strong>.
-        </p>
-        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 mb-6 border border-blue-200 dark:border-blue-800">
-          <p class="text-xs text-blue-800 dark:text-blue-300 font-semibold">
-            Stay tuned for the biggest update yet!
-          </p>
-        </div>
-        <button onclick="this.closest('.fixed').remove()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg transition transform hover:scale-[1.02]">
-          Got it
-        </button>
-      </div>
+
+const modal = document.createElement('div');
+
+modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in';
+
+modal.innerHTML = `
+
+<div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="this.parentElement.remove()"></div>
+
+<div class="relative bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700 transform animate-scale-in">
+
+  <div class="text-center">
+
+    <div class="w-16 h-16 bg-blue-500 dark:bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+
+      <span class="material-icons text-white text-3xl">schedule</span>
+
     </div>
-  `;
-  document.body.appendChild(modal);
+
+    <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-3">Coming Soon</h3>
+
+    <p class="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+
+      RC25 v8.0 is under final testing. Available on <strong class="text-blue-600 dark:text-blue-400">August 3rd, 2026</strong>.
+
+    </p>
+
+    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 mb-6 border border-blue-200 dark:border-blue-800">
+
+      <p class="text-xs text-blue-800 dark:text-blue-300 font-semibold">
+
+        Stay tuned for the biggest update yet!
+
+      </p>
+
+    </div>
+
+    <button onclick="this.closest('.fixed').remove()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg transition transform hover:scale-[1.02]">
+
+      Got it
+
+    </button>
+
+  </div>
+
+</div>
+
+`;
+
+document.body.appendChild(modal);
+
 };
 
 function Rc25Page() {
-  // Trigger background fetch
-  window.fetchRc25ConfigBackground();
 
-  const isAdmin = !!window.isAdmin;
-  const v7TrailerLink = 'https://youtu.be/K9xpbC-Po6o';
-  const installationVideoId = 'AyCpwTJWVKc'; 
-  const channelLink = 'https://youtube.com/@starkofficial17';
+// Trigger background fetch
 
-  // Admin Controls HTML
-  const adminControls = isAdmin ? `
-    <div class="mt-8 p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 backdrop-blur-md">
-      <div class="flex justify-between items-center mb-3">
-        <span class="text-xs font-black uppercase tracking-widest text-slate-500">Admin Controls</span>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <button onclick="window.toggleRc25Download()" class="btn bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs py-2 shadow-sm border border-slate-200 dark:border-slate-600">
-          Toggle Status
-        </button>
-        <button onclick="window.editRc25DownloadLink()" class="btn bg-blue-600 text-white text-xs py-2 shadow-blue-500/30">
-          Update Link
-        </button>
-      </div>
-    </div>` : '';
+window.fetchRc25ConfigBackground();
 
-  return `
-  <div class="max-w-5xl mx-auto animate-fade-in pb-32 px-3 sm:px-6 relative">
-    
-    <nav class="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 mb-6 bg-white/40 dark:bg-black/20 backdrop-blur-md py-2 px-4 rounded-full w-fit border border-white/20">
-      <a href="/" class="hover:text-blue-600 transition flex items-center gap-1"><span class="material-icons text-sm">home</span> Home</a>
-      <span class="material-icons text-[10px] opacity-50">chevron_right</span>
-      <span class="text-slate-900 dark:text-white">RC25 Patch</span>
-    </nav>
+const isAdmin = !!window.isAdmin;
 
-    <div class="relative rounded-[2rem] overflow-hidden shadow-2xl mb-8 group border border-white/30 dark:border-slate-700/50 bg-white/10 dark:bg-black/30 backdrop-blur-xl">
-      
-      <div class="p-6 sm:p-10 flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left relative z-10">
-         <img src="assets/icons/logo_rc25_v8_beta.png" class="w-32 h-32 rounded-[1.5rem] shadow-2xl border border-white/20 dark:border-slate-700 object-cover transform group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/128?text=RC25'">
-         
-         <div class="flex-1">
-            <h1 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mb-2 tracking-tight leading-none">
-              Real Cricket 25 Patch
-            </h1>
-            <p class="text-sm font-bold text-slate-500 dark:text-slate-400 mb-4">
-              Project Reborn v8.0 • Revolutionary Update
-            </p>
-            
-            <div class="flex flex-wrap justify-center sm:justify-start gap-3 mb-6">
-               <span class="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wide border border-blue-200 dark:border-blue-800">
-                 #1 Sports Mod
-               </span>
-               <span class="px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 text-[10px] font-bold uppercase tracking-wide border border-green-200 dark:border-green-800 flex items-center gap-1">
-                 <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> v8.0 Beta
-               </span>
-               <span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold uppercase tracking-wide border border-slate-200 dark:border-slate-600">
-                 Aug 2, 2026
-               </span>
-            </div>
+const v7TrailerLink = 'https://youtu.be/K9xpbC-Po6o';
 
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-               <button onclick="window.showUnavailableMessage()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-blue-500/30 transition transform active:scale-95 text-sm uppercase tracking-wide flex items-center justify-center gap-2">
-                 <span class="material-icons text-sm">event</span> Available Aug 2nd
-               </button>
-               <button onclick="window.showUnavailableMessage()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 text-sm border border-slate-200 dark:border-slate-700">
-                 <span class="material-icons text-base">play_arrow</span> Trailer
-               </button>
-            </div>
-         </div>
-      </div>
-      
-      <div class="absolute -top-20 -right-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
-      <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -z-10"></div>
-    </div>
+const installationVideoId = 'AyCpwTJWVKc';
 
-    <!-- PREVIEW SECTION - FIXED FOR MOBILE -->
-    <section class="mb-10">
-       <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 px-2">Preview</h2>
-       <div class="relative rounded-3xl overflow-hidden min-h-[300px] sm:min-h-[400px]">
-         
-         <!-- Gradient Background -->
-         <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-red-600"></div>
-         
-         <!-- Blurred Screenshots Background -->
-         <div class="absolute inset-0 flex gap-4 p-4 overflow-hidden blur-3xl opacity-20">
-            ${[1, 2, 3, 4, 5].map(i => `
-              <div class="shrink-0 h-full w-64 sm:w-80 rounded-2xl bg-white/10"></div>
-            `).join('')}
-         </div>
-         
-         <!-- Lock Overlay Content -->
-         <div class="absolute inset-0 flex items-center justify-center p-6 sm:p-8">
-           <div class="text-center max-w-sm">
-             <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-2xl border border-white/20">
-               <span class="material-icons text-white text-3xl sm:text-4xl">lock</span>
-             </div>
-             <h3 class="text-2xl sm:text-3xl font-black text-white mb-2 sm:mb-3 drop-shadow-lg">Screenshots Locked</h3>
-             <p class="text-white/90 text-xs sm:text-sm font-medium leading-relaxed">Exclusive previews will be revealed on August 2nd</p>
-           </div>
-         </div>
-         
-       </div>
-    </section>
+const channelLink = 'https://youtube.com/@starkofficial17';
 
-    <div class="grid lg:grid-cols-3 gap-6">
-      
-      <div class="lg:col-span-2 space-y-6">
-        
-        <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
-           <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">About This Update</h3>
-           <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-             Version 8.0 is the most ambitious update yet, bringing revolutionary changes to mobile cricket gaming. Experience next-level realism with advanced graphics and gameplay.
-             <br><br>
-             <span class="text-blue-600 dark:text-blue-400 font-bold">Release Date:</span> August 2nd, 2026
-           </p>
-        </div>
+// Admin Controls HTML
 
-        <!-- INSTALLATION VIDEO -->
-        <div class="bg-slate-900 rounded-[2rem] p-1.5 shadow-2xl overflow-hidden ring-1 ring-white/10">
-          <div class="relative w-full aspect-video rounded-[1.5rem] overflow-hidden bg-black">
-            <iframe class="absolute inset-0 w-full h-full" 
-                    src="https://www.youtube.com/embed/${installationVideoId}?rel=0&modestbranding=1" 
-                    title="RC25 Installation" frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-            </iframe>
-          </div>
-          <div class="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-             <div>
-                <h3 class="font-bold text-white text-sm">Installation Guide (v7+)</h3>
-                <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Watch for smooth installation</p>
-             </div>
-             <a href="${channelLink}" target="_blank" class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-full shadow-lg shadow-red-500/30 hover:bg-red-700 transition flex items-center gap-1 whitespace-nowrap">
-               <span class="material-icons text-sm">subscriptions</span> Subscribe
-             </a>
-          </div>
-        </div>
+const adminControls = isAdmin ? `
 
-        <!-- CHANGELOG -->
-        <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
-           <h3 class="text-lg font-bold mb-6 text-slate-900 dark:text-white">What's New</h3>
-           <div class="relative border-l-2 border-slate-200 dark:border-slate-700 ml-3 space-y-8">
-              <div class="relative pl-8">
-                 <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 ring-4 ring-white dark:ring-slate-800 animate-pulse shadow-lg shadow-blue-500/50"></div>
-                 <h4 class="font-bold text-blue-600 dark:text-blue-400 text-sm">Version 8.0 (Aug 2, 2026)</h4>
-                 <ul class="mt-2 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
-                     <li class="flex items-center gap-2"><span class="text-blue-500">•</span> Major gameplay overhaul</li>
-                     <li class="flex items-center gap-2"><span class="text-blue-500">•</span> Graphics advancements</li>
-                     <li class="flex items-center gap-2"><span class="text-blue-500">•</span> 2 New scorebars</li>
-                     <li class="flex items-center gap-2"><span class="text-blue-500">•</span> Improved AI</li>
-                     <li class="flex items-center gap-2"><span class="text-blue-500">•</span> And much more...</li>
-                   </ul>
-                   <p class="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-3">Full features list on release day</p>
-              </div>
-              <div class="relative pl-8">
-                 <div class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-slate-400"></div>
-                 <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Version 7+ (Previous)</h4>
-                 <p class="text-xs text-slate-500 mt-1 leading-relaxed">Added The Hundred, realistic lighting, and fixed texture bugs.</p>
-              </div>
-           </div>
-        </div>
+<div class="mt-8 p-4 rounded-2xl bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 backdrop-blur-md">
 
-      </div>
+  <div class="flex justify-between items-center mb-3">
 
-      <div class="space-y-6">
-        
-        <!-- PREMIUM CARD -->
-        <div class="relative rounded-3xl p-6 overflow-hidden shadow-2xl text-center group cursor-pointer border border-white/10" onclick="window.router.navigateTo('/rc20')">
-           <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-violet-700 opacity-90 transition group-hover:scale-105 duration-700"></div>
-           
-           <div class="relative z-10">
-             <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-md text-white border border-white/20 shadow-inner">
-                <span class="material-icons">diamond</span>
-             </div>
-             <h3 class="text-xl font-bold text-white mb-2">Go Premium</h3>
-             <p class="text-indigo-100 text-xs mb-6 leading-relaxed px-4">
-               Unlock Unlimited Coins, Tickets & All Tournaments in our <strong>RC20 VIP Menu</strong>.
-             </p>
-             <button class="w-full py-3 bg-white text-indigo-700 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 text-sm transition transform hover:scale-[1.02]">
-               View RC20 Mod
-             </button>
-           </div>
-        </div>
+    <span class="text-xs font-black uppercase tracking-widest text-slate-500">Admin Controls</span>
 
-        <!-- NOTIFICATION CARD -->
-        <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-6 text-white shadow-2xl border border-white/20">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-md">
-              <span class="material-icons">notifications_active</span>
-            </div>
-            <h3 class="font-bold text-lg">Stay Updated</h3>
-          </div>
-          <p class="text-white/90 text-xs leading-relaxed mb-4">
-            Subscribe to our YouTube channel to get notified the moment v8.0 drops on August 2nd!
-          </p>
-          <a href="${channelLink}" target="_blank" class="w-full py-3 bg-white text-blue-600 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 text-sm transition transform hover:scale-[1.02]">
-            <span class="material-icons text-sm">subscriptions</span> Subscribe Now
-          </a>
-        </div>
-
-        ${adminControls}
-
-      </div>
-
-    </div>
   </div>
+
+  <div class="grid grid-cols-2 gap-3">
+
+    <button onclick="window.toggleRc25Download()" class="btn bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-xs py-2 shadow-sm border border-slate-200 dark:border-slate-600">
+
+      Toggle Status
+
+    </button>
+
+    <button onclick="window.editRc25DownloadLink()" class="btn bg-blue-600 text-white text-xs py-2 shadow-blue-500/30">
+
+      Update Link
+
+    </button>
+
+  </div>
+
+</div>` : '';
+
+return `
+
+  <div class="max-w-5xl mx-auto animate-fade-in pb-32 px-3 sm:px-6 relative"><nav class="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 mb-6 bg-white/40 dark:bg-black/20 backdrop-blur-md py-2 px-4 rounded-full w-fit border border-white/20">
+
+  <a href="/" class="hover:text-blue-600 transition flex items-center gap-1"><span class="material-icons text-sm">home</span> Home</a>
+
+  <span class="material-icons text-[10px] opacity-50">chevron_right</span>
+
+  <span class="text-slate-900 dark:text-white">RC25 Patch</span>
+
+</nav>
+
+
+
+<div class="relative rounded-[2rem] overflow-hidden shadow-2xl mb-8 group border border-white/30 dark:border-slate-700/50 bg-white/10 dark:bg-black/30 backdrop-blur-xl">
+
   
-  <style>
+
+  <div class="p-6 sm:p-10 flex flex-col sm:flex-row gap-6 items-center sm:items-start text-center sm:text-left relative z-10">
+
+     <img src="assets/icons/logo_rc25_v8_beta.png" class="w-32 h-32 rounded-[1.5rem] shadow-2xl border border-white/20 dark:border-slate-700 object-cover transform group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/128?text=RC25'">
+
+     
+
+     <div class="flex-1">
+
+        <h1 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white mb-2 tracking-tight leading-none">
+
+          Real Cricket 25 Patch
+
+        </h1>
+
+        <p class="text-sm font-bold text-slate-500 dark:text-slate-400 mb-4">
+
+          Project Reborn v8.0 • Revolutionary Update
+
+        </p>
+
+        
+
+        <div class="flex flex-wrap justify-center sm:justify-start gap-3 mb-6">
+
+           <span class="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wide border border-blue-200 dark:border-blue-800">
+
+             #1 Sports Mod
+
+           </span>
+
+           <span class="px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300 text-[10px] font-bold uppercase tracking-wide border border-green-200 dark:border-green-800 flex items-center gap-1">
+
+             <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> v8.0 Beta
+
+           </span>
+
+           <span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[10px] font-bold uppercase tracking-wide border border-slate-200 dark:border-slate-600">
+
+             Aug 3, 2026
+
+           </span>
+
+        </div>
+
+
+
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+
+           <button onclick="window.showUnavailableMessage()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-blue-500/30 transition transform active:scale-95 text-sm uppercase tracking-wide flex items-center justify-center gap-2">
+
+             <span class="material-icons text-sm">event</span> Available Aug 3rd
+
+           </button>
+
+           <button onclick="window.showUnavailableMessage()" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 text-sm border border-slate-200 dark:border-slate-700">
+
+             <span class="material-icons text-base">play_arrow</span> Trailer
+
+           </button>
+
+        </div>
+
+     </div>
+
+  </div>
+
+  
+
+  <div class="absolute -top-20 -right-20 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -z-10"></div>
+
+  <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl -z-10"></div>
+
+</div>
+
+
+
+<!-- PREVIEW SECTION - FIXED FOR MOBILE -->
+
+<section class="mb-10">
+
+   <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 px-2">Preview</h2>
+
+   <div class="relative rounded-3xl overflow-hidden min-h-[300px] sm:min-h-[400px]">
+
+     
+
+     <!-- Gradient Background -->
+
+     <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-red-600"></div>
+
+     
+
+     <!-- Blurred Screenshots Background -->
+
+     <div class="absolute inset-0 flex gap-4 p-4 overflow-hidden blur-3xl opacity-20">
+
+        ${[1, 2, 3, 4, 5].map(i => `
+
+          <div class="shrink-0 h-full w-64 sm:w-80 rounded-2xl bg-white/10"></div>
+
+        `).join('')}
+
+     </div>
+
+     
+
+     <!-- Lock Overlay Content -->
+
+     <div class="absolute inset-0 flex items-center justify-center p-6 sm:p-8">
+
+       <div class="text-center max-w-sm">
+
+         <div class="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-2xl border border-white/20">
+
+           <span class="material-icons text-white text-3xl sm:text-4xl">lock</span>
+
+         </div>
+
+         <h3 class="text-2xl sm:text-3xl font-black text-white mb-2 sm:mb-3 drop-shadow-lg">Screenshots Locked</h3>
+
+         <p class="text-white/90 text-xs sm:text-sm font-medium leading-relaxed">Exclusive previews will be revealed on August 3rd</p>
+
+       </div>
+
+     </div>
+
+     
+
+   </div>
+
+</section>
+
+
+
+<div class="grid lg:grid-cols-3 gap-6">
+
+  
+
+  <div class="lg:col-span-2 space-y-6">
+
+    
+
+    <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
+
+       <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">About This Update</h3>
+
+       <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+
+         Version 8.0 is the most ambitious update yet, bringing revolutionary changes to mobile cricket gaming. Experience next-level realism with advanced graphics and gameplay.
+
+         <br><br>
+
+         <span class="text-blue-600 dark:text-blue-400 font-bold">Release Date:</span> August 3rd, 2026
+
+       </p>
+
+    </div>
+
+
+
+    <!-- INSTALLATION VIDEO -->
+
+    <div class="bg-slate-900 rounded-[2rem] p-1.5 shadow-2xl overflow-hidden ring-1 ring-white/10">
+
+      <div class="relative w-full aspect-video rounded-[1.5rem] overflow-hidden bg-black">
+
+        <iframe class="absolute inset-0 w-full h-full" 
+
+                src="https://www.youtube.com/embed/${installationVideoId}?rel=0&modestbranding=1" 
+
+                title="RC25 Installation" frameborder="0" 
+
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+
+        </iframe>
+
+      </div>
+
+      <div class="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+
+         <div>
+
+            <h3 class="font-bold text-white text-sm">Installation Guide (v7+)</h3>
+
+            <p class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Watch for smooth installation</p>
+
+         </div>
+
+         <a href="${channelLink}" target="_blank" class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-full shadow-lg shadow-red-500/30 hover:bg-red-700 transition flex items-center gap-1 whitespace-nowrap">
+
+           <span class="material-icons text-sm">subscriptions</span> Subscribe
+
+         </a>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- CHANGELOG -->
+
+    <div class="bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white/50 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
+
+       <h3 class="text-lg font-bold mb-6 text-slate-900 dark:text-white">What's New</h3>
+
+       <div class="relative border-l-2 border-slate-200 dark:border-slate-700 ml-3 space-y-8">
+
+          <div class="relative pl-8">
+
+             <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 ring-4 ring-white dark:ring-slate-800 animate-pulse shadow-lg shadow-blue-500/50"></div>
+
+             <h4 class="font-bold text-blue-600 dark:text-blue-400 text-sm">Version 8.0 (Aug 3, 2026)</h4>
+
+             <ul class="mt-2 space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+
+                 <li class="flex items-center gap-2"><span class="text-blue-500">•</span> Major gameplay overhaul</li>
+
+                 <li class="flex items-center gap-2"><span class="text-blue-500">•</span> Graphics advancements</li>
+
+                 <li class="flex items-center gap-2"><span class="text-blue-500">•</span> 2 New scorebars</li>
+
+                 <li class="flex items-center gap-2"><span class="text-blue-500">•</span> Improved AI</li>
+
+                 <li class="flex items-center gap-2"><span class="text-blue-500">•</span> And much more...</li>
+
+               </ul>
+
+               <p class="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-3">Full features list on release day</p>
+
+          </div>
+
+          <div class="relative pl-8">
+
+             <div class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-slate-400"></div>
+
+             <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Version 7+ (Previous)</h4>
+
+             <p class="text-xs text-slate-500 mt-1 leading-relaxed">Added The Hundred, realistic lighting, and fixed texture bugs.</p>
+
+          </div>
+
+       </div>
+
+    </div>
+
+
+
+  </div>
+
+
+
+  <div class="space-y-6">
+
+    
+
+    <!-- PREMIUM CARD -->
+
+    <div class="relative rounded-3xl p-6 overflow-hidden shadow-2xl text-center group cursor-pointer border border-white/10" onclick="window.router.navigateTo('/rc20')">
+
+       <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-violet-700 opacity-90 transition group-hover:scale-105 duration-700"></div>
+
+       
+
+       <div class="relative z-10">
+
+         <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-md text-white border border-white/20 shadow-inner">
+
+            <span class="material-icons">diamond</span>
+
+         </div>
+
+         <h3 class="text-xl font-bold text-white mb-2">Go Premium</h3>
+
+         <p class="text-indigo-100 text-xs mb-6 leading-relaxed px-4">
+
+           Unlock Unlimited Coins, Tickets & All Tournaments in our <strong>RC20 VIP Menu</strong>.
+
+         </p>
+
+         <button class="w-full py-3 bg-white text-indigo-700 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 text-sm transition transform hover:scale-[1.02]">
+
+           View RC20 Mod
+
+         </button>
+
+       </div>
+
+    </div>
+
+
+
+    <!-- NOTIFICATION CARD -->
+
+    <div class="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-6 text-white shadow-2xl border border-white/20">
+
+      <div class="flex items-center gap-3 mb-4">
+
+        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-md">
+
+          <span class="material-icons">notifications_active</span>
+
+        </div>
+
+        <h3 class="font-bold text-lg">Stay Updated</h3>
+
+      </div>
+
+      <p class="text-white/90 text-xs leading-relaxed mb-4">
+
+        Subscribe to our YouTube channel to get notified the moment v8.0 drops on August 3rd!
+
+      </p>
+
+      <a href="${channelLink}" target="_blank" class="w-full py-3 bg-white text-blue-600 rounded-xl font-bold shadow-lg flex items-center justify-center gap-2 text-sm transition transform hover:scale-[1.02]">
+
+        <span class="material-icons text-sm">subscriptions</span> Subscribe Now
+
+      </a>
+
+    </div>
+
+
+
+    ${adminControls}
+
+
+
+  </div>
+
+
+
+</div>
+
+  </div>  <style>
+  
     @keyframes scale-in {
+  
       from { transform: scale(0.9); opacity: 0; }
+  
       to { transform: scale(1); opacity: 1; }
+  
     }
+  
     .animate-scale-in {
+  
       animation: scale-in 0.3s ease-out;
+  
     }
-  </style>
-  `;
+  
+  </style>`;
+
 }
 
 // Admin Helpers
+
 window.toggleRc25Download = function () {
-  const db = window.db;
-  const cfg = window.rc25Config || {};
-  db.collection('gameConfig').doc('rc25').set({ enabled: !cfg.enabled, link: cfg.link }, { merge: true })
-    .then(() => { 
-        window.rc25Config.enabled = !cfg.enabled; 
-        window.Rc25Page && (document.getElementById('app-content').innerHTML = window.Rc25Page()); 
-    });
+
+const db = window.db;
+
+const cfg = window.rc25Config || {};
+
+db.collection('gameConfig').doc('rc25').set({ enabled: !cfg.enabled, link: cfg.link }, { merge: true })
+
+.then(() => { 
+
+    window.rc25Config.enabled = !cfg.enabled; 
+
+    window.Rc25Page && (document.getElementById('app-content').innerHTML = window.Rc25Page()); 
+
+});
+
 };
 
 window.editRc25DownloadLink = function () {
-  const link = prompt("New Download Link:", window.rc25Config?.link || "");
-  if(link) {
-    window.db.collection('gameConfig').doc('rc25').set({ link }, { merge: true })
-      .then(() => { 
-          window.rc25Config.link = link; 
-          window.Rc25Page && (document.getElementById('app-content').innerHTML = window.Rc25Page()); 
-      });
-  }
+
+const link = prompt("New Download Link:", window.rc25Config?.link || "");
+
+if(link) {
+
+window.db.collection('gameConfig').doc('rc25').set({ link }, { merge: true })
+
+  .then(() => { 
+
+      window.rc25Config.link = link; 
+
+      window.Rc25Page && (document.getElementById('app-content').innerHTML = window.Rc25Page()); 
+
+  });
+
+}
+
 };
 
 window.Rc25Page = Rc25Page;
