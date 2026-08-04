@@ -3,7 +3,7 @@
 // Global config state (Defaults set immediately to prevent loading stuck)
 window.rc25Config = {
   enabled: true,
-  link: 'https://dupload.net/o9cxh6xht397' // Updated v8 Beta Release Link
+  link: 'https://dupload.net/iznn1jwit3m4' // Updated v8 Beta Release Link
 };
 window.rc25ConfigLoaded = false;
 
