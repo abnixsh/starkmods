@@ -39,7 +39,6 @@ function Rc25Page() {
   window.fetchRc25ConfigBackground();
 
   const isAdmin = !!window.isAdmin;
-  const v7TrailerLink = 'https://youtu.be/K9xpbC-Po6o'; 
   const installationVideoId = 'AyCpwTJWVKc'; 
   const channelLink = 'https://youtube.com/@starkofficial17';
 
@@ -93,9 +92,6 @@ function Rc25Page() {
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                <a id="main-download-btn" href="${window.rc25Config.link}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-blue-500/30 transition transform active:scale-95 text-sm uppercase tracking-wide flex items-center justify-center gap-2">
                  <span class="material-icons text-sm">download</span> Download Beta
-               </a>
-               <a href="${v7TrailerLink}" target="_blank" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white px-6 py-3 rounded-2xl font-bold transition flex items-center justify-center gap-2 text-sm border border-slate-200 dark:border-slate-700">
-                 <span class="material-icons text-base">play_arrow</span> Trailer
                </a>
             </div>
          </div>
