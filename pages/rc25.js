@@ -3,7 +3,7 @@
 // Global config state (Defaults set immediately to prevent loading stuck)
 window.rc25Config = {
   enabled: true,
-  link: 'https://dupload.net/iznn1jwit3m4' // Updated v8 Beta Release Link
+  link: 'https://dupload.net/j85r0m1it6j3' // Updated v8 Beta Release Link
 };
 window.rc25ConfigLoaded = false;
 
@@ -87,11 +87,14 @@ function Rc25Page() {
                <span class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300 text-[10px] font-bold uppercase tracking-wide border border-amber-200 dark:border-amber-800 flex items-center gap-1">
                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> v8 Beta Live
                </span>
+               <span class="px-3 py-1 rounded-full bg-red-600 text-yellow-400 text-[10px] font-bold uppercase tracking-wide border border-red-700 flex items-center gap-1">
+  <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse"></span> Bugs Fixed
+</span>
             </div>
 
             <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                <a id="main-download-btn" href="${window.rc25Config.link}" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-blue-500/30 transition transform active:scale-95 text-sm uppercase tracking-wide flex items-center justify-center gap-2">
-                 <span class="material-icons text-sm">download</span> Download Beta
+                 <span class="material-icons text-sm">download</span> Download Bugs Fixed
                </a>
             </div>
          </div>
