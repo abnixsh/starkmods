@@ -1,3 +1,5 @@
+// js/router.js
+
 class Router {
   constructor() {
     this.routes = {};
@@ -8,7 +10,7 @@ class Router {
     this.addRoute('/', 'home');
     this.addRoute('/cart', 'cart');
     this.addRoute('/checkout', 'checkout');
- this.addRoute('/order-details', 'orderDetails');
+    this.addRoute('/order-details', 'orderDetails');
     this.addRoute('/rc20', 'rc20');
     this.addRoute('/rc24', 'rc24');
     this.addRoute('/rcswipe', 'rcswipe');
@@ -34,7 +36,7 @@ class Router {
     this.addRoute('/creator-history', 'creator');
     this.addRoute('/creator-plans', 'creator');
 
-    // Creator admin routes (both use pages/creatorAdmin.js)
+    // Creator admin routes
     this.addRoute('/creator-admin', 'creatorAdmin');
     this.addRoute('/creator-admin-user', 'creatorAdmin');
 
@@ -51,15 +53,10 @@ class Router {
       if (link) {
         e.preventDefault();
         const href = link.getAttribute('href');
-
-        // Navigate
         this.navigateTo(href);
 
-        // If the link is inside the mobile menu, close the menu
-        const mobileMenu = document.getElementById('mobile-menu');
-        if (mobileMenu && !mobileMenu.classList.contains('hidden') && mobileMenu.contains(link)) {
-          mobileMenu.classList.add('hidden');
-        }
+        // If mobile menu open, close it
+        if (window.closeMobileMenu) window.closeMobileMenu();
       }
     });
 
@@ -71,35 +68,52 @@ class Router {
   }
 
   navigateTo(path) {
+    if (location.pathname === path) return;
     history.pushState(null, null, path);
     this.handleRoute(path);
   }
 
   handleRoute(path) {
     const cleanPath = path === '/' ? '/' : path.replace(/\/$/, '');
-    const pageName = this.routes[cleanPath] || '404'; // Default to '404'
+    const pageName = this.routes[cleanPath] || '404';
     this.loadPage(pageName);
   }
 
   loadPage(pageName) {
     const content = document.getElementById('app-content');
 
-    // Special Case for 404 (Don't look for file)
+    // Special Case for 404
     if (pageName === '404') {
       this.renderPage('404');
       return;
     }
 
-    // Show skeleton while we load JS for the page
-    content.innerHTML = this.getSkeletonHtml(pageName);
-
     const funcName = this.getFunctionName(pageName);
-    if (window[funcName]) {
+
+    // ZERO-LAG IN-MEMORY CACHE:
+    // If the page function is already loaded into window, render immediately without flashing skeleton!
+    if (typeof window[funcName] === 'function') {
+      if (window.startPageLoad) window.startPageLoad();
       this.renderPage(funcName);
       return;
     }
 
+    // Only show skeleton on cold-load when script needs to be fetched from network
+    if (window.startPageLoad) window.startPageLoad();
+    if (content) {
+      content.innerHTML = this.getSkeletonHtml(pageName);
+    }
+
+    // Prevent duplicate script tag downloads
+    const scriptId = `script-page-${pageName}`;
+    const existing = document.getElementById(scriptId);
+    if (existing) {
+      existing.addEventListener('load', () => this.renderPage(funcName), { once: true });
+      return;
+    }
+
     const script = document.createElement('script');
+    script.id = scriptId;
     script.src = `pages/${pageName}.js`;
 
     script.onload = () => {
@@ -107,7 +121,6 @@ class Router {
     };
 
     script.onerror = () => {
-      // Fallback if file fails to load
       this.renderPage('404');
     };
 
@@ -115,34 +128,28 @@ class Router {
   }
 
   // ---------- SKELETONS ----------
-
   getSkeletonHtml(pageName) {
-    // Home skeleton
     if (pageName === 'home') {
       return `
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 animate-fade-in">
-          <div class="mb-8 space-y-3 animate-pulse">
-            <div class="h-8 w-48 bg-slate-200 dark:bg-slate-700 rounded"></div>
-            <div class="h-4 w-72 bg-slate-200 dark:bg-slate-700 rounded"></div>
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 animate-pulse">
+          <div class="flex flex-col items-center mb-10 space-y-4">
+            <div class="h-8 w-44 bg-slate-200/80 dark:bg-slate-800/80 rounded-full"></div>
+            <div class="h-10 w-72 sm:w-96 bg-slate-200/80 dark:bg-slate-800/80 rounded-2xl"></div>
+            <div class="h-4 w-60 bg-slate-200/80 dark:bg-slate-800/80 rounded-full"></div>
           </div>
           <div class="grid md:grid-cols-3 gap-6">
-            ${[1,2,3].map(() => `
-              <div class="app-card p-6">
-                <div class="flex gap-3 mb-4 animate-pulse">
-                  <div class="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded-lg"></div>
-                  <div class="flex-1 space-y-2">
-                    <div class="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                    <div class="h-3 w-40 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                    <div class="flex gap-2 mt-2">
-                      <div class="h-4 w-10 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-                      <div class="h-4 w-14 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-                    </div>
+            ${[1, 2, 3].map(() => `
+              <div class="apple-glass-card p-6 space-y-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-14 h-14 bg-slate-200/80 dark:bg-slate-800/80 rounded-2xl"></div>
+                  <div class="space-y-2 flex-1">
+                    <div class="h-4 w-28 bg-slate-200/80 dark:bg-slate-800/80 rounded"></div>
+                    <div class="h-3 w-36 bg-slate-200/80 dark:bg-slate-800/80 rounded"></div>
                   </div>
                 </div>
-                <div class="h-40 w-full bg-slate-200 dark:bg-slate-700 rounded-lg mb-4 animate-pulse"></div>
-                <div class="h-3 w-full bg-slate-200 dark:bg-slate-700 rounded mb-2 animate-pulse"></div>
-                <div class="h-3 w-3/4 bg-slate-200 dark:bg-slate-700 rounded mb-4 animate-pulse"></div>
-                <div class="h-10 w-full bg-slate-200 dark:bg-slate-700 rounded-xl animate-pulse"></div>
+                <div class="h-36 w-full bg-slate-200/80 dark:bg-slate-800/80 rounded-xl"></div>
+                <div class="h-3 w-full bg-slate-200/80 dark:bg-slate-800/80 rounded"></div>
+                <div class="h-10 w-full bg-slate-200/80 dark:bg-slate-800/80 rounded-xl"></div>
               </div>
             `).join('')}
           </div>
@@ -150,111 +157,44 @@ class Router {
       `;
     }
 
-    // Detail pages (mods like rc20, rc24, rcswipe, wcc3, wcc2, rc25)
-    const detailPages = ['rc20', 'rc24', 'rcswipe', 'wcc3', 'wcc2', 'rc25'];
-    if (detailPages.includes(pageName)) {
-      return `
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 animate-fade-in">
-          <div class="mb-6 h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded animate-pulse"></div>
-
-          <div class="flex items-center gap-4 mb-8 animate-pulse">
-            <div class="w-20 h-20 rounded-2xl bg-slate-200 dark:bg-slate-700"></div>
-            <div class="flex-1 space-y-3">
-              <div class="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded"></div>
-              <div class="h-4 w-64 bg-slate-200 dark:bg-slate-700 rounded"></div>
-              <div class="flex gap-2 mt-2">
-                <div class="h-5 w-10 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-                <div class="h-5 w-14 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-                <div class="h-5 w-16 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="app-card p-4 rounded-2xl mb-8 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-            <div class="h-5 w-40 bg-slate-200 dark:bg-slate-700 rounded mb-4 animate-pulse"></div>
-            <div class="h-48 w-full bg-slate-200 dark:bg-slate-700 rounded-xl animate-pulse"></div>
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-6">
-            <div class="app-card p-6 rounded-2xl animate-pulse">
-              <div class="h-5 w-32 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
-              <div class="space-y-3">
-                <div class="h-4 w-full bg-slate-200 dark:bg-slate-700 rounded"></div>
-                <div class="h-4 w-5/6 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                <div class="h-4 w-4/5 bg-slate-200 dark:bg-slate-700 rounded"></div>
-                <div class="h-4 w-3/4 bg-slate-200 dark:bg-slate-700 rounded"></div>
-              </div>
-            </div>
-
-            <div class="app-card p-6 rounded-2xl flex flex-col justify-between bg-slate-900 text-white animate-pulse">
-              <div class="space-y-3">
-                <div class="h-5 w-40 bg-slate-700 rounded"></div>
-                <div class="h-4 w-5/6 bg-slate-700 rounded"></div>
-              </div>
-              <div class="mt-6 h-11 w-full bg-slate-700 rounded-xl"></div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    // Generic skeleton for other pages (cart, checkout, profile, admin, etc.)
     return `
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-16 animate-fade-in">
-        <div class="space-y-4 animate-pulse">
-          <div class="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded"></div>
-          <div class="h-4 w-64 bg-slate-200 dark:bg-slate-700 rounded"></div>
-          <div class="h-4 w-40 bg-slate-200 dark:bg-slate-700 rounded"></div>
-        </div>
-        <div class="mt-8 space-y-4 animate-pulse">
-          <div class="h-10 w-full bg-slate-200 dark:bg-slate-700 rounded"></div>
-          <div class="h-10 w-full bg-slate-200 dark:bg-slate-700 rounded"></div>
-          <div class="h-10 w-3/4 bg-slate-200 dark:bg-slate-700 rounded"></div>
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12 animate-pulse">
+        <div class="apple-glass-card p-8 space-y-6">
+          <div class="h-7 w-48 bg-slate-200/80 dark:bg-slate-800/80 rounded-xl"></div>
+          <div class="h-4 w-72 bg-slate-200/80 dark:bg-slate-800/80 rounded"></div>
+          <div class="space-y-3 pt-4">
+            <div class="h-12 w-full bg-slate-200/80 dark:bg-slate-800/80 rounded-xl"></div>
+            <div class="h-12 w-full bg-slate-200/80 dark:bg-slate-800/80 rounded-xl"></div>
+          </div>
         </div>
       </div>
     `;
   }
 
   // ---------- FUNCTION NAME RESOLUTION ----------
-
   getFunctionName(pageName) {
-    // Special handling for /creator* routes
     if (pageName === 'creator') {
-      const path = location.pathname.replace(/\/$/, ''); // remove trailing slash
-
+      const path = location.pathname.replace(/\/$/, '');
       if (path === '/creator-player')  return 'CreatorPlayerPage';
       if (path === '/creator-jersey')  return 'CreatorJerseyPage';
       if (path === '/creator-team')    return 'CreatorTeamPage';
       if (path === '/creator-history') return 'CreatorHistoryPage';
       if (path === '/creator-plans')   return 'CreatorPlansPage';
-
-      // default: /creator
       return 'CreatorPage';
     }
 
-    // Special handling for /creator-admin* routes
     if (pageName === 'creatorAdmin') {
       const path = location.pathname.replace(/\/$/, '');
-
-      if (path === '/creator-admin-user') {
-        // page that shows a single user's creator requests
-        return 'CreatorAdminUserRequestsPage';
-      }
-
-      // default: /creator-admin
+      if (path === '/creator-admin-user') return 'CreatorAdminUserRequestsPage';
       return 'CreatorAdminPage';
     }
 
-    // Special handling for /admin* routes
     if (pageName === 'admin') {
       const path = location.pathname.replace(/\/$/, '');
-
       if (path === '/admin-orders')        return 'AdminOrdersPage';
       if (path === '/admin-sub-orders')    return 'AdminSubOrdersPage';
       if (path === '/admin-user-orders')   return 'AdminUserOrdersPage';
       if (path === '/admin-elite-wallets') return 'AdminEliteWalletsPage';
-
-      // default: /admin
       return 'AdminPage';
     }
 
@@ -269,53 +209,58 @@ class Router {
       'cart': 'CartPage',
       'checkout': 'CheckoutPage',
       'profile': 'ProfilePage',
-      'orderDetails': 'OrderDetailsPage', 
-      'admin': 'AdminPage',        // fallback if special case not used
+      'orderDetails': 'OrderDetailsPage',
+      'admin': 'AdminPage',
       'contact': 'ContactPage',
       'terms': 'TermsPage',
       'privacy': 'PrivacyPage',
-      creatorAdmin: 'CreatorAdminPage', // fallback if special case not used
-      '404': 'NotFoundPage' // Virtual function
+      'creatorAdmin': 'CreatorAdminPage',
+      '404': 'NotFoundPage'
     };
     return map[pageName];
   }
 
   renderPage(funcName) {
     const content = document.getElementById('app-content');
+    if (!content) return;
 
-    // Handle 404 explicitly
+    // Handle 404
     if (funcName === '404' || funcName === 'NotFoundPage') {
       content.innerHTML = `
-        <div class="text-center py-20 animate-fade-in">
-          <div class="text-6xl mb-4">😕</div>
-          <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Page Not Found</h2>
-          <p class="text-slate-500 mb-6">The page you are looking for doesn't exist.</p>
-          <a href="/" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition" data-link>Go Home</a>
+        <div class="apple-page-enter text-center py-20">
+          <div class="text-6xl mb-4">🏏</div>
+          <h2 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Page Not Found</h2>
+          <p class="text-slate-500 mb-6">The requested page doesn't exist.</p>
+          <a href="/" class="btn bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold shadow-lg shadow-blue-500/20" data-link>Back to Home</a>
         </div>`;
+      if (window.finishPageLoad) window.finishPageLoad();
       return;
     }
 
-    // Render Normal Page
-    if (typeof funcName === 'string' && window[funcName]) {
+    if (typeof funcName === 'string' && typeof window[funcName] === 'function') {
       try {
-        content.innerHTML = window[funcName]();
-        window.scrollTo(0, 0);
-        if (window.initializeComponents) window.initializeComponents();
+        const pageHtml = window[funcName]();
+        content.innerHTML = `<div class="apple-page-enter">${pageHtml}</div>`;
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        if (window.initializeComponents) {
+          window.initializeComponents();
+        }
       } catch (e) {
-        console.error(e);
-        content.innerHTML = `<div class="text-center py-20 text-red-500">Render Error: ${e.message}</div>`;
+        console.error("Page render error:", e);
+        content.innerHTML = `<div class="text-center py-20 text-red-500 font-bold">Render error: ${e.message}</div>`;
       }
     } else {
-      content.innerHTML = `<div class="text-center py-20 text-red-500">Error: Function <b>${funcName}</b> not found.</div>`;
+      content.innerHTML = `<div class="text-center py-20 text-red-500 font-bold">Error: Page handler <b>${funcName}</b> not found.</div>`;
+    }
+
+    if (window.finishPageLoad) {
+      window.finishPageLoad();
     }
   }
 }
 
+// Router initialization
 document.addEventListener('DOMContentLoaded', () => {
   window.router = new Router();
-
-  // If auth is already ready (user known), re-render current path
-  if (window.authReady) {
-    window.router.handleRoute(location.pathname);
-  }
 });

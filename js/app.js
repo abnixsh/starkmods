@@ -2,6 +2,40 @@
 (function () {
   'use strict';
 
+  // --- 0. APPLE PAGE LOADING ANIMATION CONTROLLER ---
+  window.startPageLoad = function () {
+    const bar = document.getElementById('stark-progress-bar');
+    const fill = document.getElementById('stark-progress-bar-fill');
+    if (!bar || !fill) return;
+
+    fill.style.transition = 'width 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+    bar.style.opacity = '1';
+    fill.style.width = '38%';
+
+    setTimeout(() => {
+      if (fill && fill.style.width === '38%') {
+        fill.style.width = '78%';
+      }
+    }, 120);
+  };
+
+  window.finishPageLoad = function () {
+    const bar = document.getElementById('stark-progress-bar');
+    const fill = document.getElementById('stark-progress-bar-fill');
+    if (!bar || !fill) return;
+
+    fill.style.width = '100%';
+    setTimeout(() => {
+      if (bar) bar.style.opacity = '0';
+      setTimeout(() => {
+        if (fill) {
+          fill.style.transition = 'none';
+          fill.style.width = '0%';
+        }
+      }, 250);
+    }, 180);
+  };
+
   // --- 1. CART SYSTEM ---
   window.cart = [];
   window.products = {
@@ -78,7 +112,7 @@
     }
   };
 
-  // --- 2. THEME LOGIC ---
+  // --- 2. THEME LOGIC (Smooth Apple Style) ---
   const THEME_KEY = 'stark_theme_dark';
 
   function applyTheme(isDark) {
@@ -98,7 +132,7 @@
     let isDark;
     if (saved === '1') isDark = true;
     else if (saved === '0') isDark = false;
-    else isDark = false; // default light
+    else isDark = false; // default to clean light mode
 
     applyTheme(isDark);
   }
@@ -184,7 +218,7 @@
 
       function startAutoplay() {
         if (autoplayId) return;
-        autoplayId = setInterval(goNext, 4000);
+        autoplayId = setInterval(goNext, 4500);
       }
 
       function stopAutoplay() {
@@ -198,36 +232,36 @@
         startAutoplay();
       }
 
-      carousel.addEventListener('mouseenter', stopAutoplay);
-      carousel.addEventListener('mouseleave', startAutoplay);
+      carousel.addEventListener('mouseenter', stopAutoplay, { passive: true });
+      carousel.addEventListener('mouseleave', startAutoplay, { passive: true });
 
       update();
       startAutoplay();
     });
   }
 
-// --- 4. DOCK ACTIVE STATE ---
-function updateDockActive() {
-  const path = location.pathname.replace(/\/$/, '') || '/';
-  const dockMap = {
-    '/': 'home',
-    '/creator': 'creator',
-    '/profile': 'profile'
-  };
+  // --- 4. DOCK ACTIVE STATE ---
+  function updateDockActive() {
+    const path = location.pathname.replace(/\/$/, '') || '/';
+    const dockMap = {
+      '/': 'home',
+      '/creator': 'creator',
+      '/profile': 'profile'
+    };
 
-  document.querySelectorAll('.ios-dock-item').forEach(btn => {
-    btn.classList.remove('dock-active');
-  });
+    document.querySelectorAll('.ios-dock-item').forEach(btn => {
+      btn.classList.remove('dock-active');
+    });
 
-  const activeKey = dockMap[path];
-  if (activeKey) {
-    const activeBtn = document.querySelector(`.ios-dock-item[data-dock="${activeKey}"]`);
-    if (activeBtn) {
-      activeBtn.classList.add('dock-active');
+    const activeKey = dockMap[path];
+    if (activeKey) {
+      const activeBtn = document.querySelector(`.ios-dock-item[data-dock="${activeKey}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('dock-active');
+      }
     }
   }
-}
-window.updateDockActive = updateDockActive;
+  window.updateDockActive = updateDockActive;
 
   // --- 5. INIT ON DOM LOAD ---
   document.addEventListener('DOMContentLoaded', () => {
@@ -241,26 +275,27 @@ window.updateDockActive = updateDockActive;
       .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
       .forEach(btn => btn.addEventListener('click', toggleTheme));
 
-    // Menu button (now works on all screens)
+    // Menu button
     const menuBtn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');
     if (menuBtn && menu) {
-      menuBtn.addEventListener('click', () => {
+      menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         menu.classList.toggle('hidden');
       });
     }
 
-    // Close menu on scroll
+    // Passive scroll listener (prevents lag by never blocking scroll frames)
     window.addEventListener('scroll', () => {
-      closeMobileMenu();
-    });
+      if (menu && !menu.classList.contains('hidden')) {
+        menu.classList.add('hidden');
+      }
+    }, { passive: true });
 
     // Close menu when clicking a link inside it
     if (menu) {
       menu.querySelectorAll('a[data-link]').forEach(link => {
-        link.addEventListener('click', () => {
-          closeMobileMenu();
-        });
+        link.addEventListener('click', closeMobileMenu);
       });
     }
   });
@@ -270,5 +305,6 @@ window.updateDockActive = updateDockActive;
     initializeCarousels();
     updateCartBadge();
     updateDockActive();
+    if (window.updateAdminIcon) window.updateAdminIcon();
   };
 })();

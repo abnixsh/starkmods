@@ -28,9 +28,14 @@
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 
-<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 antialiased transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-black text-slate-800 dark:text-slate-100 antialiased transition-colors duration-250">
 
-  <!-- ===== HEADER (iOS Style: Hamburger Left, Logo Center, Cart Right) ===== -->
+  <!-- ===== APPLE PAGE LOADING PROGRESS BAR ===== -->
+  <div id="stark-progress-bar">
+    <div id="stark-progress-bar-fill"></div>
+  </div>
+
+  <!-- ===== HEADER (iOS Style: Hamburger Left, Logo Center, Desktop Auth + Cart Right) ===== -->
   <header class="glass-header sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
       <div class="flex items-center justify-between h-14">
@@ -38,15 +43,17 @@
         <!-- LEFT: Hamburger Menu Button (No glass bg) -->
         <div class="flex items-center gap-2">
           <button id="mobile-menu-button"
-                  class="p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10">
+                  class="p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10"
+                  aria-label="Open Navigation Menu">
             <span class="material-icons text-[24px]">menu</span>
           </button>
 
           <!-- ADMIN ICON (only for admin; visibility controlled by JS) -->
           <button id="admin-panel-btn"
                   onclick="window.router.navigateTo('/admin')"
-                  class="hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10">
-            <span class="material-icons text-xl">admin_panel_settings</span>
+                  class="hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10"
+                  title="Admin Panel">
+            <span class="material-icons text-xl text-amber-500">admin_panel_settings</span>
           </button>
         </div>
 
@@ -59,17 +66,22 @@
           </a>
         </div>
 
-        <!-- RIGHT: Cart Icon (No glass bg) -->
+        <!-- RIGHT: Desktop Auth + Theme Toggle + Cart Icon -->
         <div class="flex items-center gap-2">
+          <!-- Desktop Auth Container -->
+          <div id="auth-container" class="hidden sm:flex items-center"></div>
+
           <!-- Theme Toggle (desktop only) -->
           <button id="theme-toggle"
-                  class="hidden sm:flex p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10">
+                  class="hidden sm:flex p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10"
+                  title="Toggle Theme">
             <span id="theme-icon" class="material-icons text-xl">dark_mode</span>
           </button>
 
           <!-- Cart -->
           <button onclick="window.router.navigateTo('/cart')"
-                  class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10">
+                  class="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 transition-all active:scale-95 hover:bg-black/5 dark:hover:bg-white/10"
+                  title="View Cart">
             <span class="material-icons text-[24px]">shopping_bag</span>
             <span id="cart-badge"
                   class="hidden absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-white dark:border-slate-900 shadow-sm">
@@ -82,7 +94,7 @@
 
     <!-- SLIDE-DOWN MENU -->
     <div id="mobile-menu"
-         class="hidden border-t border-slate-200/50 dark:border-slate-700/50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl absolute w-full left-0 z-40 transition-all">
+         class="hidden border-t border-slate-200/50 dark:border-slate-800/80 bg-white/90 dark:bg-slate-950/90 backdrop-blur-2xl shadow-2xl absolute w-full left-0 z-40 transition-all">
       <div class="max-w-lg mx-auto px-4 py-4 space-y-1">
         <a href="/" class="flex items-center gap-3 mobile-link py-3 px-4 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-slate-800/80 font-medium transition-colors" data-link>
           <span class="material-icons text-xl text-blue-500">home</span>
@@ -111,10 +123,10 @@
         </a>
 
         <!-- Divider -->
-        <div class="h-px bg-slate-200/60 dark:bg-slate-700/60 my-2"></div>
+        <div class="h-px bg-slate-200/60 dark:bg-slate-800/60 my-2"></div>
 
         <!-- Mobile Auth Container -->
-        <div id="mobile-auth-container"></div>
+        <div id="mobile-auth-container" class="py-1"></div>
 
         <!-- Mobile Theme Toggle -->
         <button id="theme-toggle-mobile"
@@ -125,9 +137,6 @@
       </div>
     </div>
   </header>
-
-  <!-- Desktop Auth Container (hidden, keeps old logic working) -->
-  <div id="auth-container" class="hidden"></div>
 
   <!-- ===== MAIN CONTENT (Router injects here) ===== -->
   <main id="app-content" class="max-w-6xl mx-auto px-4 sm:px-6 py-10 min-h-[60vh]">
