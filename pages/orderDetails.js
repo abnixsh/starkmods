@@ -304,7 +304,7 @@
         <div>
            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Purchased Item</div>
            <h2 class="text-xl font-black text-slate-900 dark:text-white leading-tight">${order.item?.gameName}</h2>
-           <p class="text-xs text-slate-500 font-bold mt-1">₹${order.amount} • <span class="uppercase">${order.item?.planName || 'Plan'}</span></p>
+           <p class="text-xs text-slate-500 font-bold mt-1">${order.paidCurrency === 'PKR' ? 'Rs ' : (order.paidCurrency === 'USD' || order.paidCurrency === 'USDT' ? '$' : '₹')}${order.amount ?? order.paidAmount ?? order.basePriceINR ?? order.item?.price ?? '0'} • <span class="uppercase">${order.item?.planName || 'Plan'}</span></p>
         </div>
       </div>
 

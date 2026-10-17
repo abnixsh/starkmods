@@ -27,6 +27,8 @@ class Router {
     this.addRoute('/admin-sub-orders', 'admin');
     this.addRoute('/admin-user-orders', 'admin');
     this.addRoute('/admin-elite-wallets', 'admin');
+    this.addRoute('/admin-mods', 'admin');
+    this.addRoute('/admin-payments', 'admin');
 
     // Creator routes
     this.addRoute('/creator', 'creator');
@@ -195,6 +197,8 @@ class Router {
       if (path === '/admin-sub-orders')    return 'AdminSubOrdersPage';
       if (path === '/admin-user-orders')   return 'AdminUserOrdersPage';
       if (path === '/admin-elite-wallets') return 'AdminEliteWalletsPage';
+      if (path === '/admin-mods')          return 'AdminModsPage';
+      if (path === '/admin-payments')      return 'AdminPaymentsPage';
       return 'AdminPage';
     }
 

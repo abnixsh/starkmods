@@ -54,6 +54,19 @@
   box-sizing: border-box;
 }
 
+/* Prevent image downloading by long-pressing / holding / dragging */
+img, picture, svg {
+  -webkit-touch-callout: none !important; /* iOS Safari disable long press menu */
+  -webkit-user-select: none !important;   /* Safari */
+  -khtml-user-select: none !important;    /* Konqueror HTML */
+  -moz-user-select: none !important;      /* Old Firefox */
+  -ms-user-select: none !important;       /* Internet Explorer/Edge */
+  user-select: none !important;           /* Non-prefixed version */
+  -webkit-user-drag: none !important;     /* Webkit drag prevention */
+  user-drag: none !important;
+  pointer-events: auto;
+}
+
 html {
   scroll-behavior: smooth;
   text-rendering: optimizeLegibility;
@@ -69,6 +82,25 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* --- APPLE SPINNER --- */
+.apple-spinner {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 2.5px solid rgba(0, 113, 227, 0.15);
+  border-top-color: var(--accent);
+  animation: appleSpin 0.75s linear infinite;
+}
+
+.dark .apple-spinner {
+  border: 2.5px solid rgba(255, 255, 255, 0.12);
+  border-top-color: var(--accent);
+}
+
+@keyframes appleSpin {
+  to { transform: rotate(360deg); }
 }
 
 /* --- APPLE PAGE LOADER (Top slim glowing bar) --- */

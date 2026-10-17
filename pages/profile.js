@@ -103,7 +103,8 @@ function ProfilePage() {
       
       <div id="order-list" class="space-y-4 min-h-[160px]">
         <div class="text-center py-10">
-          <div class="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent mx-auto"></div>
+          <div class="apple-spinner mx-auto mb-2"></div>
+          <p class="text-xs text-slate-400 font-medium">Loading orders...</p>
         </div>
       </div>
     </div>`;
@@ -138,6 +139,10 @@ window.loadUserOrders = function () {
         const title = isSub ? (o.item?.gameName || 'Subscription') : (o.item?.gameName || 'Unknown Item');
         const image = o.item?.image || 'assets/icons/icon_wcc3.png'; // Fallback image
 
+        // Robust Price Calculation
+        const priceVal = o.amount !== undefined ? o.amount : (o.paidAmount !== undefined ? o.paidAmount : (o.basePriceINR !== undefined ? o.basePriceINR : (o.item?.price !== undefined ? o.item.price : 0)));
+        const currSymbol = o.paidCurrency === 'PKR' ? 'Rs ' : (o.paidCurrency === 'USD' || o.paidCurrency === 'USDT' ? '$' : '₹');
+
         // Status Styling
         let statusBadge = '';
         if (o.status === 'approved') {
@@ -159,7 +164,7 @@ window.loadUserOrders = function () {
               <div>
                 <div class="font-bold text-slate-900 dark:text-white text-sm sm:text-base">${title}</div>
                 <div class="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                  ${o.item?.planName || 'Standard'} • ₹${o.amount}
+                  ${o.item?.planName || 'Standard'} • ${currSymbol}${priceVal}
                 </div>
                 ${statusBadge}
               </div>

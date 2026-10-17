@@ -1,6 +1,8 @@
 // pages/checkout.js
 
 function CheckoutPage() {
+  if (window.fetchPaymentConfigOnce) window.fetchPaymentConfigOnce();
+
   // --- CONFIGURATION: EXCHANGE RATES ---
   // 1 INR = How much PKR? (e.g. 3.3) | 1 INR = How much USD? (e.g. 0.012)
   // Adjust these rates based on current market + a little buffer for fees
@@ -200,20 +202,37 @@ window.goToStep3 = function () {
   startTimer();
 };
 
-/* ---------------- SMART PAYMENT LOGIC (FIXED) ---------------- */
+/* ---------------- SMART PAYMENT LOGIC (DYNAMIC FROM ADMIN CONFIG) ---------------- */
+
+window.paymentConfig = window.paymentConfig || null;
+
+window.fetchPaymentConfigOnce = function() {
+  if (window.paymentConfig || !window.db) return;
+  db.collection('siteConfig').doc('paymentDetails').get().then(doc => {
+    if (doc.exists) {
+      window.paymentConfig = doc.data();
+    }
+  }).catch(() => {});
+};
 
 function renderSmartPaymentDetails() {
   const box = document.getElementById('final-payment-display');
   const method = window.selectedMethod;
   const item = window.cart[0];
-  const rates = window.currentRates; // Get rates defined at top
+  const rates = window.currentRates;
+
+  const cfg = window.paymentConfig || {};
+  const upiCfg = cfg.upi || { id: "abnixsh@ptyes", name: "StarkStore", qrUrl: "" };
+  const epCfg = cfg.ep || { number: "03045381058", name: "Muzammil Hasnain", qrUrl: "" };
+  const binanceCfg = cfg.binance || { payId: "998477777", qrUrl: "" };
+  const paypalCfg = cfg.paypal || { email: "starkmods@paypal.me", qrUrl: "" };
 
   // 1. UPI (INR)
   if (method === 'upi') {
-    const upiID = "abnixsh@ptyes"; 
-    const name = "StarkStore";
+    const upiID = upiCfg.id || "abnixsh@ptyes"; 
+    const name = upiCfg.name || "StarkStore";
     const link = `upi://pay?pa=${upiID}&pn=${name}&am=${item.price}&cu=INR`;
-    const qr = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(link)}`;
+    const qr = upiCfg.qrUrl || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(link)}`;
 
     box.innerHTML = `
       <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl mb-4">
@@ -221,25 +240,27 @@ function renderSmartPaymentDetails() {
         <div class="text-xs font-bold text-blue-400 uppercase">Total Amount (INR)</div>
       </div>
       <div class="relative inline-block group">
-        <div class="relative bg-white p-3 rounded-xl">
-          <img src="${qr}" class="w-48 h-48 object-contain mx-auto">
+        <div class="relative bg-white p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+          <img src="${qr}" class="w-48 h-48 object-contain mx-auto" alt="UPI QR">
         </div>
       </div>
-      <div class="mt-4 bg-slate-100 dark:bg-slate-900 px-4 py-2 rounded-lg inline-flex items-center gap-2 cursor-pointer hover:bg-slate-200 transition"
+      <div class="mt-4 bg-slate-100 dark:bg-slate-900 px-4 py-2 rounded-lg inline-flex items-center gap-2 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition"
            onclick="navigator.clipboard.writeText('${upiID}')">
-        <span class="font-mono font-bold text-slate-700 dark:text-slate-300">${upiID}</span>
+        <span class="font-mono font-bold text-slate-700 dark:text-slate-300 text-sm">${upiID}</span>
         <span class="material-icons text-xs text-slate-400">content_copy</span>
       </div>
     `;
   }
 
-  // 2. EASYPAISA (PKR Conversion)
+  // 2. EASYPAISA / NAYAPAY (PKR Conversion)
   else if (method === 'ep') {
-    const epNumber = "03045381058";
-    const epName = "Muzammil Hasnain";
-    
-    // CONVERSION LOGIC: Round up to nearest whole number
+    const epNumber = epCfg.number || "03045381058";
+    const epName = epCfg.name || "Muzammil Hasnain";
     const pkrAmount = Math.ceil(item.price * rates.PKR);
+    const qrHtml = epCfg.qrUrl ? `
+      <div class="mb-4 bg-white p-2 rounded-xl inline-block border border-slate-200 dark:border-slate-700">
+        <img src="${epCfg.qrUrl}" class="w-40 h-40 object-contain mx-auto" alt="QR">
+      </div>` : '';
 
     box.innerHTML = `
       <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl mb-4 border border-green-200 dark:border-green-800">
@@ -247,6 +268,7 @@ function renderSmartPaymentDetails() {
         <div class="text-xs font-bold text-green-500 uppercase">Total Amount (PKR)</div>
       </div>
 
+      ${qrHtml}
       <img src="assets/icons/pay_nayapay.png" class="h-10 mx-auto mb-4 object-contain" onerror="this.style.display='none'">
 
       <div class="text-left bg-slate-100 dark:bg-slate-900 p-4 rounded-xl space-y-3">
@@ -255,10 +277,10 @@ function renderSmartPaymentDetails() {
            <div class="font-semibold text-slate-900 dark:text-white">${epName}</div>
         </div>
         <div>
-           <div class="text-[10px] text-slate-500 uppercase font-bold">NayaPay Number</div>
+           <div class="text-[10px] text-slate-500 uppercase font-bold">NayaPay / EasyPaisa Number</div>
            <div class="flex justify-between items-center bg-white dark:bg-slate-950 p-2 rounded-lg mt-1 border border-slate-200 dark:border-slate-700">
              <span class="font-mono text-lg font-bold text-slate-900 dark:text-white">${epNumber}</span>
-             <button class="text-green-500 hover:text-green-600" onclick="navigator.clipboard.writeText('${epNumber}')">
+             <button class="text-green-500 hover:text-green-600 p-1" onclick="navigator.clipboard.writeText('${epNumber}')">
                <span class="material-icons">content_copy</span>
              </button>
            </div>
@@ -270,7 +292,11 @@ function renderSmartPaymentDetails() {
   // 3. BINANCE (USDT Conversion)
   else if (method === 'binance') {
     const usdtAmount = (item.price * rates.USD).toFixed(2);
-    const binanceId = "998477777";
+    const binanceId = binanceCfg.payId || "998477777";
+    const qrHtml = binanceCfg.qrUrl ? `
+      <div class="mb-4 bg-white p-2 rounded-xl inline-block border border-slate-200 dark:border-slate-700">
+        <img src="${binanceCfg.qrUrl}" class="w-40 h-40 object-contain mx-auto" alt="Binance QR">
+      </div>` : '';
 
     box.innerHTML = `
       <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-xl mb-4 border border-yellow-200 dark:border-yellow-800">
@@ -278,13 +304,14 @@ function renderSmartPaymentDetails() {
         <div class="text-xs font-bold text-yellow-500 uppercase">Total Amount</div>
       </div>
 
+      ${qrHtml}
       <img src="assets/icons/pay_binance.png" class="h-10 mx-auto mb-4 object-contain">
       
       <div class="text-left bg-slate-100 dark:bg-slate-900 p-4 rounded-xl">
         <p class="text-xs text-slate-500 uppercase font-bold mb-1">Binance Pay ID</p>
         <div class="flex justify-between items-center bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
           <span class="font-mono text-xl font-bold text-slate-900 dark:text-white">${binanceId}</span>
-          <button class="text-yellow-500 hover:text-yellow-600" onclick="navigator.clipboard.writeText('${binanceId}')">
+          <button class="text-yellow-500 hover:text-yellow-600 p-1" onclick="navigator.clipboard.writeText('${binanceId}')">
             <span class="material-icons">content_copy</span>
           </button>
         </div>
@@ -295,7 +322,11 @@ function renderSmartPaymentDetails() {
   // 4. PAYPAL (USD Conversion)
   else if (method === 'paypal') {
     const usdAmount = (item.price * rates.USD).toFixed(2);
-    const paypalEmail = "PAYPAL IS NOT ACCEPTED YET!"; // REPLACE THIS
+    const paypalEmail = paypalCfg.email || "starkmods@paypal.me";
+    const qrHtml = paypalCfg.qrUrl ? `
+      <div class="mb-4 bg-white p-2 rounded-xl inline-block border border-slate-200 dark:border-slate-700">
+        <img src="${paypalCfg.qrUrl}" class="w-40 h-40 object-contain mx-auto" alt="PayPal QR">
+      </div>` : '';
 
     box.innerHTML = `
       <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl mb-4 border border-blue-200 dark:border-blue-800">
@@ -303,13 +334,14 @@ function renderSmartPaymentDetails() {
         <div class="text-xs font-bold text-blue-500 uppercase">Total Amount</div>
       </div>
       
+      ${qrHtml}
       <img src="assets/icons/pay_paypal.png" class="h-8 mx-auto mb-4 object-contain">
 
       <div class="text-left bg-slate-100 dark:bg-slate-900 p-4 rounded-xl">
-        <p class="text-xs text-slate-500 uppercase font-bold mb-1">PayPal Email (Friends & Family)</p>
+        <p class="text-xs text-slate-500 uppercase font-bold mb-1">PayPal Email / Link</p>
         <div class="flex justify-between items-center bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-          <span class="font-mono text-sm font-bold text-slate-900 dark:text-white">${paypalEmail}</span>
-          <button class="text-blue-500 hover:text-blue-600" onclick="navigator.clipboard.writeText('${paypalEmail}')">
+          <span class="font-mono text-sm font-bold text-slate-900 dark:text-white break-all">${paypalEmail}</span>
+          <button class="text-blue-500 hover:text-blue-600 p-1" onclick="navigator.clipboard.writeText('${paypalEmail}')">
             <span class="material-icons">content_copy</span>
           </button>
         </div>
@@ -359,9 +391,10 @@ window.submitOrder = async function () {
     contact: window.userDetails.contact,
     email: window.currentUser.email,
     item: item,
+    amount: finalAmount,          // Backwards compatible
     basePriceINR: item.price,
-    paidAmount: finalAmount,      // New field
-    paidCurrency: finalCurrency,  // New field
+    paidAmount: finalAmount,      // Converted amount
+    paidCurrency: finalCurrency,  // Currency symbol
     method: window.selectedMethod.toUpperCase(),
     transId: transId,
     status: 'pending',

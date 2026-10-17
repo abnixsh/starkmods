@@ -28,6 +28,20 @@ window.fetchRc25ConfigBackground = function () {
         } else if (btn) {
             btn.href = window.rc25Config.link;
         }
+
+        // Live update screenshots if present
+        if (window.rc25Config.screenshots && window.rc25Config.screenshots.length) {
+          const container = document.getElementById('rc25-screenshots-container');
+          if (container) {
+            container.innerHTML = window.rc25Config.screenshots.map((src, idx) => `
+              <div class="snap-center shrink-0 first:pl-0 last:pr-4 group">
+                 <img src="${src}" 
+                      class="h-48 sm:h-64 w-auto rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 object-cover select-none pointer-events-none transition transform group-hover:scale-[1.02]"
+                      onerror="this.src='https://placehold.co/600x300?text=Screenshot+${idx+1}'">
+              </div>
+            `).join('');
+          }
+        }
       }
       window.rc25ConfigLoaded = true;
     })
@@ -107,12 +121,12 @@ function Rc25Page() {
     <!-- PREVIEW SECTION - WORKING SCREENSHOTS -->
     <section class="mb-10">
        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 px-2">Preview</h2>
-       <div class="flex overflow-x-auto gap-4 pb-6 snap-x snap-mandatory no-scrollbar px-2" style="scroll-padding-left: 0;">
-          ${[1, 2, 3, 4, 5].map(i => `
+       <div id="rc25-screenshots-container" class="flex overflow-x-auto gap-4 pb-6 snap-x snap-mandatory no-scrollbar px-2" style="scroll-padding-left: 0;">
+          ${((window.rc25Config && window.rc25Config.screenshots && window.rc25Config.screenshots.length) ? window.rc25Config.screenshots : [1, 2, 3, 4, 5].map(i => `assets/img/img_rc25_V8_${i}.jpg`)).map((src, idx) => `
             <div class="snap-center shrink-0 first:pl-0 last:pr-4 group">
-               <img src="assets/img/img_rc25_V8_${i}.jpg" 
+               <img src="${src}" 
                     class="h-48 sm:h-64 w-auto rounded-2xl shadow-lg border border-slate-200/50 dark:border-slate-700/50 object-cover select-none pointer-events-none transition transform group-hover:scale-[1.02]"
-                    onerror="this.src='https://placehold.co/600x300?text=Screenshot+${i}'">
+                    onerror="this.src='https://placehold.co/600x300?text=Screenshot+${idx+1}'">
             </div>
           `).join('')}
        </div>

@@ -275,6 +275,21 @@
       .querySelectorAll('#theme-toggle, #theme-toggle-mobile')
       .forEach(btn => btn.addEventListener('click', toggleTheme));
 
+    // Prevent right-click / contextmenu & drag on images
+    document.addEventListener('contextmenu', (e) => {
+      if (e.target.tagName === 'IMG' || e.target.closest('img')) {
+        e.preventDefault();
+        return false;
+      }
+    }, { capture: true });
+
+    document.addEventListener('dragstart', (e) => {
+      if (e.target.tagName === 'IMG' || e.target.closest('img')) {
+        e.preventDefault();
+        return false;
+      }
+    }, { capture: true });
+
     // Menu button
     const menuBtn = document.getElementById('mobile-menu-button');
     const menu = document.getElementById('mobile-menu');
