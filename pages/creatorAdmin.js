@@ -124,7 +124,7 @@ function CreatorAdminPage() {
 
         <!-- TABLE -->
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
+          <table class="w-full text-left text-xs whitespace-nowrap min-w-[580px]">
             <thead class="bg-slate-100/60 dark:bg-slate-900/60 border-b border-slate-200/50 dark:border-slate-800/80 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-extrabold">
               <tr>
                 <th class="p-4 w-10 text-center">
@@ -160,7 +160,7 @@ function CreatorAdminPage() {
 
         <div class="apple-glass-card overflow-hidden">
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="w-full text-left text-xs whitespace-nowrap min-w-[580px]">
               <thead class="bg-slate-100/60 dark:bg-slate-900/60 border-b border-slate-200/50 dark:border-slate-800/80 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-extrabold">
                 <tr>
                   <th class="p-4">Creator Email</th>

@@ -44,83 +44,58 @@ window.loadHomeHiddenCardsOnce = function () {
 function HomePage() {
   window.loadHomeHiddenCardsOnce();
 
-  return `
-  <div class="max-w-6xl mx-auto pb-24 relative px-3 sm:px-6 pt-4">
+  // FIX: Force re-render of cards whenever navigating back to HomePage
+  setTimeout(() => {
+    if (typeof window.renderAllHomeCards === 'function') {
+      window.renderAllHomeCards();
+    }
+  }, 0);
 
-    <!-- ===== 1. ULTRA-MINIMAL TOP ANNOUNCEMENT BADGE ===== -->
-    <div class="flex justify-center mb-6">
-      <div class="apple-glass-pill py-1.5 px-4 flex items-center gap-2 border border-black/5 dark:border-white/10 shadow-sm">
-        <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
-        <span class="text-xs font-semibold tracking-tight text-slate-700 dark:text-slate-300">
-          <strong class="text-blue-600 dark:text-blue-400 font-bold mr-1">v8.2 LIVE</strong> Real Cricket 25 Patch & VIP Mod Menus
-        </span>
+  return `
+  <div class="max-w-6xl mx-auto pb-24 relative px-3 sm:px-6 pt-2 sm:pt-4">
+
+    <!-- ===== 1. ULTRA-MINIMAL TOP BAR WITH PROMINENT TELEGRAM BUTTON ===== -->
+    <div class="mb-6 p-3 sm:p-4 rounded-3xl apple-glass border border-black/5 dark:border-white/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+      
+      <!-- Brand & Status Pill -->
+      <div class="flex items-center gap-3">
+        <img src="assets/icons/starkmodslogo.png" 
+             alt="Stark Mods" 
+             class="h-8 sm:h-9 w-auto object-contain header-logo"
+             onerror="this.style.display='none'">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">v8.2 LIVE &bull; Pro Cricket Mod Studio</span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Anti-ban VIP mod menus, textures, shot packs & 4K patches</p>
+        </div>
+      </div>
+
+      <!-- Community Actions (Telegram Front & Center) -->
+      <div class="flex items-center gap-2.5 w-full sm:w-auto justify-center sm:justify-end">
+        <!-- Telegram Button (High Contrast, Branded Apple Pill) -->
+        <a href="https://t.me/starkrc20" target="_blank" rel="noopener noreferrer"
+           class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#229ED9] hover:bg-[#1b8ec4] text-white text-xs sm:text-sm font-bold shadow-md shadow-cyan-500/25 active:scale-95 transition-all">
+          <svg class="w-4 h-4 fill-white flex-shrink-0" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+          <span>Join Telegram</span>
+          <span class="bg-black/20 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">25k+</span>
+        </a>
+
+        <!-- Discord Button -->
+        <a href="https://discord.gg/KaeHESH9n" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold shadow-sm active:scale-95 transition-all">
+          <svg class="w-4 h-4 fill-white flex-shrink-0" viewBox="0 0 24 24">
+            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
+          </svg>
+          <span class="hidden sm:inline">Discord</span>
+        </a>
       </div>
     </div>
 
-    <!-- ===== 2. STATIC, LAG-FREE MINIMAL HERO ===== -->
-    <section class="mb-10 text-center px-4 relative z-10 max-w-2xl mx-auto">
-      
-      <!-- Brand Logo / Wordmark -->
-      <div class="mb-5 inline-block">
-        <img src="assets/icons/starkmodslogo.png" 
-             alt="Stark Mods" 
-             class="h-11 sm:h-13 w-auto mx-auto object-contain header-logo"
-             onerror="this.style.display='none'">
-      </div>
-
-      <!-- Clean, High-Contrast Typography (Zero lag animations) -->
-      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-3">
-        Pro Cricket Mod Studio<span class="text-blue-500">.</span>
-      </h1>
-
-      <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-lg mx-auto font-normal leading-relaxed mb-7">
-        Ultra HD graphics, realistic kits, unlocked shot animations & anti-ban protection for RC25, RC24, and WCC3.
-      </p>
-
-      <!-- Polished Community Buttons & Actions -->
-      <div class="flex flex-wrap items-center justify-center gap-3 mb-8">
-        
-        <!-- Primary Action -->
-        <button onclick="document.getElementById('mods-grid').scrollIntoView({ behavior: 'smooth' })"
-                class="apple-btn-primary px-6 py-2.5 rounded-full font-bold text-xs sm:text-sm shadow-md flex items-center gap-2">
-          <span class="material-icons text-sm">grid_view</span>
-          <span>Browse Mods</span>
-        </button>
-
-        <!-- Telegram Button (Branded, High Contrast) -->
-        <a href="https://t.me/starkrc20" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[#229ED9] hover:bg-[#1e8ec3] text-white text-xs font-bold transition shadow-sm active:scale-95">
-          <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
-          </svg>
-          <span>Telegram</span>
-          <span class="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded-full">25k</span>
-        </a>
-
-        <!-- Discord Button (Branded, High Contrast) -->
-        <a href="https://discord.gg/KaeHESH9n" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-[#5865F2] hover:bg-[#4752C4] text-white text-xs font-bold transition shadow-sm active:scale-95">
-          <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24">
-            <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
-          </svg>
-          <span>Discord</span>
-          <span class="bg-white/20 text-white text-[10px] px-1.5 py-0.5 rounded-full">15k</span>
-        </a>
-
-      </div>
-
-      <!-- Compact Trust Metrics -->
-      <div class="inline-flex items-center gap-4 sm:gap-6 px-4 py-2 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 font-semibold">
-        <span class="flex items-center gap-1.5"><span class="material-icons text-blue-500 text-sm">verified</span> 100% Anti-Ban</span>
-        <span class="h-3 w-px bg-slate-300 dark:bg-slate-700"></span>
-        <span class="flex items-center gap-1.5"><span class="material-icons text-emerald-500 text-sm">bolt</span> Instant Download</span>
-        <span class="h-3 w-px bg-slate-300 dark:bg-slate-700"></span>
-        <span class="flex items-center gap-1.5"><span class="material-icons text-amber-500 text-sm">support_agent</span> 24/7 Verified</span>
-      </div>
-
-    </section>
-
-    <!-- ===== 3. SEARCH & INSTANT FILTER ===== -->
+    <!-- ===== 2. SEARCH & INSTANT FILTER ===== -->
     <div class="relative z-30 mb-8 mx-auto max-w-xl px-1">
       <div class="apple-glass p-1.5 flex items-center gap-2 shadow-sm">
         
@@ -148,7 +123,7 @@ function HomePage() {
 
     <input type="hidden" id="filter-category" value="all">
 
-    <!-- ===== 4. MODS GRID ===== -->
+    <!-- ===== 3. MODS GRID ===== -->
     <section class="grid sm:grid-cols-2 md:grid-cols-3 gap-6" id="mods-grid">
       <!-- Injected by renderAllHomeCards() -->
     </section>
@@ -298,19 +273,62 @@ window.renderAllHomeCards = function() {
     </button>
   `);
 
+  // Pill color class mapper
+  const pillColorClasses = {
+    blue: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20',
+    emerald: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
+    amber: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
+    purple: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20',
+    rose: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
+    slate: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20'
+  };
+
   // 5. Dynamic Custom Cards Added from Admin
   (window.customHomeCards || []).forEach(c => {
     const isFree = c.type === 'free' || c.price === 0;
-    const actionBtn = isFree ? `
-      <a href="${c.link}" target="_blank" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-1.5">
-        <span class="material-icons text-sm">download</span>
-        <span>Download Free</span>
-      </a>
-    ` : `
-      <a href="${c.link}" target="_blank" class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm">
-        <span>Get Access • ₹${c.price}</span>
-      </a>
-    `;
+
+    // Custom Pills
+    let pillsHtml = '';
+    if (c.pill1Text) {
+      const cls = pillColorClasses[c.pill1Color || 'blue'] || pillColorClasses.blue;
+      pillsHtml += `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${cls}">${c.pill1Text}</span>`;
+    }
+    if (c.pill2Text) {
+      const cls = pillColorClasses[c.pill2Color || (isFree ? 'emerald' : 'amber')] || pillColorClasses.emerald;
+      pillsHtml += `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${cls}">${c.pill2Text}</span>`;
+    }
+    if (!pillsHtml) {
+      pillsHtml = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${isFree ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'}">${isFree ? 'Free Download' : `₹${c.price || c.price1Month || 250} VIP`}</span>`;
+    }
+
+    // Video preview button
+    const hasVideo = !!(c.enablePreview && c.videoUrl);
+    const videoBtn = hasVideo ? `
+      <button onclick="event.stopPropagation(); window.openVideoPreview(decodeURIComponent('${encodeURIComponent(c.videoUrl)}'), '${(c.name || '').replace(/'/g, "\\'")}')"
+              class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 flex items-center gap-1 transition active:scale-95 shadow-sm">
+        <span class="material-icons text-xs">play_circle</span>
+        <span>Watch Preview</span>
+      </button>
+    ` : '';
+
+    // Action button
+    let actionBtn = '';
+    if (isFree) {
+      actionBtn = `
+        <a href="${c.link || '#'}" target="_blank" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl font-bold text-xs shadow-md flex items-center justify-center gap-1.5 transition active:scale-95">
+          <span class="material-icons text-sm">download</span>
+          <span>Download Free</span>
+        </a>
+      `;
+    } else {
+      const minPrice = c.price1Month || c.price || 250;
+      actionBtn = `
+        <button onclick="window.openCustomModPlanModal('${c.id}')"
+                class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-950 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
+          <span>Select Plan • From ₹${minPrice}</span>
+        </button>
+      `;
+    }
 
     cardsHtml += renderCard(c.id, `
       <div class="flex items-center gap-3.5 mb-4">
@@ -321,13 +339,21 @@ window.renderAllHomeCards = function() {
         </div>
       </div>
       ${c.banner ? `
-      <div class="mb-4 rounded-xl overflow-hidden h-40 relative shadow-sm bg-black/10">
+      <div class="mb-4 rounded-xl overflow-hidden h-40 relative shadow-sm bg-black/10 group-hover:opacity-95 transition">
         <img src="${c.banner}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/320x180?text=MOD'">
+        ${hasVideo ? `
+          <div onclick="event.stopPropagation(); window.openVideoPreview(decodeURIComponent('${encodeURIComponent(c.videoUrl)}'), '${(c.name || '').replace(/'/g, "\\'")}')" class="absolute inset-0 bg-black/30 flex items-center justify-center cursor-pointer hover:bg-black/40 transition">
+            <div class="w-11 h-11 rounded-full bg-red-600/90 text-white flex items-center justify-center shadow-lg transform active:scale-90 transition">
+              <span class="material-icons text-2xl ml-0.5">play_arrow</span>
+            </div>
+          </div>
+        ` : ''}
       </div>` : ''}
-      <div class="flex flex-wrap items-center gap-2 mb-3">
-        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${isFree ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'}">
-          ${isFree ? 'Free' : `₹${c.price} VIP`}
-        </span>
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div class="flex flex-wrap items-center gap-1.5">
+          ${pillsHtml}
+        </div>
+        ${videoBtn}
       </div>
       <p class="text-xs text-slate-600 dark:text-slate-300 mb-5 leading-relaxed flex-grow">
         ${c.desc || ''}
@@ -427,6 +453,108 @@ window.toggleHomeCard = function (id) {
       console.error('toggleHomeCard error:', err);
       alert('Failed to update visibility: ' + err.message);
     });
+};
+
+// Custom Mod Plan Selector Modal (Mobile-first Android UX)
+window.openCustomModPlanModal = function(cardId) {
+  const card = (window.customHomeCards || []).find(x => x.id === cardId);
+  if (!card) return;
+
+  const mPrice = Number(card.price1Month || card.price || 250);
+  const yPrice = Number(card.price1Year || 600);
+  const lPrice = Number(card.priceLifetime || 1000);
+  const nameSafe = (card.name || '').replace(/'/g, "\\'");
+  const iconSafe = (card.icon || 'assets/icons/stark-32.png').replace(/'/g, "\\'");
+
+  let modal = document.getElementById('custom-mod-plan-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'custom-mod-plan-modal';
+    modal.className = 'fixed inset-0 z-[9999] bg-black/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in';
+    document.body.appendChild(modal);
+  }
+
+  const videoSection = (card.enablePreview && card.videoUrl) ? `
+    <div class="mb-4 rounded-2xl overflow-hidden aspect-video bg-black shadow-md relative">
+      <iframe src="${window.getYoutubeEmbedUrl ? window.getYoutubeEmbedUrl(card.videoUrl) : card.videoUrl}" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+  ` : '';
+
+  modal.innerHTML = `
+    <div class="apple-glass-card w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl border border-white/20 dark:border-slate-700 bg-white dark:bg-slate-900 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-4 border-b border-black/5 dark:border-white/10 mb-4">
+        <div class="flex items-center gap-3">
+          <img src="${card.icon || 'assets/icons/stark-32.png'}" class="w-11 h-11 rounded-2xl object-cover border border-black/10 dark:border-white/10 shadow-sm" onerror="this.src='/assets/icons/stark-32.png'">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 dark:text-white leading-tight">${card.name}</h3>
+            <p class="text-xs text-slate-400 font-medium">${card.tag || 'VIP Mod Menu'}</p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('custom-mod-plan-modal').classList.add('hidden')" class="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-white transition active:scale-90">
+          <span class="material-icons text-base">close</span>
+        </button>
+      </div>
+
+      ${videoSection}
+
+      <div class="mb-4">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5">Select VIP Access Plan</h4>
+        <div class="space-y-2.5">
+          <!-- 1 Month -->
+          <div onclick="window.addCustomToCart('${card.id}', '1 Month Access', ${mPrice}, '${nameSafe}', '${iconSafe}'); document.getElementById('custom-mod-plan-modal').classList.add('hidden');"
+               class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 bg-black/[0.02] dark:bg-white/[0.03] flex items-center justify-between cursor-pointer transition active:scale-[0.98]">
+            <div>
+              <div class="text-xs font-bold text-slate-900 dark:text-white">1 Month Access</div>
+              <div class="text-[11px] text-slate-400 font-medium">Standard VIP license &bull; Instant Delivery</div>
+            </div>
+            <div class="text-right">
+              <span class="text-base font-black text-slate-900 dark:text-white">₹${mPrice}</span>
+              <span class="block text-[10px] text-blue-500 font-bold uppercase">Select &rarr;</span>
+            </div>
+          </div>
+
+          <!-- 1 Year -->
+          <div onclick="window.addCustomToCart('${card.id}', '1 Year Access', ${yPrice}, '${nameSafe}', '${iconSafe}'); document.getElementById('custom-mod-plan-modal').classList.add('hidden');"
+               class="p-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-blue-500 bg-black/[0.02] dark:bg-white/[0.03] flex items-center justify-between cursor-pointer transition active:scale-[0.98]">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-slate-900 dark:text-white">1 Year Access</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-blue-500/10 text-blue-500">Popular</span>
+              </div>
+              <div class="text-[11px] text-slate-400 font-medium">365 Days Access &bull; All Updates Included</div>
+            </div>
+            <div class="text-right">
+              <span class="text-base font-black text-slate-900 dark:text-white">₹${yPrice}</span>
+              <span class="block text-[10px] text-blue-500 font-bold uppercase">Select &rarr;</span>
+            </div>
+          </div>
+
+          <!-- Lifetime -->
+          <div onclick="window.addCustomToCart('${card.id}', 'Lifetime Access', ${lPrice}, '${nameSafe}', '${iconSafe}'); document.getElementById('custom-mod-plan-modal').classList.add('hidden');"
+               class="p-3.5 rounded-2xl border-2 border-amber-500/40 hover:border-amber-500 bg-amber-500/[0.04] flex items-center justify-between cursor-pointer transition active:scale-[0.98] shadow-sm">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="material-icons text-amber-500 text-xs">diamond</span>
+                <span class="text-xs font-bold text-slate-900 dark:text-white">Lifetime Access</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400">Best Value</span>
+              </div>
+              <div class="text-[11px] text-slate-400 font-medium">Permanent Access &bull; Anti-ban & 24/7 VIP Support</div>
+            </div>
+            <div class="text-right">
+              <span class="text-base font-black text-amber-600 dark:text-amber-400">₹${lPrice}</span>
+              <span class="block text-[10px] text-amber-500 font-bold uppercase">Select &rarr;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-[11px] text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5 p-3 rounded-2xl flex items-center gap-2">
+        <span class="material-icons text-blue-500 text-sm">verified_user</span>
+        <span>Secure UPI payment (FamPay/GPay/PhonePe) & instant key delivery.</span>
+      </div>
+    </div>
+  `;
+  modal.classList.remove('hidden');
 };
 
 // Initialize render on page load

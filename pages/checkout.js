@@ -222,32 +222,47 @@ function renderSmartPaymentDetails() {
   const rates = window.currentRates;
 
   const cfg = window.paymentConfig || {};
-  const upiCfg = cfg.upi || { id: "abnixsh@ptyes", name: "StarkStore", qrUrl: "" };
+  const upiCfg = cfg.upi || { id: "fucckkoffabhishekhop@fam", name: "StarkStore", qrUrl: "" };
   const epCfg = cfg.ep || { number: "03045381058", name: "Muzammil Hasnain", qrUrl: "" };
   const binanceCfg = cfg.binance || { payId: "998477777", qrUrl: "" };
   const paypalCfg = cfg.paypal || { email: "starkmods@paypal.me", qrUrl: "" };
 
-  // 1. UPI (INR)
+  // 1. UPI (INR) - FamPay Auto-generate QR by price
   if (method === 'upi') {
-    const upiID = upiCfg.id || "abnixsh@ptyes"; 
+    const upiID = upiCfg.id || "fucckkoffabhishekhop@fam"; 
     const name = upiCfg.name || "StarkStore";
-    const link = `upi://pay?pa=${upiID}&pn=${name}&am=${item.price}&cu=INR`;
-    const qr = upiCfg.qrUrl || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(link)}`;
+    const link = `upi://pay?pa=${encodeURIComponent(upiID)}&pn=${encodeURIComponent(name)}&am=${item.price}&cu=INR`;
+    // Auto generate QR strictly according to exact order price (e.g. ₹250, ₹300, ₹1000)
+    const qr = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
     box.innerHTML = `
-      <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl mb-4">
+      <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl mb-4 border border-blue-500/20">
         <div class="text-3xl font-black text-blue-600 dark:text-blue-400">₹${item.price}</div>
-        <div class="text-xs font-bold text-blue-400 uppercase">Total Amount (INR)</div>
+        <div class="text-xs font-bold text-blue-500 dark:text-blue-300 uppercase tracking-wider mt-0.5">Total Amount (FamPay / UPI INR)</div>
       </div>
-      <div class="relative inline-block group">
-        <div class="relative bg-white p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-          <img src="${qr}" class="w-48 h-48 object-contain mx-auto" alt="UPI QR">
+
+      <!-- Android One-Tap UPI App Button -->
+      <a href="${link}"
+         class="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all mb-4">
+        <span class="material-icons text-base">phone_android</span>
+        <span>Open FamPay / GPay / PhonePe (₹${item.price})</span>
+      </a>
+
+      <div class="relative inline-block group mb-3">
+        <div class="relative bg-white p-3 rounded-2xl shadow-md border border-slate-200 dark:border-slate-700">
+          <img src="${qr}" class="w-48 h-48 object-contain mx-auto" alt="FamPay Dynamic UPI QR">
         </div>
+        <span class="text-[10px] text-slate-400 font-semibold block mt-1.5">Scan with any UPI app • Amount pre-filled</span>
       </div>
-      <div class="mt-4 bg-slate-100 dark:bg-slate-900 px-4 py-2 rounded-lg inline-flex items-center gap-2 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition"
-           onclick="navigator.clipboard.writeText('${upiID}')">
-        <span class="font-mono font-bold text-slate-700 dark:text-slate-300 text-sm">${upiID}</span>
-        <span class="material-icons text-xs text-slate-400">content_copy</span>
+
+      <div class="mt-2">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">FamPay UPI ID</div>
+        <div id="upi-copy-box" class="bg-slate-100 dark:bg-slate-900 px-4 py-2.5 rounded-xl inline-flex items-center gap-2 cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-800 transition border border-slate-200 dark:border-slate-700 active:scale-95"
+             onclick="navigator.clipboard.writeText('${upiID}'); const label=document.getElementById('upi-copy-label'); label.innerText='Copied!'; setTimeout(()=>label.innerText='${upiID}', 2000);">
+          <span class="material-icons text-sm text-blue-500">account_balance_wallet</span>
+          <span id="upi-copy-label" class="font-mono font-bold text-slate-800 dark:text-slate-200 text-xs sm:text-sm">${upiID}</span>
+          <span class="material-icons text-xs text-slate-400">content_copy</span>
+        </div>
       </div>
     `;
   }
@@ -410,14 +425,51 @@ window.submitOrder = async function () {
         // ... (Keep your existing subscription logic here) ...
     }
 
-    // Send Telegram Notification (Ensure your API handles the currency fields)
+    // Send Telegram Notification (Cloudflare Pages API with direct client fallback)
+    let tgSent = false;
     try {
-        await fetch('/api/order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
+      const apiRes = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      if (apiRes.ok) tgSent = true;
+    } catch(apiErr) {
+      console.warn('Backend /api/order error, attempting direct Telegram API send...', apiErr);
+    }
+
+    if (!tgSent) {
+      try {
+        const botToken = (window.paymentConfig && window.paymentConfig.tgBotToken) || '8491648554:AAHwIlmoD6jrIZlhMdSd0Pd8mNYJebkrWxE';
+        const chatId = (window.paymentConfig && window.paymentConfig.tgChatId) || '6879169726';
+        const tgMsg = `🚨 <b>NEW ORDER #${orderData.orderId}</b>\n` +
+          `-----------------------------\n` +
+          `👤 <b>User:</b> ${orderData.userName || '-'}\n` +
+          `📧 <b>Email:</b> ${orderData.email}\n` +
+          `📱 <b>Contact:</b> ${orderData.contact || '-'}\n` +
+          `-----------------------------\n` +
+          `🎮 <b>Game:</b> ${orderData.item.gameName}\n` +
+          `📅 <b>Plan:</b> ${orderData.item.planName}\n` +
+          `💰 <b>Amount:</b> ₹${orderData.basePriceINR} (${orderData.paidAmount} ${orderData.paidCurrency})\n` +
+          `💳 <b>Method:</b> ${orderData.method}\n` +
+          `-----------------------------\n` +
+          `🔢 <b>UTR / Trans ID:</b> <code>${orderData.transId}</code>\n` +
+          `-----------------------------\n` +
+          `<i>FamPay / Bank payment submitted. Verify and approve in Admin.</i>`;
+
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: tgMsg,
+            parse_mode: 'HTML'
+          })
         });
-    } catch(e) { console.log('API Error', e); }
+      } catch (directErr) {
+        console.warn('Direct Telegram API notification error:', directErr);
+      }
+    }
 
     alert("✅ Order Submitted! Please wait for admin approval.");
     window.cart = [];

@@ -124,7 +124,7 @@ function renderOrderListTemplate(title) {
         <button onclick="window.router.navigateTo('/admin')" class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-3 py-1 rounded font-bold hover:bg-slate-300 transition">Back</button>
       </div>
       <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-        <table class="w-full text-left text-sm">
+        <table class="w-full text-left text-sm whitespace-nowrap min-w-[640px]">
           <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500">
             <tr>
               <th class="p-3">User Email</th><th class="p-3">Total</th><th class="p-3">Approved</th>
@@ -210,7 +210,7 @@ function AdminUserOrdersPage() {
         <button onclick="window.history.back()" class="text-xs bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-3 py-1 rounded font-bold hover:bg-slate-300 transition">Back</button>
       </div>
       <div class="overflow-x-auto bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
-        <table class="w-full text-left text-sm">
+        <table class="w-full text-left text-sm whitespace-nowrap min-w-[640px]">
           <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-slate-500">
             <tr><th class="p-3">Item</th><th class="p-3">UTR / Trans ID</th><th class="p-3">Amount</th><th class="p-3">Status</th><th class="p-3">Key</th><th class="p-3">Actions</th></tr>
           </thead>
@@ -587,13 +587,41 @@ function AdminPaymentsPage() {
               </div>
             </div>
           </div>
+        <!-- 5. Telegram Bot Order Alerts -->
+        <div class="apple-glass-card p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-8 h-8 rounded-full bg-[#229ED9]/10 text-[#229ED9] flex items-center justify-center">
+              <span class="material-icons text-base">send</span>
+            </div>
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white">5. Telegram Bot Order Alerts</h3>
+              <p class="text-xs text-slate-400">Receive instant order notifications with UTR & customer details in Telegram</p>
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-500 mb-1">Telegram Bot Token</label>
+              <input type="text" id="pay-tg-token" class="w-full text-xs font-mono font-bold" placeholder="8491648554:AAHwIlmoD6jrIZlhMdSd0Pd8mNYJebkrWxE">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-500 mb-1">Telegram Chat ID (Admin or Group)</label>
+              <input type="text" id="pay-tg-chatid" class="w-full text-xs font-mono font-bold" placeholder="6879169726">
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="window.testTelegramBotNotification()" class="apple-glass-pill py-2 px-4 text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5 hover:bg-blue-50 transition active:scale-95">
+              <span class="material-icons text-sm">notifications_active</span>
+              <span>Send Test Telegram Alert</span>
+            </button>
+            <span id="tg-test-status" class="text-xs font-semibold text-slate-400"></span>
+          </div>
         </div>
 
         <!-- Save button -->
         <div class="pt-4 flex justify-end gap-3">
           <button onclick="window.saveAdminPaymentDetails()" class="apple-btn-primary px-8 py-3.5 rounded-full text-sm font-bold shadow-lg shadow-blue-500/25 flex items-center gap-2">
             <span class="material-icons text-sm">save</span>
-            <span>Save All Payment Methods</span>
+            <span>Save All Payment Methods & Bot Config</span>
           </button>
         </div>
 
@@ -612,7 +640,7 @@ window.loadAdminPaymentDetails = async function() {
     const data = doc.exists ? (doc.data() || {}) : {};
 
     const upi = data.upi || {};
-    document.getElementById('pay-upi-id').value = upi.id || 'abnixsh@ptyes';
+    document.getElementById('pay-upi-id').value = upi.id || 'fucckkoffabhishekhop@fam';
     document.getElementById('pay-upi-name').value = upi.name || 'StarkStore';
     document.getElementById('pay-upi-qrurl').value = upi.qrUrl || '';
     if (upi.qrUrl) document.getElementById('pay-upi-preview').innerHTML = `<img src="${upi.qrUrl}" class="w-full h-full object-cover">`;
@@ -633,10 +661,42 @@ window.loadAdminPaymentDetails = async function() {
     document.getElementById('pay-paypal-qrurl').value = paypal.qrUrl || '';
     if (paypal.qrUrl) document.getElementById('pay-paypal-preview').innerHTML = `<img src="${paypal.qrUrl}" class="w-full h-full object-cover">`;
 
+    // Telegram Bot config
+    document.getElementById('pay-tg-token').value = data.tgBotToken || '8491648554:AAHwIlmoD6jrIZlhMdSd0Pd8mNYJebkrWxE';
+    document.getElementById('pay-tg-chatid').value = data.tgChatId || '6879169726';
+
     loading.classList.add('hidden');
     form.classList.remove('hidden');
   } catch (e) {
     loading.innerHTML = `<div class="text-red-500 font-bold">Error loading payment data: ${e.message}</div>`;
+  }
+};
+
+window.testTelegramBotNotification = async function() {
+  const token = document.getElementById('pay-tg-token').value.trim() || '8491648554:AAHwIlmoD6jrIZlhMdSd0Pd8mNYJebkrWxE';
+  const chatId = document.getElementById('pay-tg-chatid').value.trim() || '6879169726';
+  const statusEl = document.getElementById('tg-test-status');
+
+  if (statusEl) statusEl.innerText = "Sending test message...";
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: `🔔 <b>Test Notification from Stark Mods Admin</b>\nTelegram Bot is successfully connected! Order alerts are active.`,
+        parse_mode: 'HTML'
+      })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      if (statusEl) statusEl.innerHTML = `<span class="text-emerald-500 font-bold">✅ Sent successfully! Check your Telegram.</span>`;
+    } else {
+      if (statusEl) statusEl.innerHTML = `<span class="text-red-500 font-bold">❌ Error: ${data.description}</span>`;
+    }
+  } catch (e) {
+    if (statusEl) statusEl.innerHTML = `<span class="text-red-500 font-bold">❌ Failed: ${e.message}</span>`;
   }
 };
 
@@ -659,8 +719,8 @@ window.saveAdminPaymentDetails = async function() {
 
   const paymentData = {
     upi: {
-      id: document.getElementById('pay-upi-id').value.trim(),
-      name: document.getElementById('pay-upi-name').value.trim(),
+      id: document.getElementById('pay-upi-id').value.trim() || 'fucckkoffabhishekhop@fam',
+      name: document.getElementById('pay-upi-name').value.trim() || 'StarkStore',
       qrUrl: document.getElementById('pay-upi-qrurl').value.trim()
     },
     ep: {
@@ -676,13 +736,15 @@ window.saveAdminPaymentDetails = async function() {
       email: document.getElementById('pay-paypal-email').value.trim(),
       qrUrl: document.getElementById('pay-paypal-qrurl').value.trim()
     },
+    tgBotToken: document.getElementById('pay-tg-token').value.trim() || '8491648554:AAHwIlmoD6jrIZlhMdSd0Pd8mNYJebkrWxE',
+    tgChatId: document.getElementById('pay-tg-chatid').value.trim() || '6879169726',
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
   try {
     await db.collection('siteConfig').doc('paymentDetails').set(paymentData, { merge: true });
     window.paymentConfig = paymentData;
-    alert("✅ Payment methods and QR codes successfully updated!");
+    alert("✅ Payment methods, FamPay details and Telegram Bot config successfully updated!");
   } catch (e) {
     alert("Failed to save: " + e.message);
   }
@@ -826,66 +888,144 @@ function AdminModsPage() {
       </section>
 
       <!-- MODAL FOR ADDING / EDITING CUSTOM MOD -->
-      <div id="mod-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="apple-glass-card w-full max-w-lg p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-          <div class="flex items-center justify-between border-b pb-3">
-            <h3 class="font-bold text-base text-slate-900 dark:text-white" id="modal-mod-title">Add Game Card</h3>
-            <button onclick="window.closeModModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white">
-              <span class="material-icons">close</span>
+      <div id="mod-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-end sm:items-center justify-center p-2 sm:p-4 animate-fade-in">
+        <div class="apple-glass-card w-full max-w-lg p-5 sm:p-6 space-y-4 max-h-[88vh] overflow-y-auto rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700 bg-white dark:bg-slate-900">
+          <div class="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
+            <div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white" id="modal-mod-title">Add / Edit Mod Card</h3>
+              <p class="text-[11px] text-slate-400">Configure title, tags, pills, multi-plan pricing & YouTube video</p>
+            </div>
+            <button onclick="window.closeModModal()" class="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-white active:scale-90 transition">
+              <span class="material-icons text-base">close</span>
             </button>
           </div>
 
           <input type="hidden" id="modal-mod-id">
 
-          <div class="grid grid-cols-2 gap-3">
+          <!-- 1. Basic Info -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Game / Mod Name *</label>
-              <input type="text" id="modal-mod-name" class="w-full text-xs" placeholder="e.g. Cricket 26 Ultra">
+              <input type="text" id="modal-mod-name" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800" placeholder="e.g. RC 20 VIP Mod Menu">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Category / Tag</label>
-              <input type="text" id="modal-mod-tag" class="w-full text-xs" placeholder="e.g. Patch Update">
+              <input type="text" id="modal-mod-tag" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-800" placeholder="e.g. VIP Injector &bull; Pro Cheats">
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Pricing Type *</label>
-              <select id="modal-mod-type" class="w-full text-xs" onchange="window.togglePriceField(this.value)">
+          <!-- 2. Status Pills & Colors -->
+          <div class="p-3.5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 space-y-2.5">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Status Pills & Badge Colors</span>
+            
+            <!-- Pill 1 -->
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Pill 1 Text</label>
+                <input type="text" id="modal-mod-pill1-text" class="w-full text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="e.g. v8.2 LIVE">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Pill 1 Color</label>
+                <select id="modal-mod-pill1-color" class="w-full text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                  <option value="blue">Blue</option>
+                  <option value="emerald">Emerald (Green)</option>
+                  <option value="amber">Amber (Gold/Orange)</option>
+                  <option value="purple">Purple</option>
+                  <option value="rose">Rose (Red)</option>
+                  <option value="slate">Slate (Gray)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Pill 2 -->
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Pill 2 Text</label>
+                <input type="text" id="modal-mod-pill2-text" class="w-full text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="e.g. Anti-Ban VIP">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Pill 2 Color</label>
+                <select id="modal-mod-pill2-color" class="w-full text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                  <option value="amber">Amber (Gold/Orange)</option>
+                  <option value="emerald">Emerald (Green)</option>
+                  <option value="blue">Blue</option>
+                  <option value="purple">Purple</option>
+                  <option value="rose">Rose (Red)</option>
+                  <option value="slate">Slate (Gray)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Pricing (1 Month, 1 Year, Lifetime) -->
+          <div class="p-3.5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Pricing & License Plans</span>
+              <select id="modal-mod-type" class="text-xs p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold" onchange="window.togglePriceField(this.value)">
                 <option value="free">Free Download</option>
-                <option value="paid">Paid VIP</option>
+                <option value="paid">Paid VIP (Multi-Plan)</option>
               </select>
             </div>
-            <div id="modal-price-box" class="hidden">
-              <label class="block text-xs font-bold text-slate-500 mb-1">Price (INR) *</label>
-              <input type="number" id="modal-mod-price" class="w-full text-xs" placeholder="250">
+
+            <div id="modal-price-box" class="hidden space-y-2 pt-1 border-t border-black/5 dark:border-white/5">
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 mb-0.5">1 Month (₹)</label>
+                  <input type="number" id="modal-mod-price-month" class="w-full text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold" placeholder="250">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 mb-0.5">1 Year (₹)</label>
+                  <input type="number" id="modal-mod-price-year" class="w-full text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold" placeholder="600">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 mb-0.5">Lifetime (₹)</label>
+                  <input type="number" id="modal-mod-price-lifetime" class="w-full text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold" placeholder="1000">
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400">Users can choose 1 Month, 1 Year, or Lifetime directly from the card and checkout with FamPay UPI.</p>
             </div>
           </div>
 
-          <div>
-            <label class="block text-xs font-bold text-slate-500 mb-1">Description *</label>
-            <textarea id="modal-mod-desc" rows="3" class="w-full text-xs" placeholder="Features and summary..."></textarea>
+          <!-- 4. YouTube Video Preview Feature -->
+          <div class="p-3.5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/5 dark:border-white/5 space-y-2">
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="modal-mod-video-enable" class="w-4 h-4 rounded text-blue-600">
+              <label for="modal-mod-video-enable" class="text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer">
+                Enable In-Page YouTube Video Preview
+              </label>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 mb-0.5">YouTube Video URL or Video ID</label>
+              <input type="text" id="modal-mod-video-url" class="w-full text-xs p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono" placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/...">
+              <p class="text-[10px] text-slate-400 mt-1">When enabled, users can click "Watch Preview" to play the video right inside the card/modal without leaving the site.</p>
+            </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
+          <!-- 5. Media & Links -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-500 mb-1">Icon URL</label>
-              <input type="text" id="modal-mod-icon" class="w-full text-xs" placeholder="assets/icons/icon_rc25.jpg">
+              <input type="text" id="modal-mod-icon" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="assets/icons/icon_rc20.jpg">
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Screenshot / Banner URL</label>
-              <input type="text" id="modal-mod-banner" class="w-full text-xs" placeholder="assets/img/img_rc25_1.jpg">
+              <label class="block text-xs font-bold text-slate-500 mb-1">Banner / Screenshot URL</label>
+              <input type="text" id="modal-mod-banner" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="assets/img/img_rc20_1.jpg">
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-bold text-slate-500 mb-1">Download or Details Link *</label>
-            <input type="text" id="modal-mod-link" class="w-full text-xs font-mono" placeholder="https://mediafire.com/... or /rc25">
+            <input type="text" id="modal-mod-link" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono" placeholder="https://mediafire.com/... or /rc20">
           </div>
 
-          <div class="flex justify-end gap-2 pt-2 border-t">
-            <button onclick="window.closeModModal()" class="apple-glass-pill py-2 px-4 text-xs font-bold">Cancel</button>
-            <button onclick="window.saveCustomModCard()" class="apple-btn-primary px-6 py-2 rounded-full text-xs font-bold shadow">Save Card</button>
+          <div>
+            <label class="block text-xs font-bold text-slate-500 mb-1">Description *</label>
+            <textarea id="modal-mod-desc" rows="2" class="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="Features and summary..."></textarea>
+          </div>
+
+          <div class="flex justify-end gap-2.5 pt-3 border-t border-black/5 dark:border-white/10">
+            <button onclick="window.closeModModal()" class="apple-glass-pill py-2 px-5 text-xs font-bold">Cancel</button>
+            <button onclick="window.saveCustomModCard()" class="apple-btn-primary px-7 py-2.5 rounded-full text-xs font-bold shadow-md">Save Card</button>
           </div>
         </div>
       </div>
@@ -969,128 +1109,173 @@ window.loadAdminModsList = async function() {
     let html = '';
     snap.forEach(doc => {
       const c = doc.data();
-      const id = doc.id;
-      const isFree = c.type === 'free' || c.price === 0;
+        const id = doc.id;
+        const isFree = c.type === 'free' || c.price === 0;
+        const hasVideo = !!(c.enablePreview && c.videoUrl);
 
-      html += `
-        <div class="apple-glass-card p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <img src="${c.icon || 'assets/icons/stark-32.png'}" class="w-12 h-12 rounded-xl object-cover border" onerror="this.src='/assets/icons/stark-32.png'">
-            <div>
-              <div class="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                ${c.name}
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isFree ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}">
-                  ${isFree ? 'Free' : `₹${c.price}`}
-                </span>
+        html += `
+          <div class="apple-glass-card p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+              <img src="${c.icon || 'assets/icons/stark-32.png'}" class="w-14 h-14 rounded-2xl object-cover border flex-shrink-0" onerror="this.src='/assets/icons/stark-32.png'">
+              <div class="overflow-hidden flex-1">
+                <div class="font-bold text-sm text-slate-900 dark:text-white flex flex-wrap items-center gap-2">
+                  <span>${c.name}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isFree ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}">
+                    ${isFree ? 'Free' : `₹${c.price1Month || c.price || 250}`}
+                  </span>
+                  ${hasVideo ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 flex items-center gap-0.5"><span class="material-icons text-[10px]">smart_display</span> Video Preview</span>` : ''}
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                  ${c.pill1Text ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500">${c.pill1Text}</span>` : ''}
+                  ${c.pill2Text ? `<span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500">${c.pill2Text}</span>` : ''}
+                  ${!isFree ? `<span class="text-[9px] text-slate-400 font-medium">1M: ₹${c.price1Month || c.price || 250} | 1Y: ₹${c.price1Year || 600} | Life: ₹${c.priceLifetime || 1000}</span>` : ''}
+                </div>
+
+                <p class="text-xs text-slate-500 truncate max-w-sm mt-1">${c.desc || '-'}</p>
               </div>
-              <p class="text-xs text-slate-500 truncate max-w-sm mt-0.5">${c.desc || '-'}</p>
-              <div class="text-[10px] font-mono text-slate-400 mt-1 truncate max-w-xs">Link: ${c.link}</div>
+            </div>
+            
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end border-t sm:border-t-0 pt-2 sm:pt-0">
+              ${hasVideo ? `
+                <button onclick="window.openVideoPreview('${encodeURIComponent(c.videoUrl)}', '${(c.name || '').replace(/'/g, "\\'")}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition" title="Preview Video">
+                  <span class="material-icons text-sm">play_circle</span>
+                </button>
+              ` : ''}
+              <button onclick="window.editCustomMod('${id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-blue-500 hover:bg-blue-50 transition" title="Edit">
+                <span class="material-icons text-sm">edit</span>
+              </button>
+              <button onclick="window.deleteCustomMod('${id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-red-500 hover:bg-red-50 transition" title="Delete">
+                <span class="material-icons text-sm">delete</span>
+              </button>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="window.editCustomMod('${id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-blue-500 hover:bg-blue-50 transition" title="Edit">
-              <span class="material-icons text-sm">edit</span>
-            </button>
-            <button onclick="window.deleteCustomMod('${id}')" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-red-500 hover:bg-red-50 transition" title="Delete">
-              <span class="material-icons text-sm">delete</span>
-            </button>
-          </div>
-        </div>
-      `;
+        `;
+      });
+      list.innerHTML = html;
     });
-    list.innerHTML = html;
-  });
-};
-
-window.saveGameModConfig = async function(gameId, inputId) {
-  const link = document.getElementById(inputId).value.trim();
-  if (!link) { alert("Please enter a valid link"); return; }
-  try {
-    await db.collection('gameConfig').doc(gameId).set({ link, enabled: true, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
-    alert("✅ Link saved for " + gameId.toUpperCase());
-  } catch (e) {
-    alert("Error: " + e.message);
-  }
-};
-
-window.openAddModModal = function() {
-  document.getElementById('modal-mod-id').value = '';
-  document.getElementById('modal-mod-title').innerText = 'Add Game Card';
-  document.getElementById('modal-mod-name').value = '';
-  document.getElementById('modal-mod-tag').value = '';
-  document.getElementById('modal-mod-type').value = 'free';
-  document.getElementById('modal-mod-price').value = '0';
-  document.getElementById('modal-mod-desc').value = '';
-  document.getElementById('modal-mod-icon').value = '';
-  document.getElementById('modal-mod-banner').value = '';
-  document.getElementById('modal-mod-link').value = '';
-  window.togglePriceField('free');
-  document.getElementById('mod-modal').classList.remove('hidden');
-};
-
-window.closeModModal = function() {
-  document.getElementById('mod-modal').classList.add('hidden');
-};
-
-window.togglePriceField = function(val) {
-  const box = document.getElementById('modal-price-box');
-  if (box) box.classList.toggle('hidden', val !== 'paid');
-};
-
-window.saveCustomModCard = async function() {
-  const id = document.getElementById('modal-mod-id').value.trim();
-  const name = document.getElementById('modal-mod-name').value.trim();
-  const tag = document.getElementById('modal-mod-tag').value.trim();
-  const type = document.getElementById('modal-mod-type').value;
-  const price = type === 'paid' ? parseInt(document.getElementById('modal-mod-price').value || 0) : 0;
-  const desc = document.getElementById('modal-mod-desc').value.trim();
-  const icon = document.getElementById('modal-mod-icon').value.trim();
-  const banner = document.getElementById('modal-mod-banner').value.trim();
-  const link = document.getElementById('modal-mod-link').value.trim();
-
-  if (!name || !desc || !link) {
-    alert("Please fill in Game Name, Description and Link.");
-    return;
-  }
-
-  const payload = {
-    name, tag, type, price, desc, icon, banner, link,
-    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
   };
 
-  try {
-    if (id) {
-      await db.collection('customCards').doc(id).update(payload);
-    } else {
-      payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-      await db.collection('customCards').add(payload);
+  window.saveGameModConfig = async function(gameId, inputId) {
+    const link = document.getElementById(inputId).value.trim();
+    if (!link) { alert("Please enter a valid link"); return; }
+    try {
+      await db.collection('gameConfig').doc(gameId).set({ link, enabled: true, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      alert("✅ Link saved for " + gameId.toUpperCase());
+    } catch (e) {
+      alert("Error: " + e.message);
     }
-    window.closeModModal();
-    alert("✅ Game Card Saved!");
-    if (window.fetchCustomHomeCards) window.fetchCustomHomeCards();
-  } catch (e) {
-    alert("Error: " + e.message);
-  }
-};
+  };
 
-window.editCustomMod = async function(id) {
-  const doc = await db.collection('customCards').doc(id).get();
-  if (!doc.exists) return;
-  const d = doc.data();
+  window.openAddModModal = function() {
+    document.getElementById('modal-mod-id').value = '';
+    document.getElementById('modal-mod-title').innerText = 'Add Game Card';
+    document.getElementById('modal-mod-name').value = '';
+    document.getElementById('modal-mod-tag').value = '';
+    document.getElementById('modal-mod-pill1-text').value = '';
+    document.getElementById('modal-mod-pill1-color').value = 'blue';
+    document.getElementById('modal-mod-pill2-text').value = '';
+    document.getElementById('modal-mod-pill2-color').value = 'amber';
+    document.getElementById('modal-mod-type').value = 'free';
+    document.getElementById('modal-mod-price-month').value = '250';
+    document.getElementById('modal-mod-price-year').value = '600';
+    document.getElementById('modal-mod-price-lifetime').value = '1000';
+    document.getElementById('modal-mod-video-enable').checked = false;
+    document.getElementById('modal-mod-video-url').value = '';
+    document.getElementById('modal-mod-desc').value = '';
+    document.getElementById('modal-mod-icon').value = '';
+    document.getElementById('modal-mod-banner').value = '';
+    document.getElementById('modal-mod-link').value = '';
+    window.togglePriceField('free');
+    document.getElementById('mod-modal').classList.remove('hidden');
+  };
 
-  document.getElementById('modal-mod-id').value = id;
-  document.getElementById('modal-mod-title').innerText = 'Edit Game Card';
-  document.getElementById('modal-mod-name').value = d.name || '';
-  document.getElementById('modal-mod-tag').value = d.tag || '';
-  document.getElementById('modal-mod-type').value = d.type || 'free';
-  document.getElementById('modal-mod-price').value = d.price || '0';
-  document.getElementById('modal-mod-desc').value = d.desc || '';
-  document.getElementById('modal-mod-icon').value = d.icon || '';
-  document.getElementById('modal-mod-banner').value = d.banner || '';
-  document.getElementById('modal-mod-link').value = d.link || '';
-  window.togglePriceField(d.type || 'free');
-  document.getElementById('mod-modal').classList.remove('hidden');
-};
+  window.closeModModal = function() {
+    document.getElementById('mod-modal').classList.add('hidden');
+  };
+
+  window.togglePriceField = function(val) {
+    const box = document.getElementById('modal-price-box');
+    if (box) box.classList.toggle('hidden', val !== 'paid');
+  };
+
+  window.saveCustomModCard = async function() {
+    const id = document.getElementById('modal-mod-id').value.trim();
+    const name = document.getElementById('modal-mod-name').value.trim();
+    const tag = document.getElementById('modal-mod-tag').value.trim();
+    const pill1Text = document.getElementById('modal-mod-pill1-text').value.trim();
+    const pill1Color = document.getElementById('modal-mod-pill1-color').value;
+    const pill2Text = document.getElementById('modal-mod-pill2-text').value.trim();
+    const pill2Color = document.getElementById('modal-mod-pill2-color').value;
+    const type = document.getElementById('modal-mod-type').value;
+    const price1Month = type === 'paid' ? parseInt(document.getElementById('modal-mod-price-month').value || 250) : 0;
+    const price1Year = type === 'paid' ? parseInt(document.getElementById('modal-mod-price-year').value || 600) : 0;
+    const priceLifetime = type === 'paid' ? parseInt(document.getElementById('modal-mod-price-lifetime').value || 1000) : 0;
+    const enablePreview = document.getElementById('modal-mod-video-enable').checked;
+    const videoUrl = document.getElementById('modal-mod-video-url').value.trim();
+    const desc = document.getElementById('modal-mod-desc').value.trim();
+    const icon = document.getElementById('modal-mod-icon').value.trim();
+    const banner = document.getElementById('modal-mod-banner').value.trim();
+    const link = document.getElementById('modal-mod-link').value.trim();
+
+    if (!name || !desc) {
+      alert("Please fill in Game Name and Description.");
+      return;
+    }
+
+    const payload = {
+      name, tag, pill1Text, pill1Color, pill2Text, pill2Color,
+      type,
+      price: price1Month, // Primary price for backward compatibility
+      price1Month,
+      price1Year,
+      priceLifetime,
+      enablePreview,
+      videoUrl,
+      desc, icon, banner, link,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+      if (id) {
+        await db.collection('customCards').doc(id).update(payload);
+      } else {
+        payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        await db.collection('customCards').add(payload);
+      }
+      window.closeModModal();
+      alert("✅ Game Card Saved!");
+    } catch (e) {
+      alert("Error: " + e.message);
+    }
+  };
+
+  window.editCustomMod = async function(id) {
+    const doc = await db.collection('customCards').doc(id).get();
+    if (!doc.exists) return;
+    const d = doc.data();
+
+    document.getElementById('modal-mod-id').value = id;
+    document.getElementById('modal-mod-title').innerText = 'Edit Game Card';
+    document.getElementById('modal-mod-name').value = d.name || '';
+    document.getElementById('modal-mod-tag').value = d.tag || '';
+    document.getElementById('modal-mod-pill1-text').value = d.pill1Text || '';
+    document.getElementById('modal-mod-pill1-color').value = d.pill1Color || 'blue';
+    document.getElementById('modal-mod-pill2-text').value = d.pill2Text || '';
+    document.getElementById('modal-mod-pill2-color').value = d.pill2Color || 'amber';
+    document.getElementById('modal-mod-type').value = d.type || 'free';
+    document.getElementById('modal-mod-price-month').value = d.price1Month || d.price || '250';
+    document.getElementById('modal-mod-price-year').value = d.price1Year || '600';
+    document.getElementById('modal-mod-price-lifetime').value = d.priceLifetime || '1000';
+    document.getElementById('modal-mod-video-enable').checked = !!d.enablePreview;
+    document.getElementById('modal-mod-video-url').value = d.videoUrl || '';
+    document.getElementById('modal-mod-desc').value = d.desc || '';
+    document.getElementById('modal-mod-icon').value = d.icon || '';
+    document.getElementById('modal-mod-banner').value = d.banner || '';
+    document.getElementById('modal-mod-link').value = d.link || '';
+    window.togglePriceField(d.type || 'free');
+    document.getElementById('mod-modal').classList.remove('hidden');
+  };
 
 window.deleteCustomMod = async function(id) {
   if (!confirm("Are you sure you want to delete this game card?")) return;

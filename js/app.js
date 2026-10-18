@@ -315,11 +315,97 @@
     }
   });
 
+  // Helper: Extract YouTube Embed URL
+  window.getYoutubeEmbedUrl = function (url) {
+    if (!url) return '';
+    url = String(url).trim();
+    if (url.includes('youtube.com/embed/')) {
+      const id = url.split('embed/')[1].split('?')[0];
+      return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+    }
+    const matchShort = url.match(/youtu\.be\/([a-zA-Z0-9_-]{6,15})/);
+    if (matchShort) return `https://www.youtube-nocookie.com/embed/${matchShort[1]}?autoplay=1&rel=0`;
+    const matchWatch = url.match(/[?&]v=([a-zA-Z0-9_-]{6,15})/);
+    if (matchWatch) return `https://www.youtube-nocookie.com/embed/${matchWatch[1]}?autoplay=1&rel=0`;
+    const matchShorts = url.match(/shorts\/([a-zA-Z0-9_-]{6,15})/);
+    if (matchShorts) return `https://www.youtube-nocookie.com/embed/${matchShorts[1]}?autoplay=1&rel=0`;
+    if (/^[a-zA-Z0-9_-]{10,12}$/.test(url)) {
+      return `https://www.youtube-nocookie.com/embed/${url}?autoplay=1&rel=0`;
+    }
+    return url;
+  };
+
+  // Helper: Open YouTube Video Preview Modal
+  window.openVideoPreview = function (videoUrl, title) {
+    const embedUrl = window.getYoutubeEmbedUrl(videoUrl);
+    if (!embedUrl) {
+      alert("No video preview available.");
+      return;
+    }
+
+    let modal = document.getElementById('global-video-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'global-video-modal';
+      modal.className = 'fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in';
+      document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+      <div class="apple-glass-card w-full max-w-3xl overflow-hidden rounded-3xl shadow-2xl border border-white/20 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95">
+        <div class="flex items-center justify-between px-5 py-3.5 border-b border-black/5 dark:border-white/10">
+          <div class="flex items-center gap-2">
+            <span class="material-icons text-red-500 text-lg">smart_display</span>
+            <span class="font-bold text-sm text-slate-900 dark:text-white truncate">${title || 'Mod Video Preview'}</span>
+          </div>
+          <button onclick="window.closeVideoPreview()" class="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-white transition active:scale-90">
+            <span class="material-icons text-base">close</span>
+          </button>
+        </div>
+        <div class="relative w-full aspect-video bg-black">
+          <iframe src="${embedUrl}" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </div>
+    `;
+    modal.classList.remove('hidden');
+  };
+
+  window.closeVideoPreview = function () {
+    const modal = document.getElementById('global-video-modal');
+    if (modal) {
+      modal.innerHTML = '';
+      modal.classList.add('hidden');
+    }
+  };
+
+  // Helper: Add custom card to cart with chosen plan
+  window.addCustomToCart = function (cardId, planName, price, name, icon) {
+    const cost = Number(price) || 0;
+    if (cost === 0) {
+      alert("This mod is free to download!");
+      return;
+    }
+    window.cart = [{
+      gameId: cardId,
+      gameName: name || 'Custom Mod',
+      planName: planName || 'VIP Access',
+      price: cost,
+      image: icon || 'assets/icons/stark-32.png'
+    }];
+    updateCartBadge();
+    if (window.router) window.router.navigateTo('/cart');
+  };
+
   // Called by router after each page render
   window.initializeComponents = function () {
     initializeCarousels();
     updateCartBadge();
     updateDockActive();
     if (window.updateAdminIcon) window.updateAdminIcon();
+
+    // Fix: Re-render home cards automatically when navigating back to HomePage
+    if (document.getElementById('mods-grid') && typeof window.renderAllHomeCards === 'function') {
+      window.renderAllHomeCards();
+    }
   };
 })();
